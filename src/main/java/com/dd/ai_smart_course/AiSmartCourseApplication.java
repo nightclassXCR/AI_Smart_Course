@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course;
 
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
