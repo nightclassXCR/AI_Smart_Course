@@ -2,10 +2,7 @@ package com.dd.ai_smart_course.mapper;
 
 
 import com.dd.ai_smart_course.entity.Chapter;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -31,6 +28,10 @@ public interface ChapterMapper {
     // 根据章节ID更新章节信息
     @Update("UPDATE chapter SET course_id = #{courseId}, title = #{title}, content = #{content}, sort_order = #{sortOrder} WHERE id = #{id}")
     int updateChapter(Chapter chapter);
+
+    //  根据章节ID删除章节
+    @Delete("DELETE FROM chapter WHERE id = #{id}")
+    int deleteChapter(int id);
 
 
 }

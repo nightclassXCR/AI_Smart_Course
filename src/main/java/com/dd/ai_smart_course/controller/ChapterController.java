@@ -51,7 +51,10 @@ public class ChapterController {
                 return Result.error("添加失败");
             }
     }
-
+    /**
+     * 更新章节
+     * @param chapterdto
+     */
     @PutMapping
     public Result<String> updateChapter(@RequestBody ChapterDTO chapterdto) {
             int result = chapterService.updateChapter(chapterdto);
@@ -59,6 +62,20 @@ public class ChapterController {
                 return Result.success("更新成功");
             } else {
                 return Result.error("更新失败");
+            }
+    }
+
+    /**
+     * 删除章节
+     * @param id
+     */
+    @DeleteMapping("/{id}")
+    public Result<String> deleteChapter(@PathVariable int id) {
+            int result = chapterService.deleteChapter(id);
+            if (result > 0) {
+                return Result.success("删除成功");
+            } else {
+                return Result.error("删除失败");
             }
     }
 

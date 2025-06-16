@@ -19,4 +19,7 @@ public interface ChapterService {
     // 更新章节
     int updateChapter(ChapterDTO chapterdto);
 
+    // 删除章节
+    int deleteChapter(int id);
+
 }

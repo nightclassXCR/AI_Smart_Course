@@ -46,6 +46,18 @@ public class ChapterImpl implements ChapterService {
             throw new RuntimeException("课程不存在");
         }
         chapterdto.setCourseId(courseId);
-        return chapterMapper.updateChapter(chapterdto);
+        Chapter chapter = new Chapter();
+        chapter.setId(chapterdto.getId());
+        chapter.setCourseId(courseId);
+        chapter.setTitle(chapterdto.getTitle());
+        chapter.setContent(chapterdto.getContent());
+        chapter.setSortOrder(chapterdto.getSortOrder());
+        return  chapterMapper.updateChapter(chapter);
+    }
+
+    // 删除章节
+    @Override
+    public int deleteChapter(int id) {
+        return chapterMapper.deleteChapter(id);
     }
 }
