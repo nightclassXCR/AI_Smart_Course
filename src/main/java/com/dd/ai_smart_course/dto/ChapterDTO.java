@@ -8,7 +8,9 @@ public class ChapterDTO extends Chapter {
     private String courseName;
 
 
-    public ChapterDTO(String courseName) {
+
+    public ChapterDTO(Chapter chapter, String courseName) {
+        super(chapter.getId(), chapter.getCourseId(), chapter.getTitle(), chapter.getContent(), chapter.getSortOrder());
         this.courseName = courseName;
     }
 
