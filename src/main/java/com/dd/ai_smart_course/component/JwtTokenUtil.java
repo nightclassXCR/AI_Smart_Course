@@ -30,6 +30,7 @@ public class JwtTokenUtil {
                 .signWith(SignatureAlgorithm.HS256, KEY)  //加密算法及其密钥
                 .compact();     //将三部分拼装
 
+        log.info("生成token: ");
 //        //生成日志
 //        System.out.println("生成令牌: " + token);
 
@@ -37,13 +38,14 @@ public class JwtTokenUtil {
     }
 
     //从令牌中获取用户ID
-    public String getUserIDFromToken(String token){
-        String userID = null;
+    public Integer getUserIDFromToken(String token){
+        Integer userID = null;
         Claims claims = getAllClaimsFromToken(token);
         try{
-            userID = claims.get("userID").toString();
+            String userIDString = claims.get("userID").toString();
+            userID = Integer.valueOf(userIDString);
         }catch (Exception e){
-            log.error("token解析失败: ", e);
+            log.error("token解析用户ID失败: ", e);
         }
 
         return userID;
@@ -75,14 +77,14 @@ public class JwtTokenUtil {
     }
 
     //判断令牌是否超时
-    private Boolean isTokenExpired(String token){
+    public Boolean isTokenExpired(String token){
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
     //判断令牌是否有效
     public Boolean validateToken(String token,String userID){
-        final String tokenUserID = getUserIDFromToken(token);
+        final Integer tokenUserID = getUserIDFromToken(token);
         return (tokenUserID.equals(userID) && !isTokenExpired(token));
     }
 

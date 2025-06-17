@@ -13,10 +13,10 @@ public class User {
     private String phoneNumber;
     private String password;
     private String name;
-    private String role;
+    private String role;    //"ROLE_ADMIN" OR "ROLE_USER"
     private Timestamp createdAt;
     private Timestamp lastActivityAt;
-    private String status;
+    private String status;  //"STATUS_NORMAL" OR "STATUS_BANNED"
 
 
 }
