@@ -65,8 +65,11 @@ public class ConceptController {
      */
     @DeleteMapping("/{id}")
     public Result<String> deleteConcept(@PathVariable int id) {
-        conceptService.deleteConcept(id);
-        return Result.success("删除成功");
+        if(conceptService.deleteConcept(id) > 0){
+            return Result.success("删除成功");
+        }else {
+            return Result.error("删除失败");
+        }
     }
 
 }

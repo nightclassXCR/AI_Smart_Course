@@ -7,10 +7,8 @@ import lombok.Data;
 public class ChapterDTO extends Chapter {
     private String courseName;
 
-
-
     public ChapterDTO(Chapter chapter, String courseName) {
-        super(chapter.getId(), chapter.getCourseId(), chapter.getTitle(), chapter.getContent(), chapter.getSortOrder());
+        super(chapter.getId(), chapter.getCourseId(), chapter.getTitle(), chapter.getContent(), chapter.getSequence(), chapter.getCreatedAt(), chapter.getUpdatedAt());
         this.courseName = courseName;
     }
 

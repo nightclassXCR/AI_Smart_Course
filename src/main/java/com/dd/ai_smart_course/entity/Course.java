@@ -10,5 +10,6 @@ public class Course {
     private String name;
     private int teacherId;
     private String description;
+    private String status;// published,draft,archived
     private Timestamp createdAt;
 }

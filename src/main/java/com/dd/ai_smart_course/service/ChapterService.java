@@ -3,8 +3,11 @@ package com.dd.ai_smart_course.service;
 
 import com.dd.ai_smart_course.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
+import com.dd.ai_smart_course.entity.Concept;
+import com.dd.ai_smart_course.entity.Course;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ChapterService {
     // 获取所有章节
@@ -21,5 +24,11 @@ public interface ChapterService {
 
     // 删除章节
     int deleteChapter(int id);
+
+    // 重新排序章节
+    void reorderChapters(Long courseId, List<Long> orderedChapterIds);
+
+    // 获取某课程下的所有知识点
+    List<Concept> getConceptsByChapterId(Long chapterId);
 
 }

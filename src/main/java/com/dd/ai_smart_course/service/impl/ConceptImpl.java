@@ -2,6 +2,7 @@ package com.dd.ai_smart_course.service.impl;
 
 import com.dd.ai_smart_course.dto.ConceptDTO;
 import com.dd.ai_smart_course.entity.Concept;
+import com.dd.ai_smart_course.entity.Question;
 import com.dd.ai_smart_course.mapper.ChapterMapper;
 import com.dd.ai_smart_course.mapper.ConceptMapper;
 import com.dd.ai_smart_course.service.ConceptService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ConceptImpl implements ConceptService {
@@ -66,5 +68,35 @@ public class ConceptImpl implements ConceptService {
     @Override
     public int deleteConcept(int id) {
         return conceptMapper.deleteConcept(id);
+    }
+
+    @Override
+    public void linkConceptToQuestion(Long conceptId, Long questionId) {
+
+    }
+
+    @Override
+    public List<Question> getQuestionsByConcept(Long conceptId) {
+        return List.of();
+    }
+
+    @Override
+    public void updateMasteryLevel(Long userId, Long conceptId, int masteryLevel) {
+
+    }
+
+    @Override
+    public int getMasteryLevel(Long userId, Long conceptId) {
+        return 0;
+    }
+
+    @Override
+    public Map<Concept, Integer> getUserConceptMasteryByCourse(Long userId, Long courseId) {
+        return Map.of();
+    }
+
+    @Override
+    public List<Concept> recommendConceptsForUser(Long userId, Long courseId) {
+        return List.of();
     }
 }

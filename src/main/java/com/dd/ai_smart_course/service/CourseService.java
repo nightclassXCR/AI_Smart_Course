@@ -1,8 +1,11 @@
 package com.dd.ai_smart_course.service;
 
+import com.dd.ai_smart_course.entity.Chapter;
+import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CourseService {
     // 获取所有课程
@@ -15,5 +18,13 @@ public interface CourseService {
     int updateCourse(Course course);
     // 删除课程
     int deleteCourse(int id);
+    // 获取指定教师授课的课程
+    List<Course> getCoursesByTeacherId(Long teacherId);
+    // 获取课程下所有章节
+    List<Chapter> getChaptersByCourse(Long courseId);
+    // 获取课程下所有知识点
+    List<Concept> getConceptsByCourse(Long courseId);
+    // 按章节分组的知识点
+    Map<Chapter, List<Concept>> getConceptsGroupedByChapter(Long courseId);
 
 }

@@ -2,12 +2,15 @@ package com.dd.ai_smart_course.service.impl;
 
 import com.dd.ai_smart_course.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
+import com.dd.ai_smart_course.entity.Concept;
+import com.dd.ai_smart_course.entity.Course;
 import com.dd.ai_smart_course.service.ChapterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.dd.ai_smart_course.mapper.ChapterMapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ChapterImpl implements ChapterService {
@@ -51,7 +54,7 @@ public class ChapterImpl implements ChapterService {
         chapter.setCourseId(courseId);
         chapter.setTitle(chapterdto.getTitle());
         chapter.setContent(chapterdto.getContent());
-        chapter.setSortOrder(chapterdto.getSortOrder());
+        chapter.setSequence(chapterdto.getSequence());
         return  chapterMapper.updateChapter(chapter);
     }
 
@@ -59,5 +62,17 @@ public class ChapterImpl implements ChapterService {
     @Override
     public int deleteChapter(int id) {
         return chapterMapper.deleteChapter(id);
+    }
+
+    // 重新排序章节
+    @Override
+    public void reorderChapters(Long courseId, List<Long> orderedChapterIds) {
+
+    }
+
+    // 根据章节id查询 concepts
+    @Override
+    public List<Concept> getConceptsByChapterId(Long chapterId) {
+        return List.of();
     }
 }

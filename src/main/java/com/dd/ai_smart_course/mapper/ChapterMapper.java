@@ -10,15 +10,15 @@ import java.util.List;
 public interface ChapterMapper {
 
     // 获取所有章节
-    @Select("SELECT * FROM chapter")
+    @Select("SELECT * FROM chapters")
     List<Chapter> getAllChapters();
 
     // 根据课程ID获取章节
-    @Select("SELECT * FROM chapter WHERE course_id = #{courseId}")
+    @Select("SELECT * FROM chapters WHERE course_id = #{courseId}")
     List<Chapter> getChaptersByCourseId(int courseId);
 
     // 添加章节
-    @Insert("INSERT INTO chapter (course_id, title, content, sort_order) VALUES (#{courseId}, #{title}, #{content}, #{sortOrder})")
+    @Insert("INSERT INTO chapters (course_id, title, content, sort_order) VALUES (#{courseId}, #{title}, #{content}, #{sortOrder})")
     int addChapter(Chapter chapter);
 
     // 根据课程名称获取课程ID
@@ -26,11 +26,11 @@ public interface ChapterMapper {
     Integer getCourseIdByCourseName(String courseName);
 
     // 根据章节ID更新章节信息
-    @Update("UPDATE chapter SET course_id = #{courseId}, title = #{title}, content = #{content}, sort_order = #{sortOrder} WHERE id = #{id}")
+    @Update("UPDATE chapters SET course_id = #{courseId}, title = #{title}, content = #{content}, sort_order = #{sortOrder} WHERE id = #{id}")
     int updateChapter(Chapter chapter);
 
     //  根据章节ID删除章节
-    @Delete("DELETE FROM chapter WHERE id = #{id}")
+    @Delete("DELETE FROM chapters WHERE id = #{id}")
     int deleteChapter(int id);
 
 
