@@ -59,7 +59,6 @@ public class ConceptImpl implements ConceptService {
         concept.setChapterId(chapterId);
         concept.setName(conceptDto.getName());
         concept.setDescription(conceptDto.getDescription());
-
         // 3. 调用 Mapper 更新概念信息
         return conceptMapper.updateConcept(concept);
     }
@@ -72,31 +71,32 @@ public class ConceptImpl implements ConceptService {
 
     @Override
     public void linkConceptToQuestion(Long conceptId, Long questionId) {
-
+        conceptMapper.linkConceptToQuestion(conceptId, questionId);
     }
 
     @Override
     public List<Question> getQuestionsByConcept(Long conceptId) {
-        return List.of();
+        return conceptMapper.getQuestionsByConcept(conceptId);
     }
 
     @Override
     public void updateMasteryLevel(Long userId, Long conceptId, int masteryLevel) {
-
+        conceptMapper.updateMasteryLevel(userId, conceptId, masteryLevel);
     }
 
     @Override
     public int getMasteryLevel(Long userId, Long conceptId) {
-        return 0;
+        Integer masteryLevel = conceptMapper.getMasteryLevel(userId, conceptId);
+        return masteryLevel == null ? 0 : masteryLevel;
     }
 
-    @Override
-    public Map<Concept, Integer> getUserConceptMasteryByCourse(Long userId, Long courseId) {
-        return Map.of();
-    }
-
-    @Override
-    public List<Concept> recommendConceptsForUser(Long userId, Long courseId) {
-        return List.of();
-    }
+//    @Override
+//    public Map<Concept, Integer> getUserConceptMasteryByCourse(Long userId, Long courseId) {
+//        return Map.of();
+//    }
+//
+//    @Override
+//    public List<Concept> recommendConceptsForUser(Long userId, Long courseId) {
+//        return List.of();
+//    }
 }

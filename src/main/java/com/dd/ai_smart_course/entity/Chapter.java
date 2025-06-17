@@ -3,6 +3,8 @@ package com.dd.ai_smart_course.entity;
 
 import lombok.Data;
 
+import java.util.Objects;
+
 @Data
 public class Chapter {
     private int id;
@@ -83,5 +85,28 @@ public class Chapter {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Chapter{" +
+                "id=" + id +
+                ", courseId=" + courseId +
+                ", title='" + title + '\'' +
+                ", sequence=" + sequence +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Chapter chapter = (Chapter) o;
+        return Objects.equals(id, chapter.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
