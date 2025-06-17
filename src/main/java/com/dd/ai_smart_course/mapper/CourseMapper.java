@@ -2,10 +2,7 @@ package com.dd.ai_smart_course.mapper;
 
 
 import com.dd.ai_smart_course.entity.Course;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -29,6 +26,6 @@ public interface CourseMapper {
     int updateCourse(Course course);
 
     // 删除课程
-    @Update("DELETE FROM course WHERE id = #{id}")
+    @Delete("DELETE FROM course WHERE id = #{id}")
     int deleteCourse(int id);
 }
