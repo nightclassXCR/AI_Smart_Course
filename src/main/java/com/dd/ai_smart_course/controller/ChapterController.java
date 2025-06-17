@@ -3,6 +3,7 @@ package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
+import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Result;
 import com.dd.ai_smart_course.service.ChapterService;
 import lombok.extern.slf4j.Slf4j;
@@ -77,6 +78,35 @@ public class ChapterController {
             } else {
                 return Result.error("删除失败");
             }
+    }
+
+    /**
+     * 重新排序章节
+     * @param courseId 课程ID
+     * @param orderedChapterIds 包含重新排序后的章节ID列表 (保持顺序)
+     * @return 排序结果
+     */
+    @PutMapping("/reorder/{courseId}")
+    public Result reorderChapters(@PathVariable("courseId") Long courseId, @RequestBody List<Long> orderedChapterIds) {
+        try {
+            chapterService.reorderChapters(courseId, orderedChapterIds);
+            return Result.success("排序成功");
+        } catch (IllegalArgumentException e) {
+             return  Result.error(e.getMessage());
+        } catch (Exception e) {
+            return Result.error("排序失败");
+        }
+    }
+
+    /**
+     * 获取某章节下的所有知识点
+     * @param chapterId 章节ID
+     * @return 知识点列表
+     */
+    @GetMapping("/{chapterId}/concepts")
+    public Result<List<Concept>> getConceptsByChapterId(@PathVariable("chapterId") Long chapterId) {
+        List<Concept> concepts = chapterService.getConceptsByChapterId(chapterId);
+        return Result.success("获取成功", concepts);
     }
 
 
