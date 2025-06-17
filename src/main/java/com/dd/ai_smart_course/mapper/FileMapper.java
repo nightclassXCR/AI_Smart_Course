@@ -9,22 +9,22 @@ import java.util.List;
 public interface FileMapper {
 
     // 获取所有文件记录
-    @Select("SELECT * FROM file")
+    @Select("SELECT * FROM resources")
     List<File> getAllFiles();
 
     // 获取文件记录详情
-    @Select("SELECT * FROM file WHERE id = #{id}")
+    @Select("SELECT * FROM resources WHERE id = #{id}")
     File getFileById(int id);
 
     // 添加文件记录
-    @Insert("INSERT INTO file (name, file_url, file_type, owner_type, owner_id, uploaded_at) VALUES (#{name}, #{fileUrl}, #{fileType}, #{ownerType}, #{ownerId}, #{uploadedAt})")
+    @Insert("INSERT INTO resources (name, file_url, file_type, owner_type, owner_id, created_at, updated_at) VALUES (#{name}, #{fileUrl}, #{fileType}, #{ownerType}, #{ownerId}, #{createdAt}, #{updatedAt})")
     int addFile(File file);
 
     // 更新文件记录信息
-    @Update("UPDATE file SET name = #{name}, file_url = #{fileUrl}, file_type = #{fileType}, owner_type = #{ownerType}, owner_id = #{ownerId}, uploaded_at = #{uploadedAt} WHERE id = #{id}")
+    @Update("UPDATE resources SET name = #{name}, file_url = #{fileUrl}, file_type = #{fileType}, owner_type = #{ownerType}, owner_id = #{ownerId}, created_at = #{createdAt}, uploaded_at = #{uploadedAt} WHERE id = #{id}")
     int updateFile(File file);
 
     // 删除文件记录
-    @Delete("DELETE FROM file WHERE id = #{id}")
+    @Delete("DELETE FROM resources WHERE id = #{id}")
     int deleteFile(int id);
 }

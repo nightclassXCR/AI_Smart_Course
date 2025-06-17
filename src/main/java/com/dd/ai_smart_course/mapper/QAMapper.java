@@ -17,11 +17,13 @@ public interface QAMapper {
     QA getQAById(int id);
 
     // 添加QA记录
-    @Insert("INSERT INTO qa-records (user_id, course_id, concept_id, question_text, answer_text, responder_type, created_at) VALUES (#{userId}, #{courseId}, #{conceptId}, #{questionText}, #{answerText}, #{responderType}, #{createdAt})")
+    @Insert("INSERT INTO qa-records (user_id, course_id, concept_id, responder_id, question_text, answer_text, responder_type, created_at, answered_at, status, rating)" +
+            "VALUES (#{userId}, #{courseId}, #{conceptId}, #{responderId}, #{questionText}, #{answerText}, #{responderType}, #{createdAt}, #{answeredAt}, #{status}, #{rating})")
     int addQA(QA qa);
 
     // 更新QA记录信息
-    @Update("UPDATE qa-records SET user_id = #{userId}, course_id = #{courseId}, concept_id = #{conceptId}, question_text = #{questionText}, answer_text = #{answerText}, responder_type = #{responderType}, created_at = #{createdAt} WHERE id = #{id}")
+    @Update("UPDATE qa-records SET user_id = #{userId}, course_id = #{courseId}, concept_id = #{conceptId}, responder_id = #{responderId}, question_text = #{questionText}," +
+            "answer_text = #{answerText}, responder_type = #{responderType}, created_at = #{createdAt}, status = #{status}, rating = #{rating} WHERE id = #{id}")
     int updateQA(QA qa);
 
     // 删除QA记录

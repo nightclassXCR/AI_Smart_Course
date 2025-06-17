@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.component;
 
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -8,9 +9,10 @@ import java.util.UUID;
 import java.util.function.Function;
 
 @Component
+@Slf4j
 public class JwtTokenUtil {
     private static long EXPIRATION = 1000*60*60*24;  //过期时间
-    private static String KEY = "z4Z6e7J9H0k3N5q8T1w4Z7C9v2B5y8D1f4G7j1K4m6P9s3U6x0A8t5F2w7R0"; //签名
+    private static String KEY = "z4Z6e7J9H0k3N5q8T1w4Z7C9v2B5y8D1f4G7j1K4m6P9s3U6x0A8t5F2w7R0"; //密钥
 
     //生成令牌
     public String generateToken(String subject, String userID, String username, String role, String status){
@@ -20,10 +22,7 @@ public class JwtTokenUtil {
                 .setHeaderParam("typ", "JWT")   //类型
                 .setHeaderParam("alg", "HS256") //算法
                 //payload
-                .claim("userID", userID)    //自定义参数1
-                .claim("username", username)
-                .claim("role", role)            //自定义参数2
-                .claim("status", status)
+                .claim("userID", userID)        //自定义参数,用户id
                 .setSubject(subject)    //主题
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .setId(UUID.randomUUID().toString())
@@ -31,41 +30,25 @@ public class JwtTokenUtil {
                 .signWith(SignatureAlgorithm.HS256, KEY)  //加密算法及其密钥
                 .compact();     //将三部分拼装
 
-        //生成日志
-        System.out.println("生成令牌: " + token);
+//        //生成日志
+//        System.out.println("生成令牌: " + token);
 
         return token;
     }
 
     //从令牌中获取用户ID
-    public Long getUserIDFromToken(String token){
-        Long userID = null;
+    public String getUserIDFromToken(String token){
+        String userID = null;
         Claims claims = getAllClaimsFromToken(token);
-        String userIDString = claims.get("userID").toString();
         try{
-            userID = Long.valueOf(userIDString);
+            userID = claims.get("userID").toString();
         }catch (Exception e){
-            System.out.println("数据转换失败: " + e.getMessage());
+            log.error("token解析失败: ", e);
         }
 
         return userID;
     }
 
-    //从令牌中获取用户身份
-    public String getUserRoleFromToken(String token){
-        Claims claims = getAllClaimsFromToken(token);
-        String userRole = claims.get("role").toString();
-
-        return userRole;
-    }
-
-    //从令牌中获取用户状态
-    public String getUserStatusFromToken(String token){
-        Claims claims = getAllClaimsFromToken(token);
-        String userStatus = claims.get("status").toString();
-
-        return userStatus;
-    }
 
     //"::" 是 Java 8 引入的 方法引用（Method Reference）语法，用于简化 Lambda 表达式
     //方法引用允许你直接引用现有方法，而不必显式编写 Lambda 表达式的完整形式。
@@ -98,8 +81,8 @@ public class JwtTokenUtil {
     }
 
     //判断令牌是否有效
-    public Boolean validateToken(String token,Long userID){
-        final Long tokenUserID = getUserIDFromToken(token);
+    public Boolean validateToken(String token,String userID){
+        final String tokenUserID = getUserIDFromToken(token);
         return (tokenUserID.equals(userID) && !isTokenExpired(token));
     }
 
@@ -108,8 +91,7 @@ public class JwtTokenUtil {
         Claims claims = getAllClaimsFromToken(token);
         System.out.println();
         System.out.println("解析token: " + "ID = " + claims.getId() + "; subject: " + claims.getSubject() + "; expiration = " + claims.getExpiration()
-                + "; userID = "+ claims.get("userID") + "; username = " + claims.get("username") + "; role = " + claims.get("role")
-                + "; status = " + claims.get("status"));
+                + "; userID = "+ claims.get("userID"));
 
     }
 
