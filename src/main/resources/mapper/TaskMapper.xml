@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dd.ai_smart_course.mapper.TaskMapper">
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id" >
+        insert into task(course_id, title, type, deadline, created_at)
+        values
+            <foreach collection="list" item="ts" separator=",">
+                (#{ts.courseId}, #{ts.title}, #{ts.type}, #{ts.deadline}, #{ts.createdAt}})
+            </foreach>
+    </insert>
+    <select id="listByCourseId" resultType="com.dd.ai_smart_course.entity.Task">
+        select * from tasks where course_id = #{courseId}
+    </select>
+
+
+</mapper>

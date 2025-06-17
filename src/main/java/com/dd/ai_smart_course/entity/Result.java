@@ -14,6 +14,11 @@ public class Result<T> {
         Data = data;
     }
 
+    public static <T> Result<T> success() {
+        return new Result<>(200, "操作成功", null);
+    }
+
+
     public int getCode() {
         return code;
     }
