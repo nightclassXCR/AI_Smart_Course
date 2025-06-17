@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dd.ai_smart_course.mapper.ScoreMapper">
+
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id" >
+        insert into score(user_id, grade, comment, submit_time)
+        values
+            <foreach collection="list" item="sc" separator=",">
+                (#{sc.userId}, #{sc.grade}, #{sc.comment}, #{sc.submitTime})
+            </foreach>
+    </insert>
+    <update id="update">
+        update score
+        <set>
+
+            <if test="grade!=null">
+                    grade = #{grade},
+            </if>
+            <if test="comment != null">
+                comment = #{comment},
+            </if>
+            <if test="submitTime != null">
+                submit_time = #{submitTime},
+            </if>
+        </set>
+        where user_id = #{userId}and task_id = #{taskId}
+
+
+    </update>
+
+
+    <delete id="deleteByIds">
+        delete from scores where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+
+    </delete>
+
+
+</mapper>
