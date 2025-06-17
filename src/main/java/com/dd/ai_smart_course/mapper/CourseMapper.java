@@ -30,7 +30,7 @@ public interface CourseMapper {
 
     // 删除课程
     // Todo: 添加逻辑删除功能
-    @Update("DELETE FROM courses WHERE id = #{id}")
+    @Delete("DELETE FROM courses WHERE id = #{id}")
     // 注意：删除课程可能需要处理级联删除（例如：相关章节、知识点、用户课程关联、学习日志、成绩等）
     // 在实际生产中，通常会使用逻辑删除（软删除）或者在Service层进行事务管理和相关联数据的删除操作。
     // 这里仅删除课程本身。
