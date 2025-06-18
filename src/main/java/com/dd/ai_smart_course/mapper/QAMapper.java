@@ -29,4 +29,7 @@ public interface QAMapper {
     // 删除QA记录
     @Delete("DELETE FROM qa-records WHERE id = #{id}")
     int deleteQA(int id);
+
+    @Delete("DELETE FROM qa-records WHERE course_id = #{id}")
+    int deleteByCourseId(int id);
 }

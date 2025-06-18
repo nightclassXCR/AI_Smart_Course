@@ -3,8 +3,10 @@ package com.dd.ai_smart_course.service.impl;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
-import com.dd.ai_smart_course.mapper.CourseMapper;
+import com.dd.ai_smart_course.entity.Recommend;
+import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.CourseService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +18,29 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CourseImpl implements CourseService {
 
     @Autowired
     private CourseMapper courseMapper;
+
+    @Autowired
+    private ChapterMapper chapterMapper;
+
+    @Autowired
+    private ConceptMapper conceptMapper;
+
+    @Autowired
+    private QAMapper qaMapper;
+
+//    @Autowired
+//    private RecommendMapper recommendMapper;
+
+    @Autowired
+    private ScoreMapper scoreMapper;
+
+    @Autowired
+    private LogMapper logMapper;
 
     @Override
     public List<Course> getAllCourse() {
@@ -51,12 +72,66 @@ public class CourseImpl implements CourseService {
         // 2. 删除所有关联的知识点
         // 3. 删除 course_user 表中的关联记录
         // 4. 删除 learning_logs, scores, recommendations, qa_records 等表中与此课程相关的记录
-        // 5. 如果是物理删除，确保数据库设置了正确的级联删除或手动处理
-        //    或者更常见的做法是进行逻辑删除 (设置课程状态为 'deleted'/'archived')
+        // 5. 物理删除，确保数据库设置了正确的级联删除或手动处理
+        if (id <= 0) {
+            throw new IllegalArgumentException("Course ID must be positive");
+        }
 
-        // 示例：此处仅删除课程本身，实际应根据业务需求完善
-        // 假设你有一个 ChapterMapper 和 ConceptMapper 来删除子项
-        return courseMapper.deleteCourse(id);
+        log.info("Starting hard delete for course ID: {}", id);
+
+        // Check if course exists
+        Course existingCourse = courseMapper.getCourseById(id);
+        if (existingCourse == null) {
+            log.warn("Course not found with ID: {}", id);
+            return 0; // Course doesn't exist
+        }
+
+        try {
+            // CRITICAL: Delete in correct order (child records first to avoid foreign key violations)
+
+            // Step 1: Delete QA records (问答记录) using dedicated mapper
+            int qaRecordsDeleted = qaMapper.deleteByCourseId(id);
+            log.debug("Deleted {} QA records for course {}", qaRecordsDeleted, id);
+
+//            // Step 2: Delete recommendations (推荐记录) using dedicated mapper
+//            int recommendationsDeleted = recommendationMapper.deleteByCourseId(id);
+//            log.debug("Deleted {} recommendations for course {}", recommendationsDeleted, id);
+
+//            // Step 3: Delete scores (成绩记录) using dedicated mapper
+//            int scoresDeleted = scoreMapper.deleteByCourseId(id);
+//            log.debug("Deleted {} scores for course {}", scoresDeleted, id);
+
+//            // Step 4: Delete learning logs (学习日志) using dedicated mapper
+//            int learningLogsDeleted = LogMapper.deleteByCourseId(id);
+//            log.debug("Deleted {} learning logs for course {}", learningLogsDeleted, id);
+
+            // Step 5: Delete concepts/knowledge points (知识点) using dedicated mapper
+            int conceptsDeleted = conceptMapper.deleteByCourseId(id);
+            log.debug("Deleted {} concepts for course {}", conceptsDeleted, id);
+
+            // Step 6: Delete chapters (章节) using dedicated mapper
+            int chaptersDeleted = chapterMapper.deleteByCourseId(id);
+            log.debug("Deleted {} chapters for course {}", chaptersDeleted, id);
+
+//            // Step 7: Delete course-user associations (课程用户关联) using dedicated mapper
+//            int courseUserDeleted = courseUserMapper.deleteByCourseId(id);
+//            log.debug("Deleted {} course-user associations for course {}", courseUserDeleted, id);
+
+            // Step 8: Finally delete the course itself (删除课程本身)
+            int courseDeleted = courseMapper.deleteCourse(id);
+
+            if (courseDeleted > 0) {
+                log.info("Successfully hard deleted course {} and all related data", id);
+                log.info("Deletion summary - QA: {}, Recommendations: {}, Scores: {}, Logs: {}, Concepts: {}, Chapters: {}, Users: {}",
+                        qaRecordsDeleted, conceptsDeleted, chaptersDeleted);
+            }
+
+            return courseDeleted;
+        } catch (Exception e) {
+            log.error("Failed to hard delete course with ID: {}. Error: {}", id, e.getMessage(), e);
+            // Transaction will be rolled back automatically due to @Transactional
+            throw new RuntimeException("Failed to delete course and related data: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -79,7 +154,11 @@ public class CourseImpl implements CourseService {
         return courseMapper.findChaptersForGrouping(courseId);
     }
 
-    // TODO: Implement
+    /**
+     * 获取课程的章节和知识点
+     * @param courseId
+     * @return
+     */
     @Override
     public List<Concept> getConceptsByCourse(Long courseId) {
         return courseMapper.getConceptsByCourse(courseId);
@@ -97,7 +176,7 @@ public class CourseImpl implements CourseService {
 
         // 2. 获取课程下所有知识点 (带章节信息，如果 Mapper 没有直接提供，可能需要二次查询)
         // 这里使用 getConceptsByCourse 来获取所有概念，然后通过概念的 chapterId 找到对应的章节。
-        // 缺点是如果某个章节没有知识点，它不会出现在概念列表中。
+        // 缺点是如果某个章节没有知识点，它不会出现在概念列表中
         // 更好的做法是 Mapper 返回一个包含 Concept 和 Chapter 完整信息的 DTO 列表，
         // 或者像 getConceptsWithChapterInfoByCourse 那样，JOIN 章节信息，然后手动组装
         List<Concept> concepts = courseMapper.getConceptsByCourse(courseId);

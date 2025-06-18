@@ -8,6 +8,8 @@ import java.util.List;
 @Mapper
 public interface LogMapper {
 
+
+
     // 获取所有日志记录
     @Select("SELECT * FROM learning_logs")
     List<Log> getAllLogs();
@@ -29,4 +31,5 @@ public interface LogMapper {
     // 删除日志记录
     @Delete("DELETE FROM learning_logs WHERE id = #{id}")
     int deleteLog(int id);
+
 }

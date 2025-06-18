@@ -81,6 +81,10 @@ public interface ConceptMapper {
     @Select("SELECT id, name, description, chapter_id FROM concepts WHERE id = #{conceptId}")
     Concept getConceptById(@Param("conceptId") Long conceptId);
 
+
+    @Delete("DELETE FROM concepts WHERE course_id = #{id}")
+    int deleteByCourseId(int id);
+
 //    /**
 //     * 【需要额外数据库表支持】获取用户在某个课程中的错题对应的概念ID及错题次数
 //     * ER图中没有直接的表记录用户对每个问题的对错。
