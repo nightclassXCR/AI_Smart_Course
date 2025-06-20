@@ -19,8 +19,21 @@ public class SimpleCodeManager  {
     private static final String STATUS_SENDING_SUCCESS = "SENDING_SUCCESS";
     private static final String STATUS_SENDING_FAIL = "SENDING_FAIL";
 
+    //静态的邮件发件人
+
+
     private MailSender mailSender;
     private SimpleMailMessage templateMessage;
+
+    @Autowired
+    public SimpleCodeManager(MailSender mailSender) {
+        this.mailSender = mailSender;
+
+        // 初始化模板邮件
+        this.templateMessage = new SimpleMailMessage();
+        templateMessage.setFrom("your-email@example.com");  // 发件人
+        templateMessage.setSubject("验证码");  // 主题
+    }
 
     public void setMailSender(MailSender mailSender) {
         this.mailSender = mailSender;

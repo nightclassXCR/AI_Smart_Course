@@ -20,9 +20,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void insertBatch(List<Task> tasks) {
-
             taskMapper.insertBatch(tasks);
-
     }
 
     @Override
