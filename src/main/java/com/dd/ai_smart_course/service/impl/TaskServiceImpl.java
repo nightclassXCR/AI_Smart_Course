@@ -8,6 +8,7 @@ import com.dd.ai_smart_course.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -42,6 +43,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void update(Task task) {
-
+        task.setUpdatedAt(LocalDateTime.now());
+        taskMapper.update(task);
     }
 }

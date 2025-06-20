@@ -12,4 +12,8 @@ public interface ScoreService {
     void deleteBatch(List<Integer> ids);
 
     void update(Score score);
+
+    Score getTaskScore(int taskId);
+
+    List<Score> getUserScores(int userId);
 }
