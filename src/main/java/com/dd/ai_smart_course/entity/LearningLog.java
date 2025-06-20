@@ -1,11 +1,13 @@
 package com.dd.ai_smart_course.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
 @Data
-public class Log {
+@NoArgsConstructor
+public class LearningLog {
     private int id;
     private int userId;
     private String targetType; // course, chapter, concept, task

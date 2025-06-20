@@ -47,5 +47,6 @@ public interface UserMapper {
     @Delete("DELETE FROM users WHERE id = #{id}")
     int deleteUser(int id);
 
-
+    @Select("SELECT id FROM users")
+    List<Long> findAllUserIds();
 }
