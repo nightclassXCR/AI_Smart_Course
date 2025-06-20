@@ -22,6 +22,22 @@ public class LearningActionEvent extends ApplicationEvent {
         this.detail = detail;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public String getTargetType() {
+        return targetType;
+    }
+
+    public Long getTargetId() {
+        return targetId;
+    }
+
+    public String getActionType() {
+        return actionType;
+    }
+
     public Integer getDuration() {
         return duration;
     }

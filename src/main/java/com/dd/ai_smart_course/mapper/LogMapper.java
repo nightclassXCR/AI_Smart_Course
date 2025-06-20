@@ -3,6 +3,7 @@ package com.dd.ai_smart_course.mapper;
 import com.dd.ai_smart_course.entity.LearningLog;
 import org.apache.ibatis.annotations.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper

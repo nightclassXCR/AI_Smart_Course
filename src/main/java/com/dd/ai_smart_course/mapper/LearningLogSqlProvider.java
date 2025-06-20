@@ -5,8 +5,10 @@ import org.apache.ibatis.jdbc.SQL;
 
 import java.time.LocalDateTime;
 
-import static jdk.internal.org.jline.utils.AttributedStringBuilder.append;
+
 import static org.apache.ibatis.jdbc.SqlBuilder.WHERE;
+
+
 
 public class LearningLogSqlProvider implements ProviderMethodResolver {
     private static final String TABLE_NAME = "learning_logs";

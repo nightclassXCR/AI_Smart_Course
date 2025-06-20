@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class LearnLogDTO {
+public class LearningLogDTO {
     private Long id;
     private Long userId;
     private String username; // 添加用户名，方便前端展示

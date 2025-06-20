@@ -5,6 +5,7 @@ import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.CourseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,10 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class CourseImpl implements CourseService {
+
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private CourseMapper courseMapper;
