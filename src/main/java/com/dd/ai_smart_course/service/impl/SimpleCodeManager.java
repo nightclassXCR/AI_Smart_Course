@@ -1,4 +1,4 @@
-package com.dd.ai_smart_course.service;
+package com.dd.ai_smart_course.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
