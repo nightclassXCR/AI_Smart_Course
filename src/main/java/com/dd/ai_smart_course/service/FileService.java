@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface FileService {
     // 获取所有文件
-    List<File> getAllFile();
+    List<File> getAllFiles();
     // 获取文件详情
     File getFileById(int id);
     // 添加文件

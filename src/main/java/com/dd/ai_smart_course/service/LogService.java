@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface LogService {
     // 获取所有日志
-    List<Log> getAllLog();
+    List<Log> getAllLogs();
     // 获取日志详情
     Log getLogById(int id);
     // 添加日志

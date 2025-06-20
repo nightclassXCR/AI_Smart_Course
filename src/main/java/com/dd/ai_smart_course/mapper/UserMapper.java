@@ -9,22 +9,43 @@ import java.util.List;
 public interface UserMapper {
 
     // 获取所有用户
-    @Select("SELECT * FROM user")
+    @Select("SELECT * FROM users")
     List<User> getAllUsers();
 
-    // 获取用户详情
-    @Select("SELECT * FROM user WHERE id = #{id}")
+    // 使用id获取用户详情
+    @Select("SELECT * FROM users WHERE id = #{id}")
     User getUserById(int id);
 
+    //获得指定用户(限定比较指标，比较参数，排序指标，排序方向，数目和偏移量)
+    //#{}: 参数可被自动转义，可防止SQL注入
+    //用于替换SQL中的值（如 WHERE column = ?）
+    //${}: 参数值会直接拼接到SQL中，有SQL注入风险
+    //用于直接替换SQL片段（如列名、表名、排序方向等）
+    @Select("SELECT * FROM users WHERE ${compareIndex} = #{compareParam}\n" +
+            "ORDER BY ${order} ${direction}\n" +
+            "LIMIT #{offset}, #{limit};")
+    List<User> getUsersByAllParam(String compareIndex, String compareParam, String order,String direction, int limit, int offset);
+
+
     // 添加用户
-    @Insert("INSERT INTO user (username, email, phoneNumber, password, name, role, createdAt, lastActivityAt, status) VALUES (#{username}, #{email}, #{phoneNumber}, #{password}, #{name}, #{role}, #{createdAt}, #{lastActivityAt}, #{status})")
+    @Insert("INSERT INTO users (username, email, phoneNumber, password, name, role, createdAt, lastActivityAt, status) VALUES (#{username}, #{email}, #{phoneNumber}, #{password}, #{name}, #{role}, #{createdAt}, #{lastActivityAt}, #{status})")
     int addUser(User user);
 
     // 更新用户信息
-    @Update("UPDATE user SET username = #{username}, email = #{email}, phoneNumber = #{phoneNumber}, password = #{password}, name = #{name}, role = #{role}, createdAt = #{createdAt}, lastActivityAt = #{lastActivityAt}, status = #{status} WHERE id = #{id}")
+    @Update("UPDATE users SET username = #{username}, email = #{email}, phoneNumber = #{phoneNumber}, password = #{password}, name = #{name}, role = #{role}, createdAt = #{createdAt}, lastActivityAt = #{lastActivityAt}, status = #{status} WHERE id = #{id}")
     int updateUser(User user);
 
+    //更新用户状态
+    @Update("UPDATE users SET status = #{status} where userID = #{userID}")
+    void updateUserStatus(int userID, String status);
+
+    //更新用户角色
+    @Update("UPDATE users SET role = #{role} where userID = #{userID}")
+    void updateUserRole(int userID, String role);
+
     // 删除用户
-    @Delete("DELETE FROM user WHERE id = #{id}")
+    @Delete("DELETE FROM users WHERE id = #{id}")
     int deleteUser(int id);
+
+
 }

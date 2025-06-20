@@ -11,7 +11,7 @@ public class File {
     private String name;
     private String fileUrl;
     private String fileType;
-    private String ownerType; // course, chapter, task
+    private String ownerType; // "COURSE", "CHAPTER" OR "TASK"
     private int ownerId;
     private Timestamp createdAt;
     private Timestamp updatedAt;
