@@ -1,9 +1,6 @@
 package com.dd.ai_smart_course.service.impl;
 
-import com.dd.ai_smart_course.entity.Chapter;
-import com.dd.ai_smart_course.entity.Concept;
-import com.dd.ai_smart_course.entity.Course;
-import com.dd.ai_smart_course.entity.Recommend;
+import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.CourseService;
 import lombok.extern.slf4j.Slf4j;

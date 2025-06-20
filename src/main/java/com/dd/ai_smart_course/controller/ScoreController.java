@@ -1,6 +1,6 @@
 package com.dd.ai_smart_course.controller;
 
-import com.dd.ai_smart_course.entity.Result;
+import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.entity.Score;
 import com.dd.ai_smart_course.service.ScoreService;
 import lombok.Data;
