@@ -26,19 +26,22 @@ public class LearningLogSqlProvider implements ProviderMethodResolver {
      * @return 构建好的 SQL 字符串
      */
     public String findLearningLogsSql(Long userId, String targetType, String actionType, LocalDateTime startDate, LocalDateTime endDate, Integer offset, Integer limit) {
+        if (limit != null && offset != null) {
+            // 手动拼接LIMIT/OFFSET部分
+            String limitOffset = String.format(" LIMIT %d OFFSET %d", limit, offset);
+            String sql = new SQL() {{
+                SELECT("id, user_id, target_type, target_id, action_type, action_time, duration, detail");
+                FROM(TABLE_NAME);
+                applyWhere(userId, targetType, actionType, startDate, endDate);
+                ORDER_BY("action_time DESC");
+            }}.toString();
+            return sql + limitOffset;
+        }
         return new SQL() {{
             SELECT("id, user_id, target_type, target_id, action_type, action_time, duration, detail");
             FROM(TABLE_NAME);
             applyWhere(userId, targetType, actionType, startDate, endDate);
             ORDER_BY("action_time DESC");
-            if (limit != null && offset != null) {
-                // LIMIT #{limit} OFFSET #{offset} 语法在 SQL 类中不直接支持，需要手动拼接或使用 TypeHandler
-                // 但对于基本分页，直接拼接也可以，MyBatis会处理参数
-                // 或者在 Service 层处理分页逻辑，Mapper只负责带WHERE条件的查询
-                // 这里我们按照MyBatis官方文档建议，直接拼接 LIMIT/OFFSET
-                // WARNING: SQL注入风险，但MyBatis的参数绑定会处理
-                append(" LIMIT #{limit} OFFSET #{offset}");
-            }
         }}.toString();
     }
 

@@ -1,7 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.entity.Resource;
-import com.dd.ai_smart_course.entity.Result;
+import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.mapper.ResourceMapper;
 import com.dd.ai_smart_course.service.ResourceService;
 import com.dd.ai_smart_course.utils.AliOssUtil;
