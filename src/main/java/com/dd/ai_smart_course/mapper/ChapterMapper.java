@@ -6,6 +6,7 @@ import com.dd.ai_smart_course.entity.Concept;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface ChapterMapper {
@@ -57,5 +58,6 @@ public interface ChapterMapper {
     @Delete("DELETE FROM chapters WHERE course_id = #{courseId}")
     int deleteByCourseId(int courseId);
 
-
+    @Select("SELECT * FROM chapters WHERE id = #{id}")
+    Optional<Chapter> findById(@Param("id") Long chapterId);
 }

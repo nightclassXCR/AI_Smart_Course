@@ -147,4 +147,6 @@ public interface LogMapper {
                              @Param("targetId") Long targetId,
                              @Param("actionType") String actionType);
 
+    @Select("SELECT * FROM learning_logs WHERE concept_id = #{id}")
+    List<LearningLog> getLogsByConceptId(int id);
 }

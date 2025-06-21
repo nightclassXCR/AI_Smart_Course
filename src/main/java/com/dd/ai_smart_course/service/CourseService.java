@@ -27,4 +27,17 @@ public interface CourseService {
     // 按章节分组的知识点
     Map<Chapter, List<Concept>> getConceptsGroupedByChapter(Long courseId);
 
+    // 用户选课
+    void enrollUserInCourse(Long userId, Long courseId);
+    // 用户退课
+    void unenrollUserFromCourse(Long userId, Long courseId);
+
+    // 用户是否完成课程
+    void completeCourse(Long courseId, Long userId);
+
+    // 用户开始查看章节
+    public void startViewingChapter(Long chapterId, Long userId);
+
+
+
 }

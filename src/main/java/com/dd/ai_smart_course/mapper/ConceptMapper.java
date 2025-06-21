@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Mapper
 public interface ConceptMapper {
@@ -87,6 +88,10 @@ public interface ConceptMapper {
 
     @Select("SELECT id FROM concepts")
     List<Long> findAllConceptIds();
+
+    // 获取某个概念
+    @Select("SELECT * FROM concepts WHERE id = #{id}")
+    Optional<Concept> findById(Long conceptId);
 
 //    /**
 //     * 【需要额外数据库表支持】获取用户在某个课程中的错题对应的概念ID及错题次数

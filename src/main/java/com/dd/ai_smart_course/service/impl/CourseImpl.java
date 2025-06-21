@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.service.impl;
 
 import com.dd.ai_smart_course.entity.*;
+import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.CourseService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +10,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +32,9 @@ public class CourseImpl implements CourseService {
 
     @Autowired
     private QAMapper qaMapper;
+
+    @Autowired
+    private CourseUserMapper courseUserMapper;
 
 //    @Autowired
 //    private RecommendMapper recommendMapper;
@@ -203,5 +204,160 @@ public class CourseImpl implements CourseService {
         }
 
         return groupedConcepts;
+    }
+
+    /**
+     * 添加用户到课程
+     * @param userId
+     * @param courseId
+     */
+    @Override
+    @Transactional
+    public void enrollUserInCourse(Long userId, Long courseId) {
+        if (courseUserMapper.findByCourseIdAndUserId(courseId, userId).isPresent()) {
+            throw new IllegalStateException("User already enrolled in this course.");
+        }
+        Course_user courseUser = new Course_user(courseId, userId, "STUDENT");
+        courseUserMapper.insertCourseUser(courseUser);
+        System.out.println("User " + userId + " enrolled in course " + courseId);
+
+        // **添加：发布用户注册课程事件**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "course",    // targetType
+                courseId,    // targetId
+                "click",    // actionType: 注册/选课
+                null,        // duration
+                "{\"action\":\"ENROLL\", \"description\":\"用户注册了课程: " + courseId + "\"}" // detail 明确行为
+        ));
+    }
+
+    @Override
+    @Transactional
+    public void unenrollUserFromCourse(Long userId, Long courseId) {
+        Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
+        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+            throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
+        }
+        courseUserMapper.deleteCourseUser(courseId, userId);
+        System.out.println("User " + userId + " unenrolled from course " + courseId);
+
+        // **修正：发布用户取消注册课程事件，使用 'click' 并用 detail 区分**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "course",
+                courseId,
+                "click",       // actionType: 映射为 click (用户点击“退课”按钮)
+                null,
+                "{\"action\":\"UNENROLL\", \"description\":\"用户退出了课程: " + courseId + "\"}" // detail 明确行为
+        ));
+
+    }
+
+    @Override
+    @Transactional
+    public void completeCourse(Long courseId, Long userId) {
+        Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
+        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+            throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
+        }
+        boolean actuallyCompleted = checkAndMarkCourseCompletion(courseId, userId);
+
+        if (actuallyCompleted) {
+            System.out.println("User " + userId + " marked course " + courseId + " as completed.");
+            // **修正：发布用户完成课程事件，使用 'click' 或 'view' 并用 detail 区分**
+            eventPublisher.publishEvent(new LearningActionEvent(
+                    this,
+                    Math.toIntExact(userId),
+                    "course",
+                    courseId,
+                    "click",       // actionType: 映射为 click (如果用户点击“标记完成”按钮)
+                    null,
+                    "{\"action\":\"COMPLETE\", \"description\":\"用户完成了课程: " + courseId + "\"}" // detail 明确行为
+            ));
+        } else {
+            System.out.println("Course " + courseId + " not yet fully completed by user " + userId);
+        }
+
+    }
+
+    /**
+     *  检查课程是否完成
+     * @param courseId
+     * @param userId
+     * @return
+     */
+    private boolean checkAndMarkCourseCompletion(Long courseId, Long userId) {
+        List<Chapter> chapters = chapterMapper.getChaptersByCourseId(courseId);
+        for (Chapter chapter : chapters) {
+            List<Concept> concepts = conceptMapper.getConceptsByChapterId(chapter.getId());
+            for (Concept concept : concepts) {
+                List<LearningLog> logs = logMapper.getLogsByConceptId(concept.getId());
+                for (LearningLog log : logs) {
+                    if (log.getUserId().equals(userId)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public void startViewingChapter(Long chapterId, Long userId) {
+        Optional<Chapter> chapterOptional = chapterMapper.findById(chapterId);
+        if (chapterOptional.isEmpty()) {
+            throw new IllegalArgumentException("Chapter not found: " + chapterId);
+        }
+        Chapter chapter = chapterOptional.get();
+        Long courseId = (long) chapter.getCourseId();
+
+        Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
+        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+            throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
+        }
+
+        System.out.println("User " + userId + " started viewing chapter " + chapterId);
+
+        // **修正：发布用户开始查看章节事件，使用 'view'**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "chapter",
+                chapterId,
+                "view",        // actionType: 使用 'view'
+                null,
+                "{\"action\":\"START_VIEW\", \"description\":\"用户开始查看章节: " + chapterId + "\"}" // detail 明确行为
+        ));
+    }
+    @Transactional
+    public void completeChapter(Long chapterId, Long userId) {
+        Optional<Chapter> chapterOptional = chapterMapper.findById(chapterId);
+        if (chapterOptional.isEmpty()) {
+            throw new IllegalArgumentException("Chapter not found: " + chapterId);
+        }
+        Chapter chapter = chapterOptional.get();
+        Long courseId = (long) chapter.getCourseId();
+
+        Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
+        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+            throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
+        }
+
+        System.out.println("User " + userId + " completed chapter " + chapterId + " in course " + courseId);
+
+        // **修正：发布用户完成章节事件，使用 'click' 并用 detail 区分**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "chapter",
+                chapterId,
+                "click",       // actionType: 映射为 click (如果用户点击“标记完成”按钮)
+                null,
+                "{\"action\":\"COMPLETE_CHAPTER\", \"description\":\"用户完成了章节: " + chapterId + "\"}" // detail 明确行为
+        ));
     }
 }
