@@ -93,6 +93,11 @@ public interface ConceptMapper {
     @Select("SELECT * FROM concepts WHERE id = #{id}")
     Optional<Concept> findById(Long conceptId);
 
+    // 获取某个课程的所有概念ID
+    @Select("SELECT concept_id FROM concept_question WHERE question_id IN (" +
+            "SELECT id FROM question WHERE course_id = #{courseId})")
+    List<Long> findConceptIdsByCourseId(Long courseId);
+
 //    /**
 //     * 【需要额外数据库表支持】获取用户在某个课程中的错题对应的概念ID及错题次数
 //     * ER图中没有直接的表记录用户对每个问题的对错。

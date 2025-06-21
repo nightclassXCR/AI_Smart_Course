@@ -60,4 +60,8 @@ public interface ChapterMapper {
 
     @Select("SELECT * FROM chapters WHERE id = #{id}")
     Optional<Chapter> findById(@Param("id") Long chapterId);
+
+
+    @Select("SELECT COUNT(*) FROM chapters WHERE course_id = #{courseId}")
+    int countChaptersInCourse(Long courseId);
 }

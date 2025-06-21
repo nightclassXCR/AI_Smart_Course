@@ -62,7 +62,7 @@ public class AnalysisService {
             BeanUtils.copyProperties(log, dto); // 复制相同名称的属性
 
             // 补充用户名
-            userMapper.findById(log.getUserId()).ifPresent(user -> dto.setUsername(user.getUsername()));
+            userMapper.getUserById(log.getUserId()).ifPresent(user -> dto.setUsername(user.getUsername()));
 
             return dto;
         }).collect(Collectors.toList());
@@ -87,12 +87,12 @@ public class AnalysisService {
             masteries = conceptMasteryMapper.findMasteriesByUserId(userId);
         } else if (conceptId != null) {
             masteries = conceptMasteryMapper.findAllMasteries().stream()
-                    .filter(cm -> cm.getConceptId().equals(conceptId))
+                    .filter(cm -> cm.getConcept_id().equals(conceptId))
                     .collect(Collectors.toList());
         } else if (courseId != null) {
             List<Long> conceptIdsInCourse = conceptMapper.findConceptIdsByCourseId(courseId); // 假设 ConceptMapper 有此方法
             masteries = conceptMasteryMapper.findAllMasteries().stream()
-                    .filter(cm -> conceptIdsInCourse.contains(cm.getConceptId()))
+                    .filter(cm -> conceptIdsInCourse.contains(cm.getConcept_id()))
                     .collect(Collectors.toList());
         } else {
             masteries = conceptMasteryMapper.findAllMasteries();
@@ -103,48 +103,48 @@ public class AnalysisService {
             BeanUtils.copyProperties(mastery, dto);
 
             // 补充用户名和概念名
-            userMapper.findById(mastery.getUserId()).ifPresent(user -> dto.setUsername(user.getUsername()));
-            conceptMapper.findById(mastery.getConceptId()).ifPresent(concept -> dto.setConceptName(concept.getName()));
+            userMapper.getUserById(mastery.getUser_id()).ifPresent(user -> dto.setUsername(user.getUsername()));
+            conceptMapper.findById(mastery.getConcept_id()).ifPresent(concept -> dto.setConceptName(concept.getName()));
 
             return dto;
         }).collect(Collectors.toList());
     }
 
-    /**
-     * 获取用户在特定课程的学习进度。
-     *
-     * @param userId   用户ID
-     * @param courseId 课程ID
-     * @return 用户课程进度DTO
-     */
-    @Transactional(readOnly = true)
-    public UserCourseDTO getUserCourseProgress(Long userId, Long courseId) {
-        UserCourseDTO dto = new UserCourseDTO();
-
-        // 1. 获取用户信息
-        User user = userMapper.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
-        dto.setUserId(user.getId());
-        dto.setUsername(user.getUsername());
-
-        // 2. 获取课程信息
-        Course course = courseMapper.findById(courseId)
-                .orElseThrow(() -> new IllegalArgumentException("Course not found with ID: " + courseId));
-        dto.setCourseId(course.getId());
-        dto.setCourseName(course.getName());
-
-        // 3. 计算已完成章节数
-        int completedChapters = learningLogMapper.countCompletedChaptersByUserAndCourse(userId, courseId);
-        dto.setCompletedChapters(completedChapters);
-
-        // 4. 获取课程总章节数
-        int totalChapters = chapterMapper.countChaptersInCourse(courseId);
-        dto.setTotalChapters(totalChapters);
-
-        // 5. 计算完成百分比
-        double completionPercentage = (totalChapters > 0) ? ((double) completedChapters / totalChapters * 100.0) : 0.0;
-        dto.setCompletionPercentage(completionPercentage);
-
-        return dto;
-    }
+//    /**
+//     * 获取用户在特定课程的学习进度。
+//     *
+//     * @param userId   用户ID
+//     * @param courseId 课程ID
+//     * @return 用户课程进度DTO
+//     */
+//    @Transactional(readOnly = true)
+//    public UserCourseDTO getUserCourseProgress(Long userId, Long courseId) {
+//        UserCourseDTO dto = new UserCourseDTO();
+//
+//        // 1. 获取用户信息
+//        User user = userMapper.getUserById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+//        dto.setUserId(user.getId());
+//        dto.setUsername(user.getUsername());
+//
+//        // 2. 获取课程信息
+//        Course course = courseMapper.findById(courseId)
+//                .orElseThrow(() -> new IllegalArgumentException("Course not found with ID: " + courseId));
+//        dto.setCourseId(course.getId());
+//        dto.setCourseName(course.getName());
+//
+//        // 3. 计算已完成章节数
+//        int completedChapters = learningLogMapper.countCompletedChaptersByUserAndCourse(userId, courseId);
+//        dto.setCompletedChapters(completedChapters);
+//
+//        // 4. 获取课程总章节数
+//        int totalChapters = chapterMapper.countChaptersInCourse(courseId);
+//        dto.setTotalChapters(totalChapters);
+//
+//        // 5. 计算完成百分比
+//        double completionPercentage = (totalChapters > 0) ? ((double) completedChapters / totalChapters * 100.0) : 0.0;
+//        dto.setCompletionPercentage(completionPercentage);
+//
+//        return dto;
+//    }
 }

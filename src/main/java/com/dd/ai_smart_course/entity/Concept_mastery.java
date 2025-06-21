@@ -46,4 +46,6 @@ public class Concept_mastery {
     public void setLast_practiced(LocalDateTime last_practiced) {
         this.last_practiced = last_practiced;
     }
+
+
 }
