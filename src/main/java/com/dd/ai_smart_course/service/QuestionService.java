@@ -7,14 +7,11 @@ import java.util.List;
 
 public interface QuestionService {
 
-    //拉取问题列表
-    List<Question> getAllQuestions();
-    // 根据问题id获取问题
-    Question getQuestionById(int id);
-    // 添加问题
-    int addQuestion(QuestionDTO questiondto);
-    // 更新问题
-    int updateQuestion(Question question);
-    // 删除问题
-    int deleteQuestion(int id);
+    void createQuestion(QuestionDTO dto);              // 添加题目
+    void updateQuestion(QuestionDTO dto);              // 修改题目
+    void deleteQuestion(int id);                   // 删除单题
+    void deleteQuestions(List<Integer> ids);           // 批量删除
+    QuestionDTO getQuestion(int id);               // 查询题目详情
+    List<QuestionDTO> listByCourse(int courseId);  // 按课程查题
+    List<QuestionDTO> listByChapter(int chapterId);
 }

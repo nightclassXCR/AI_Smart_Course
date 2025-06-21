@@ -9,20 +9,16 @@ import java.sql.Timestamp;
 public class Question {
     private int id;//问题ID
     private String context;//问题内容
-    private QuestionType type;//问题类型
     private QuestionDifficulty difficulty;//问题难度
-    private Timestamp created_at;//问题创建时间
-    private Timestamp updated_at;//问题更新时间
+    private Timestamp createdAt;//问题创建时间
+    private Timestamp updatedAt;//问题更新时间
     private BigDecimal point; // 分数
-
-    public enum QuestionType {
-        choice, fill, essay
-    }
-
+    private int courseId;//所属课程ID
+    private String answer;
+    private int chapterId;//所属章节ID
     public enum QuestionDifficulty {
         easy, intermediate, advanced
     }
-
 
 }
 
