@@ -1,0 +1,5 @@
+package com.dd.ai_smart_course.dto;
+
+public class LearningStatsDto {
+
+}
