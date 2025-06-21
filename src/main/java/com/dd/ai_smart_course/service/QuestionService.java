@@ -14,4 +14,5 @@ public interface QuestionService {
     QuestionDTO getQuestion(int id);               // 查询题目详情
     List<QuestionDTO> listByCourse(int courseId);  // 按课程查题
     List<QuestionDTO> listByChapter(int chapterId);
+    List<QuestionDTO> listById(List< Integer> ids);
 }

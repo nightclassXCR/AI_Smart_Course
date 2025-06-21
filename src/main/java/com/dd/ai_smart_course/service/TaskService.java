@@ -14,4 +14,6 @@ public interface TaskService {
     void delete(int taskId);
 
     void update(Task task);
+
+    List<Integer> findQuestionIdsByTaskId(int taskId);
 }

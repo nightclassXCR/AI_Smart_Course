@@ -109,4 +109,19 @@ public class QuestionImpl implements QuestionService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public List<QuestionDTO> listById(List< Integer> ids) {
+        List<Question> questions = questionMapper.findByIds(ids);
+        return questions.stream().map(q -> {
+            QuestionDTO dto = new QuestionDTO();
+            BeanUtils.copyProperties(q, dto);
+            List<Option> options = optionMapper.findByQuestionId(q.getId());
+            List<OptionDTO> opts = options.stream()
+                    .map(o -> new OptionDTO(o.getOptKey(), o.getOptValue()))
+                    .collect(Collectors.toList());
+            dto.setOptions(opts);
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }

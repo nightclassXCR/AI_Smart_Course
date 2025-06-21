@@ -11,6 +11,13 @@
         (#{q.content}, #{q.difficulty}, #{q.updated_at},#{q.created_at}, #{q.point}, #{q.courseId}, #{q.answer},#{q.chapterId})
     </foreach>
 </insert>
+    <select id="findByIds" resultType="com.dd.ai_smart_course.entity.Question">
+        SELECT * FROM questions
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 
 <!-- 批量删除 -->
 <delete id="deleteBatch">
