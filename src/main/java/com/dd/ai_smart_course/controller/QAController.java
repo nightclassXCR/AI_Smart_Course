@@ -21,6 +21,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/qa")
 public class QAController {
+
+    @Autowired
+    private DifyService difyService;
     @Autowired
     private ApplicationEventPublisher eventPublisher; // 注入事件发布器
 
