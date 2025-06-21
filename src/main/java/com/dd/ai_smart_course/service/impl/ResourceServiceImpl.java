@@ -5,6 +5,7 @@ import com.dd.ai_smart_course.mapper.ResourceMapper;
 import com.dd.ai_smart_course.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,5 +36,6 @@ public class ResourceServiceImpl implements ResourceService {
     public List<Resource> filter(Resource resource) {
         return resourceMapper.selectByFilter(resource);
     }
+
 
 }

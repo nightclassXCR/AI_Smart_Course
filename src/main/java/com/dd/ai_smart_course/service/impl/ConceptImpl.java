@@ -168,7 +168,7 @@ public class ConceptImpl implements ConceptService {
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
                 Math.toIntExact(userId),
-                "CONCEPT",
+                "concept",
                 conceptId,
                 "click",       // actionType: 使用 'click' (点击开始复习)
                 null,
