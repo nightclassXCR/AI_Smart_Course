@@ -25,7 +25,7 @@ public interface QuestionMapper {
     List<Question> findByChapterId(@Param("chapterId") int chapterId);
 
     @Delete("DELETE FROM questions WHERE id = #{id}")
-    int delete(@Param("id") Integer id);
+    int delete(@Param("id") int id);
 
     @Update("UPDATE questions SET context = #{context}, difficulty = #{difficulty}," +
             " updated_at = #{updatedAt}, created_at = #{createdAt}, point = #{point}," +

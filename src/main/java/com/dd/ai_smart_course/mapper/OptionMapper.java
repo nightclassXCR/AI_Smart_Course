@@ -12,10 +12,10 @@ public interface OptionMapper {
     int insert(Option option);
 
     @Select("SELECT * FROM options WHERE question_id = #{questionId}")
-    List<Option> findByQuestionId(@Param("questionId") Integer questionId);
+    List<Option> findByQuestionId(@Param("questionId") int questionId);
 
     @Delete("DELETE FROM options WHERE question_id = #{questionId}")
-    int deleteByQuestionId(@Param("questionId") Integer questionId);
+    int deleteByQuestionId(@Param("questionId") int questionId);
 
     // ✅ 批量插入
     int insertBatch(@Param("options") List<Option> options);
