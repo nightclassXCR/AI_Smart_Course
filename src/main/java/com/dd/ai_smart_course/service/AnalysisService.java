@@ -62,7 +62,10 @@ public class AnalysisService {
             BeanUtils.copyProperties(log, dto); // 复制相同名称的属性
 
             // 补充用户名
-            userMapper.getUserById(log.getUserId()).ifPresent(user -> dto.setUsername(user.getUsername()));
+            User user = userMapper.getUserById((int) log.getUserId());
+            if (user != null) {
+                dto.setUsername(user.getUsername());
+            }
 
             return dto;
         }).collect(Collectors.toList());
@@ -103,7 +106,10 @@ public class AnalysisService {
             BeanUtils.copyProperties(mastery, dto);
 
             // 补充用户名和概念名
-            userMapper.getUserById(mastery.getUser_id()).ifPresent(user -> dto.setUsername(user.getUsername()));
+            User user = userMapper.getUserById(mastery.getUser_id().intValue());
+            if (user != null) {
+                dto.setUsername(user.getUsername());
+            }
             conceptMapper.findById(mastery.getConcept_id()).ifPresent(concept -> dto.setConceptName(concept.getName()));
 
             return dto;
