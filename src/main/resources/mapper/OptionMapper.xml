@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dd.ai_smart_course.mapper.OptionMapper">
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch">
+        INSERT INTO option (question_id, opt_key, opt_value)
+        VALUES
+        <foreach collection="options" item="o" separator=",">
+            (#{o.question_id}, #{o.opt_Key}, #{o.opt_Value})
+        </foreach>
+    </insert>
+
+    <!-- 批量删除 -->
+    <delete id="deleteByQuestionIds">
+        DELETE FROM option WHERE question_id IN
+        <foreach collection="questionIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

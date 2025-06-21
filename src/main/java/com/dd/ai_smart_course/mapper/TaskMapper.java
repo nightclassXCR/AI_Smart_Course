@@ -17,4 +17,6 @@ public interface TaskMapper {
 
     @Delete("DELETE FROM tasks WHERE id = #{taskId}")
     void deleteByTaskId(int taskId);
+
+    void update(Task task);
 }

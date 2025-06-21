@@ -40,4 +40,16 @@ public class ScoreServiceImpl implements ScoreService {
         score.setGradedAt(LocalDateTime.now());
         scoreMapper.update(score);
     }
+
+    @Override
+    public Score getTaskScore(int taskId) {
+        List<Score> scores = scoreMapper.listByTaskId(taskId);
+        return scores.size() > 0 ? scores.get(0) : null;
+    }
+
+    @Override
+    public List<Score> getUserScores(int userId) {
+        List<Score> scores = scoreMapper.getScoreByUserId(userId);
+        return scores;
+    }
 }

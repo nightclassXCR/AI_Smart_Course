@@ -7,9 +7,14 @@ import java.util.List;
 
 @Data
 public class QuestionDTO {
-    private String context;
-    private String type;        // choice / fill / essay
-    private String difficulty;  // easy / intermediate / advanced
+    private int id;
+    private String content;
+    private String  difficulty;
+    private String updatedAt;
+    private String createdAt;
     private BigDecimal point;
+    private int courseId;
+    private String answer;
+    private int  chapterId;
     private List<OptionDTO> options;
 }

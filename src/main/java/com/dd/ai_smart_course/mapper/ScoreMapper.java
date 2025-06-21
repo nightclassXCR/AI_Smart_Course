@@ -12,7 +12,7 @@ public interface ScoreMapper {
 
 
     @Select("SELECT * FROM scores WHERE user_id = #{userId}")
-    Score getScoreByUserId(int userId);
+    List<Score> getScoreByUserId(int userId);
 
     @Select("SELECT * FROM scores WHERE id = #{id}")
     Score getById(int id);
