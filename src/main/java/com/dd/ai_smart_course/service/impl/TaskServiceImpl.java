@@ -14,7 +14,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,11 +51,14 @@ public class TaskServiceImpl implements TaskService {
         return tasks;
     }
 
+    @Transactional
     @Override
     public void delete(int taskId) {
         List<Score> scores = scoreMapper.listByTaskId(taskId);
         for(Score score:scores)
             scoreMapper.deleteById(score.getId());
+        List<Question> questions = questionMapper.findByTaskId(taskId);
+        questionMapper.deleteBatch(questions.stream().map(Question::getId).toList());
 
         taskMapper.deleteByTaskId(taskId);
     }
@@ -72,7 +77,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Transactional
     public void startTask(Long taskId, Long userId) {
-        Optional<Task> taskOptional = taskMapper.findById(taskId);
+        Optional<Task> taskOptional = taskMapper.findById(Integer.parseInt(String.valueOf(taskId)));
         if (taskOptional.isEmpty()) {
             throw new IllegalArgumentException("Task not found: " + taskId);
         }
@@ -100,7 +105,7 @@ public class TaskServiceImpl implements TaskService {
      * @return Score对象
      */
     @Transactional
-    public Score submitTask(Long taskId, Long userId, Double rawScore, String submissionContent) {
+    public Score submitTask(int taskId, int userId, BigDecimal rawScore, String submissionContent) {
         Optional<Task> taskOptional = taskMapper.findById(taskId);
         if (taskOptional.isEmpty()) {
             throw new IllegalArgumentException("Task not found: " + taskId);
@@ -110,21 +115,23 @@ public class TaskServiceImpl implements TaskService {
         score.setUserId(userId);
         score.setTaskId(taskId);
         score.setTotalScore(rawScore);
-        scoreMapper.insertScore(score);
+        List<Score> scores=new ArrayList<>();
+        scores.add(score);
+        scoreMapper.insertBatch(scores);
         System.out.println("User " + userId + " submitted task " + taskId + " with score " + rawScore);
 
         // **添加：发布用户提交任务事件，使用 'submit'**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
                 Math.toIntExact(userId),
-                "TASK",
-                taskId,
+                "task",
+                Long.parseLong(String.valueOf(taskId)),
                 "submit",    // actionType: 使用 'submit'
                 null,
                 "{\"score\":" + rawScore + ", \"content\":\"" + submissionContent + "\"}" // detail
         ));
 
-        conceptMasteryService.updateMasteryForTaskSubmission(userId, taskId);
+        conceptMasteryService.updateMasteryForTaskSubmission(Long.parseLong(String.valueOf(userId)), Long.parseLong(String.valueOf(taskId)));
 
         return score;
     }
@@ -140,7 +147,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public void answerQuestion(Long questionId, Long userId, String userAnswer, boolean isCorrect) {
 
-        Optional<Question> questionOptional = questionMapper.findById(questionId);
+        Optional<Question> questionOptional = Optional.ofNullable(questionMapper.findById(Integer.parseInt(String.valueOf(questionId))));
         if (questionOptional.isEmpty()) {
             throw new IllegalArgumentException("Question not found: " + questionId);
         }

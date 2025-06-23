@@ -5,7 +5,7 @@
 
 <!-- 批量插入 -->
 <insert id="insertBatch">
-    INSERT INTO question (content, difficulty,updated_at,created_at,point, course_id, answer,chapter_id)
+    INSERT INTO questions (content, difficulty,updated_at,created_at,point, course_id, answer,chapter_id)
     VALUES
     <foreach collection="questions" item="q" separator=",">
         (#{q.content}, #{q.difficulty}, #{q.updated_at},#{q.created_at}, #{q.point}, #{q.courseId}, #{q.answer},#{q.chapterId})
@@ -14,10 +14,15 @@
 
 <!-- 批量删除 -->
 <delete id="deleteBatch">
-    DELETE FROM question WHERE id IN
+    DELETE FROM questions WHERE id IN
     <foreach collection="ids" item="id" open="(" separator="," close=")">
         #{id}
     </foreach>
 </delete>
+
+    <select id="findByTaskId" resultType="com.dd.ai_smart_course.entity.Question">
+        select q.*, tq.task_id from questions q left outer join task_question tq on q.id = tq.question_id
+        where tq.task_id = #{taskId}
+    </select>
 
 </mapper>

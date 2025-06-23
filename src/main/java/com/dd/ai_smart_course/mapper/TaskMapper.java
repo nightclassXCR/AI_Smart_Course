@@ -23,5 +23,5 @@ public interface TaskMapper {
     void update(Task task);
 
     @Select("SELECT * FROM tasks WHERE id = #{taskId}")
-    Optional<Task> findById(Long taskId);
+    Optional<Task> findById(int taskId);
 }

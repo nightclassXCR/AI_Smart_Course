@@ -98,6 +98,83 @@ public interface ConceptMapper {
             "SELECT id FROM question WHERE course_id = #{courseId})")
     List<Long> findConceptIdsByCourseId(Long courseId);
 
+    // 获取某个章节的 concepts
+    @Select("SELECT AVG(cm.mastery_level) AS avg_mastery " +
+            "FROM concept_mastery cm " +
+            "JOIN concepts c ON cm.concept_id = c.id " +
+            "WHERE cm.user_id = #{userId} AND c.chapter_id = #{chapterId}")
+    Double getAverageMasteryByChapter(@Param("userId") Long userId,
+                                      @Param("chapterId") Long chapterId);
+
+    // 获取某个课程的 concepts
+    @Select("SELECT AVG(cm.mastery_level) AS avg_mastery " +
+            "FROM concept_mastery cm " +
+            "JOIN concepts c ON cm.concept_id = c.id " +
+            "JOIN chapters ch ON c.chapter_id = ch.id " +
+            "WHERE cm.user_id = #{userId} AND ch.course_id = #{courseId}")
+    Double getAverageMasteryByCourse(@Param("userId") Long userId,
+                                     @Param("courseId") Long courseId);
+
+    /**
+     * 获取用户在某个课程中的掌握低的 concepts
+     */
+    @Select("SELECT c.* FROM concepts c " +
+            "LEFT JOIN concept_mastery cm ON c.id = cm.concept_id AND cm.user_id = #{userId} " +
+            "WHERE cm.mastery_level < #{threshold}")
+    List<Concept> getLowMasteryConcepts(@Param("userId") Long userId,
+                                        @Param("threshold") int threshold);
+
+    /**
+     * 获取用户未掌握的 concepts
+     */
+    @Select("SELECT * FROM concepts c " +
+            "WHERE NOT EXISTS (" +
+            "SELECT 1 FROM concept_mastery cm " +
+            "WHERE cm.user_id = #{userId} AND cm.concept_id = c.id)")
+    List<Concept> getUnmasteredConcepts(@Param("userId") Long userId);
+
+    /**
+     * 获取某个概念的难度统计*/
+    @Select("SELECT q.difficulty, COUNT(*) AS count " +
+            "FROM questions q " +
+            "JOIN concept_question cq ON q.id = cq.question_id " +
+            "WHERE cq.concept_id = #{conceptId} " +
+            "GROUP BY q.difficulty")
+    List<Map<String, Object>> getDifficultyStatsByConcept(@Param("conceptId") Long conceptId);
+
+    //删除某概念与所有题目的绑定
+    @Delete("DELETE FROM concept_question WHERE concept_id = #{conceptId}")
+    void unlinkAllQuestionsFromConcept(@Param("conceptId") Long conceptId);
+
+    //查询未绑定概念的题目
+    @Select("SELECT * FROM questions q " +
+            "WHERE NOT EXISTS (" +
+            "SELECT 1 FROM concept_question cq WHERE q.id = cq.question_id)")
+    List<Question> getUnlinkedQuestions();
+
+    /**
+     * 获取某个概念的题目数量
+     */
+    @Select("SELECT COUNT(*) FROM concept_question WHERE concept_id = #{conceptId}")
+    int countQuestionsByConcept(@Param("conceptId") Long conceptId);
+
+
+    /**
+     * 获取用户在某个课程中的知识点掌握情况 (根据 ER 图，通过 chapters 表关联 course_id)
+     */
+    @Select("SELECT c.id, c.name, cm.mastery_level " +
+            "FROM concepts c " +
+            "JOIN concept_mastery cm ON c.id = cm.concept_id " +
+            "JOIN chapters ch ON c.chapter_id = ch.id " +
+            "WHERE cm.user_id = #{userId} AND ch.course_id = #{courseId} " +
+            "ORDER BY cm.mastery_level DESC")
+    List<Map<String, Object>> getSortedMasteryByCourse(@Param("userId") Long userId,
+                                                       @Param("courseId") Long courseId);
+
+
+
+
+
 //    /**
 //     * 【需要额外数据库表支持】获取用户在某个课程中的错题对应的概念ID及错题次数
 //     * ER图中没有直接的表记录用户对每个问题的对错。

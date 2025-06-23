@@ -37,5 +37,7 @@ public interface QuestionMapper {
 
     // ✅ 批量删除
     int deleteBatch(@Param("ids") List<Integer> ids);
+
+    List<Question> findByTaskId(int taskId);
 }
 
