@@ -74,4 +74,7 @@ public interface CourseMapper {
     // 为了 getConceptsGroupedByChapter 的方便，这里直接获取所有相关章节
     @Select("SELECT id, course_id, title, sequence FROM chapters WHERE course_id = #{courseId} ORDER BY sequence ASC")
     List<Chapter> findChaptersForGrouping(@Param("courseId") Long courseId);
+
+    @Delete("DELETE FROM concepts WHERE course_id = #{courseId}")
+    int deleteByCourseId(int courseId);
 }

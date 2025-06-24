@@ -77,6 +77,11 @@ public interface ConceptService {
 //     * @return
 //     */
 //    List<Concept> recommendConceptsForUser(Long userId, Long courseId);
-
+    // 用户对知识点的浏览、掌握、复习等操作
+    void viewConcept(Long conceptId, Long userId, Integer durationSeconds);
+    // 用户对知识点的掌握
+    void markConceptAsMastered(Long conceptId, Long userId);
+    // 用户对知识点的复习
+    void startConceptReview(Long conceptId, Long userId);
 }
 

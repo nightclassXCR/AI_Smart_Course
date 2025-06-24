@@ -1,25 +1,49 @@
 package com.dd.ai_smart_course.service.impl;
 
-import com.dd.ai_smart_course.entity.Chapter;
-import com.dd.ai_smart_course.entity.Concept;
-import com.dd.ai_smart_course.entity.Course;
-import com.dd.ai_smart_course.mapper.CourseMapper;
+import com.dd.ai_smart_course.entity.*;
+import com.dd.ai_smart_course.event.LearningActionEvent;
+import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.CourseService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CourseImpl implements CourseService {
+
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private CourseMapper courseMapper;
+
+    @Autowired
+    private ChapterMapper chapterMapper;
+
+    @Autowired
+    private ConceptMapper conceptMapper;
+
+    @Autowired
+    private QAMapper qaMapper;
+
+    @Autowired
+    private CourseUserMapper courseUserMapper;
+
+//    @Autowired
+//    private RecommendMapper recommendMapper;
+
+    @Autowired
+    private ScoreMapper scoreMapper;
+
+    @Autowired
+    private LogMapper logMapper;
 
     @Override
     public List<Course> getAllCourse() {
@@ -51,12 +75,66 @@ public class CourseImpl implements CourseService {
         // 2. 删除所有关联的知识点
         // 3. 删除 course_user 表中的关联记录
         // 4. 删除 learning_logs, scores, recommendations, qa_records 等表中与此课程相关的记录
-        // 5. 如果是物理删除，确保数据库设置了正确的级联删除或手动处理
-        //    或者更常见的做法是进行逻辑删除 (设置课程状态为 'deleted'/'archived')
+        // 5. 物理删除，确保数据库设置了正确的级联删除或手动处理
+        if (id <= 0) {
+            throw new IllegalArgumentException("Course ID must be positive");
+        }
 
-        // 示例：此处仅删除课程本身，实际应根据业务需求完善
-        // 假设你有一个 ChapterMapper 和 ConceptMapper 来删除子项
-        return courseMapper.deleteCourse(id);
+        log.info("Starting hard delete for course ID: {}", id);
+
+        // Check if course exists
+        Course existingCourse = courseMapper.getCourseById(id);
+        if (existingCourse == null) {
+            log.warn("Course not found with ID: {}", id);
+            return 0; // Course doesn't exist
+        }
+
+        try {
+            // CRITICAL: Delete in correct order (child records first to avoid foreign key violations)
+
+            // Step 1: Delete QA records (问答记录) using dedicated mapper
+            int qaRecordsDeleted = qaMapper.deleteByCourseId(id);
+            log.debug("Deleted {} QA records for course {}", qaRecordsDeleted, id);
+
+//            // Step 2: Delete recommendations (推荐记录) using dedicated mapper
+//            int recommendationsDeleted = recommendationMapper.deleteByCourseId(id);
+//            log.debug("Deleted {} recommendations for course {}", recommendationsDeleted, id);
+
+//            // Step 3: Delete scores (成绩记录) using dedicated mapper
+//            int scoresDeleted = scoreMapper.deleteByCourseId(id);
+//            log.debug("Deleted {} scores for course {}", scoresDeleted, id);
+
+//            // Step 4: Delete learning logs (学习日志) using dedicated mapper
+//            int learningLogsDeleted = LogMapper.deleteByCourseId(id);
+//            log.debug("Deleted {} learning logs for course {}", learningLogsDeleted, id);
+
+            // Step 5: Delete concepts/knowledge points (知识点) using dedicated mapper
+            int conceptsDeleted = conceptMapper.deleteByCourseId(id);
+            log.debug("Deleted {} concepts for course {}", conceptsDeleted, id);
+
+            // Step 6: Delete chapters (章节) using dedicated mapper
+            int chaptersDeleted = chapterMapper.deleteByCourseId(id);
+            log.debug("Deleted {} chapters for course {}", chaptersDeleted, id);
+
+//            // Step 7: Delete course-user associations (课程用户关联) using dedicated mapper
+//            int courseUserDeleted = courseUserMapper.deleteByCourseId(id);
+//            log.debug("Deleted {} course-user associations for course {}", courseUserDeleted, id);
+
+            // Step 8: Finally delete the course itself (删除课程本身)
+            int courseDeleted = courseMapper.deleteCourse(id);
+
+            if (courseDeleted > 0) {
+                log.info("Successfully hard deleted course {} and all related data", id);
+                log.info("Deletion summary - QA: {}, Recommendations: {}, Scores: {}, Logs: {}, Concepts: {}, Chapters: {}, Users: {}",
+                        qaRecordsDeleted, conceptsDeleted, chaptersDeleted);
+            }
+
+            return courseDeleted;
+        } catch (Exception e) {
+            log.error("Failed to hard delete course with ID: {}. Error: {}", id, e.getMessage(), e);
+            // Transaction will be rolled back automatically due to @Transactional
+            throw new RuntimeException("Failed to delete course and related data: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -79,7 +157,11 @@ public class CourseImpl implements CourseService {
         return courseMapper.findChaptersForGrouping(courseId);
     }
 
-    // TODO: Implement
+    /**
+     * 获取课程的章节和知识点
+     * @param courseId
+     * @return
+     */
     @Override
     public List<Concept> getConceptsByCourse(Long courseId) {
         return courseMapper.getConceptsByCourse(courseId);
@@ -97,7 +179,7 @@ public class CourseImpl implements CourseService {
 
         // 2. 获取课程下所有知识点 (带章节信息，如果 Mapper 没有直接提供，可能需要二次查询)
         // 这里使用 getConceptsByCourse 来获取所有概念，然后通过概念的 chapterId 找到对应的章节。
-        // 缺点是如果某个章节没有知识点，它不会出现在概念列表中。
+        // 缺点是如果某个章节没有知识点，它不会出现在概念列表中
         // 更好的做法是 Mapper 返回一个包含 Concept 和 Chapter 完整信息的 DTO 列表，
         // 或者像 getConceptsWithChapterInfoByCourse 那样，JOIN 章节信息，然后手动组装
         List<Concept> concepts = courseMapper.getConceptsByCourse(courseId);
@@ -122,5 +204,160 @@ public class CourseImpl implements CourseService {
         }
 
         return groupedConcepts;
+    }
+
+    /**
+     * 添加用户到课程
+     * @param userId
+     * @param courseId
+     */
+    @Override
+    @Transactional
+    public void enrollUserInCourse(Long userId, Long courseId) {
+        if (courseUserMapper.findByCourseIdAndUserId(courseId, userId).isPresent()) {
+            throw new IllegalStateException("User already enrolled in this course.");
+        }
+        Course_user courseUser = new Course_user(courseId, userId, "STUDENT");
+        courseUserMapper.insertCourseUser(courseUser);
+        System.out.println("User " + userId + " enrolled in course " + courseId);
+
+        // **添加：发布用户注册课程事件**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "course",    // targetType
+                courseId,    // targetId
+                "click",    // actionType: 注册/选课
+                null,        // duration
+                "{\"action\":\"ENROLL\", \"description\":\"用户注册了课程: " + courseId + "\"}" // detail 明确行为
+        ));
+    }
+
+    @Override
+    @Transactional
+    public void unenrollUserFromCourse(Long userId, Long courseId) {
+        Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
+        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+            throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
+        }
+        courseUserMapper.deleteCourseUser(courseId, userId);
+        System.out.println("User " + userId + " unenrolled from course " + courseId);
+
+        // **修正：发布用户取消注册课程事件，使用 'click' 并用 detail 区分**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "course",
+                courseId,
+                "click",       // actionType: 映射为 click (用户点击“退课”按钮)
+                null,
+                "{\"action\":\"UNENROLL\", \"description\":\"用户退出了课程: " + courseId + "\"}" // detail 明确行为
+        ));
+
+    }
+
+    @Override
+    @Transactional
+    public void completeCourse(Long courseId, Long userId) {
+        Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
+        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+            throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
+        }
+        boolean actuallyCompleted = checkAndMarkCourseCompletion(courseId, userId);
+
+        if (actuallyCompleted) {
+            System.out.println("User " + userId + " marked course " + courseId + " as completed.");
+            // **修正：发布用户完成课程事件，使用 'click' 或 'view' 并用 detail 区分**
+            eventPublisher.publishEvent(new LearningActionEvent(
+                    this,
+                    Math.toIntExact(userId),
+                    "course",
+                    courseId,
+                    "click",       // actionType: 映射为 click (如果用户点击“标记完成”按钮)
+                    null,
+                    "{\"action\":\"COMPLETE\", \"description\":\"用户完成了课程: " + courseId + "\"}" // detail 明确行为
+            ));
+        } else {
+            System.out.println("Course " + courseId + " not yet fully completed by user " + userId);
+        }
+
+    }
+
+    /**
+     *  检查课程是否完成
+     * @param courseId
+     * @param userId
+     * @return
+     */
+    private boolean checkAndMarkCourseCompletion(Long courseId, Long userId) {
+        List<Chapter> chapters = chapterMapper.getChaptersByCourseId(courseId);
+        for (Chapter chapter : chapters) {
+            List<Concept> concepts = conceptMapper.getConceptsByChapterId(chapter.getId());
+            for (Concept concept : concepts) {
+                List<LearningLog> logs = logMapper.getLogsByConceptId(concept.getId());
+                for (LearningLog log : logs) {
+                    if (log.getUserId().equals(userId)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
+    public void startViewingChapter(Long chapterId, Long userId) {
+        Optional<Chapter> chapterOptional = chapterMapper.findById(chapterId);
+        if (chapterOptional.isEmpty()) {
+            throw new IllegalArgumentException("Chapter not found: " + chapterId);
+        }
+        Chapter chapter = chapterOptional.get();
+        Long courseId = (long) chapter.getCourseId();
+
+        Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
+        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+            throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
+        }
+
+        System.out.println("User " + userId + " started viewing chapter " + chapterId);
+
+        // **修正：发布用户开始查看章节事件，使用 'view'**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "chapter",
+                chapterId,
+                "view",        // actionType: 使用 'view'
+                null,
+                "{\"action\":\"START_VIEW\", \"description\":\"用户开始查看章节: " + chapterId + "\"}" // detail 明确行为
+        ));
+    }
+    @Transactional
+    public void completeChapter(Long chapterId, Long userId) {
+        Optional<Chapter> chapterOptional = chapterMapper.findById(chapterId);
+        if (chapterOptional.isEmpty()) {
+            throw new IllegalArgumentException("Chapter not found: " + chapterId);
+        }
+        Chapter chapter = chapterOptional.get();
+        Long courseId = (long) chapter.getCourseId();
+
+        Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
+        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+            throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
+        }
+
+        System.out.println("User " + userId + " completed chapter " + chapterId + " in course " + courseId);
+
+        // **修正：发布用户完成章节事件，使用 'click' 并用 detail 区分**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "chapter",
+                chapterId,
+                "click",       // actionType: 映射为 click (如果用户点击“标记完成”按钮)
+                null,
+                "{\"action\":\"COMPLETE_CHAPTER\", \"description\":\"用户完成了章节: " + chapterId + "\"}" // detail 明确行为
+        ));
     }
 }

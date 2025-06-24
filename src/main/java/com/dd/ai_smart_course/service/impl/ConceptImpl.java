@@ -3,15 +3,19 @@ package com.dd.ai_smart_course.service.impl;
 import com.dd.ai_smart_course.dto.ConceptDTO;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Question;
+import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.ChapterMapper;
 import com.dd.ai_smart_course.mapper.ConceptMapper;
 import com.dd.ai_smart_course.service.ConceptService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ConceptImpl implements ConceptService {
@@ -21,6 +25,9 @@ public class ConceptImpl implements ConceptService {
 
     @Autowired
     private ChapterMapper chapterMapper;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @Override
     public List<Concept> getAllConcepts() {
@@ -99,4 +106,73 @@ public class ConceptImpl implements ConceptService {
 //    public List<Concept> recommendConceptsForUser(Long userId, Long courseId) {
 //        return List.of();
 //    }
+
+    @Override
+    @Transactional
+    public void viewConcept(Long conceptId, Long userId, Integer durationSeconds) {
+        Optional<Concept> conceptOptional = conceptMapper.findById(conceptId);
+        if (conceptOptional.isEmpty()) {
+            throw new IllegalArgumentException("Concept not found: " + conceptId);
+        }
+
+        System.out.println("User " + userId + " viewed concept " + conceptId + " for " + durationSeconds + " seconds.");
+
+        // **修正：发布用户查看概念事件，使用 'view'**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "concept",
+                conceptId,
+                "view",      // actionType: 使用 'view'
+                durationSeconds,
+                "{\"action\":\"VIEW_CONCEPT\", \"description\":\"用户查看了概念详情: " + conceptId + "\"}" // detail
+        ));
+    }
+
+    @Override
+    @Transactional
+    public void markConceptAsMastered(Long conceptId, Long userId) {
+        Optional<Concept> conceptOptional = conceptMapper.findById(conceptId);
+        if (conceptOptional.isEmpty()) {
+            throw new IllegalArgumentException("Concept not found: " + conceptId);
+        }
+
+        System.out.println("User " + userId + " marked concept " + conceptId + " as mastered.");
+
+        // **修正：发布概念标记掌握事件，使用 'click' 并用 detail 区分**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "concept",
+                conceptId,
+                "click",    // actionType: 使用 'click' (因为是UI上的一个点击操作)
+                null,
+                "{\"action\":\"MARK_MASTERED\", \"description\":\"用户手动标记概念为掌握: " + conceptId + "\"}" // detail
+        ));
+    }
+
+    /**
+     * 修改：不一定实现开始复习事件
+     */
+    @Override
+    @Transactional
+    public void startConceptReview(Long conceptId, Long userId) {
+        Optional<Concept> conceptOptional = conceptMapper.findById(conceptId);
+        if (conceptOptional.isEmpty()) {
+            throw new IllegalArgumentException("Concept not found: " + conceptId);
+        }
+
+        System.out.println("User " + userId + " started reviewing concept " + conceptId);
+
+        // **修正：发布开始复习事件，使用 'click' 并用 detail 区分**
+        eventPublisher.publishEvent(new LearningActionEvent(
+                this,
+                Math.toIntExact(userId),
+                "concept",
+                conceptId,
+                "click",       // actionType: 使用 'click' (点击开始复习)
+                null,
+                "{\"action\":\"START_REVIEW\", \"description\":\"用户开始复习概念: " + conceptId + "\"}" // detail
+        ));
+    }
 }

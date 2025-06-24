@@ -4,6 +4,7 @@ import com.dd.ai_smart_course.entity.File;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface FileMapper {
@@ -27,4 +28,9 @@ public interface FileMapper {
     // 删除文件记录
     @Delete("DELETE FROM resources WHERE id = #{id}")
     int deleteFile(int id);
+
+    // 查询文件记录
+    @Select("SELECT * FROM resources WHERE id = #{id}")
+    Optional<File> findById(Long resourceId);
+
 }

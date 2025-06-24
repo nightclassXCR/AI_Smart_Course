@@ -6,6 +6,7 @@ import com.dd.ai_smart_course.entity.Concept;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface ChapterMapper {
@@ -54,5 +55,13 @@ public interface ChapterMapper {
     @Select("SELECT id, chapter_id, name, description FROM concepts WHERE chapter_id = #{chapterId}")
     List<Concept> getConceptsByChapterId(@Param("chapterId") Long chapterId);
 
+    @Delete("DELETE FROM chapters WHERE course_id = #{courseId}")
+    int deleteByCourseId(int courseId);
 
+    @Select("SELECT * FROM chapters WHERE id = #{id}")
+    Optional<Chapter> findById(@Param("id") Long chapterId);
+
+
+    @Select("SELECT COUNT(*) FROM chapters WHERE course_id = #{courseId}")
+    int countChaptersInCourse(Long courseId);
 }

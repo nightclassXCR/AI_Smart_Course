@@ -1,6 +1,6 @@
 package com.dd.ai_smart_course.service.impl;
 
-import com.dd.ai_smart_course.entity.Log;
+import com.dd.ai_smart_course.entity.LearningLog;
 import com.dd.ai_smart_course.mapper.LogMapper;
 import com.dd.ai_smart_course.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,23 +13,23 @@ public class LogImpl implements LogService {
     private LogMapper logMapper;
 
     @Override
-    public List<Log> getAllLogs() {
+    public List<LearningLog> getAllLogs() {
         return logMapper.getAllLogs();
     }
 
     @Override
-    public Log getLogById(int id) {
+    public LearningLog getLogById(int id) {
         return logMapper.getLogById(id);
     }
 
     @Override
-    public int addLog(Log log) {
-        return logMapper.addLog(log);
+    public int addLog(LearningLog learnlog) {
+        return logMapper.addLog(learnlog);
     }
 
     @Override
-    public int updateLog(Log log) {
-        return logMapper.updateLog(log);
+    public int updateLog(LearningLog learnlog) {
+        return logMapper.updateLog(learnlog);
     }
 
     @Override
