@@ -12,11 +12,11 @@ public interface UserService {
     int deleteUser(int id);
 
     //根据状态获取用户
-    List<User> getUsersByStatus(String status, boolean isDESC, String order, int limit, int offset);
+    List<User> getUsersByStatus(String status, boolean isDESC, String order, Integer limit, Integer offset);
 
     //根据用户名获取用户
-    List<User> getUsersByUsername(String username, boolean isDESC, String order, int limit, int offset);
+    List<User> getUsersByUsername(String username, boolean isDESC, String order, Integer limit, Integer offset);
 
     //根据用户角色获取用户
-    List<User> getUsersByRole(String role, boolean isDESC, String order, int limit, int offset);
+    List<User> getUsersByRole(String role, boolean isDESC, String order, Integer limit, Integer offset);
 }

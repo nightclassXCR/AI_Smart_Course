@@ -15,7 +15,10 @@ public enum ErrorCode {
     EMAIL_EXISTS(4001, "邮箱已被注册"),
     PHONE_EXISTS(4002, "手机号已被注册"),
     USERNAME_EXISTS(4003, "用户名已存在"),
-    PASSWORD_INVALID(4004, "密码格式错误");
+
+    EMAIL_NULL(5001, "邮箱已被注册"),
+    PHONE_NULL(5002, "手机号已被注册"),
+    USERNAME_NULL(5003, "用户名已存在");
 
     private final int code;     // 错误码
     private final String message;   // 错误信息
