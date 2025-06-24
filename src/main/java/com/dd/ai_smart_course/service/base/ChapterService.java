@@ -1,13 +1,11 @@
-package com.dd.ai_smart_course.service;
+package com.dd.ai_smart_course.service.base;
 
 
-import com.dd.ai_smart_course.dto.ChapterDTO;
+import com.dd.ai_smart_course.service.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
-import com.dd.ai_smart_course.entity.Course;
 
 import java.util.List;
-import java.util.Map;
 
 public interface ChapterService {
     // 获取所有章节

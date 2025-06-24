@@ -1,4 +1,4 @@
-package com.dd.ai_smart_course.service;
+package com.dd.ai_smart_course.service.base;
 
 import com.dd.ai_smart_course.entity.Resource;
 

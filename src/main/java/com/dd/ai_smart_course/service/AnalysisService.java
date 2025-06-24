@@ -2,11 +2,9 @@ package com.dd.ai_smart_course.service;
 
 
 import com.dd.ai_smart_course.R.PaginationResult;
-import com.dd.ai_smart_course.dto.ConceptMasteryDTO;
-import com.dd.ai_smart_course.dto.LearningLogDTO;
-import com.dd.ai_smart_course.dto.UserCourseDTO;
+import com.dd.ai_smart_course.service.dto.ConceptMasteryDTO;
+import com.dd.ai_smart_course.service.dto.LearningLogDTO;
 import com.dd.ai_smart_course.entity.Concept_mastery;
-import com.dd.ai_smart_course.entity.Course;
 import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.mapper.*;
 import org.springframework.beans.BeanUtils;
@@ -20,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.dd.ai_smart_course.dto.LearningStatsDto;
+import com.dd.ai_smart_course.service.dto.LearningStatsDTO;
 import com.dd.ai_smart_course.mapper.ScoreMapper;
 
 @Service
@@ -168,8 +166,8 @@ public class AnalysisService {
      * @return LearningStatsDto
      */
     @Transactional(readOnly = true)
-    public LearningStatsDto getLearningStats(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
-        LearningStatsDto stats = new LearningStatsDto();
+    public LearningStatsDTO getLearningStats(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        LearningStatsDTO stats = new LearningStatsDTO();
         stats.setUserId(userId);
         // 用户名
         User user = userMapper.getUserById(userId.intValue());

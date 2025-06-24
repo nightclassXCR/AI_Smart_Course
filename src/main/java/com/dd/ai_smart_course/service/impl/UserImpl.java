@@ -1,15 +1,14 @@
 package com.dd.ai_smart_course.service.impl;
 
 import com.dd.ai_smart_course.entity.User;
-import com.dd.ai_smart_course.exception.BusinessException;
-import com.dd.ai_smart_course.exception.errorcode.ErrorCode;
+import com.dd.ai_smart_course.service.exception.BusinessException;
+import com.dd.ai_smart_course.service.exception.errorcode.ErrorCode;
 import com.dd.ai_smart_course.mapper.UserMapper;
-import com.dd.ai_smart_course.service.UserService;
+import com.dd.ai_smart_course.service.base.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 

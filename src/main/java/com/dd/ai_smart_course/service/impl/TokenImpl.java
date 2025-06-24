@@ -4,7 +4,7 @@ import com.dd.ai_smart_course.component.JwtTokenUtil;
 import com.dd.ai_smart_course.entity.LocalToken;
 import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.mapper.UserMapper;
-import com.dd.ai_smart_course.service.TokenService;
+import com.dd.ai_smart_course.service.base.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

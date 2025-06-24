@@ -1,6 +1,6 @@
-package com.dd.ai_smart_course.exception;
+package com.dd.ai_smart_course.service.exception;
 
-import com.dd.ai_smart_course.exception.errorcode.ErrorCode;
+import com.dd.ai_smart_course.service.exception.errorcode.ErrorCode;
 
 //基础异常类
 public class BusinessException extends RuntimeException{

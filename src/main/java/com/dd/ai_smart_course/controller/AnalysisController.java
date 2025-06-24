@@ -1,7 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
-import com.dd.ai_smart_course.dto.LearningLogDTO;
-import com.dd.ai_smart_course.dto.LearningStatsDto;
+import com.dd.ai_smart_course.service.dto.LearningLogDTO;
+import com.dd.ai_smart_course.service.dto.LearningStatsDTO;
 import com.dd.ai_smart_course.R.PaginationResult;
 import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.service.AnalysisService;
@@ -10,7 +10,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/analysis")
@@ -79,12 +78,12 @@ public class AnalysisController {
      * 获取当前用户的学习统计数据
      */
     @GetMapping("/my-stats")
-    public Result<LearningStatsDto> getMyLearningStats(
+    public Result<LearningStatsDTO> getMyLearningStats(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime
     ) {
         Long userId = getCurrentUserId();
-        LearningStatsDto stats = analysisService.getLearningStats(userId, startTime, endTime);
+        LearningStatsDTO stats = analysisService.getLearningStats(userId, startTime, endTime);
         return Result.success("获取成功", stats);
     }
 
@@ -92,12 +91,12 @@ public class AnalysisController {
      * 获取指定用户的学习统计数据（管理员功能）
      */
     @GetMapping("/user-stats/{userId}")
-    public Result<LearningStatsDto> getUserLearningStats(
+    public Result<LearningStatsDTO> getUserLearningStats(
             @PathVariable Long userId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime
     ) {
-        LearningStatsDto stats = analysisService.getLearningStats(userId, startTime, endTime);
+        LearningStatsDTO stats = analysisService.getLearningStats(userId, startTime, endTime);
         return Result.success("获取成功", stats);
     }
 }

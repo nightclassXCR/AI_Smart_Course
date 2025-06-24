@@ -1,11 +1,10 @@
-package com.dd.ai_smart_course.service;
+package com.dd.ai_smart_course.service.base;
 
-import com.dd.ai_smart_course.dto.ConceptDTO;
+import com.dd.ai_smart_course.service.dto.ConceptDTO;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Question;
 
 import java.util.List;
-import java.util.Map;
 
 public interface ConceptService {
 

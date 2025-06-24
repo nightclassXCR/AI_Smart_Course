@@ -2,8 +2,7 @@ package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.entity.Task;
-import com.dd.ai_smart_course.entity.Task_question;
-import com.dd.ai_smart_course.service.TaskService;
+import com.dd.ai_smart_course.service.base.TaskService;
 //import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

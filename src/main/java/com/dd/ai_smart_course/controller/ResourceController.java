@@ -2,8 +2,7 @@ package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.entity.Resource;
 import com.dd.ai_smart_course.R.Result;
-import com.dd.ai_smart_course.mapper.ResourceMapper;
-import com.dd.ai_smart_course.service.ResourceService;
+import com.dd.ai_smart_course.service.base.ResourceService;
 import com.dd.ai_smart_course.utils.AliOssUtil;
 import io.swagger.annotations.ApiOperation;
 import jakarta.servlet.http.HttpServletResponse;
