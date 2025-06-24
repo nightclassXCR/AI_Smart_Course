@@ -290,13 +290,13 @@ public class CourseImpl implements CourseService {
      * @return
      */
     private boolean checkAndMarkCourseCompletion(Long courseId, Long userId) {
-        List<Chapter> chapters = chapterMapper.getChaptersByCourseId(courseId);
+        List<Chapter> chapters = chapterMapper.getChaptersByCourseId(Math.toIntExact(courseId));
         for (Chapter chapter : chapters) {
             List<Concept> concepts = conceptMapper.getConceptsByChapterId(chapter.getId());
             for (Concept concept : concepts) {
                 List<LearningLog> logs = logMapper.getLogsByConceptId(concept.getId());
                 for (LearningLog log : logs) {
-                    if (log.getUserId().equals(userId)) {
+                    if (log.getUserId()==(userId)) {
                         return true;
                     }
                 }

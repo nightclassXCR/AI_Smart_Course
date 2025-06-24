@@ -45,8 +45,7 @@ public interface LogMapper {
 
     /**
      * 根据条件查询学习日志记录。
-     * 使用 @SelectProvider 结合 SqlProvider 类来构建动态 SQL，以处理复杂的条件查询。
-     * @ResultMap 注解用于引用在 Mapper 接口内部定义的 @Results 映射。
+     * 使用 @Select 注解定义动态 SQL，替代原有的 @SelectProvider。
      *
      * @param userId     用户ID (可选)
      * @param targetType 目标类型 (可选)
@@ -57,8 +56,20 @@ public interface LogMapper {
      * @param limit      分页限制数量 (可选)
      * @return 学习日志列表
      */
-    @SelectProvider(type = LearningLogSqlProvider.class, method = "findLearningLogsSql")
-    @Results(id = "learningLogResultMap", value = { // 定义一个结果集映射，供多个查询复用
+    @Select({"<script>",
+            "SELECT id, user_id, target_type, target_id, action_type, action_time, duration, detail",
+            "FROM learning_logs",
+            "<where>",
+            "<if test='userId != null'> AND user_id = #{userId} </if>",
+            "<if test='targetType != null'> AND target_type = #{targetType} </if>",
+            "<if test='actionType != null'> AND action_type = #{actionType} </if>",
+            "<if test='startDate != null'> AND action_time >= #{startDate} </if>",
+            "<if test='endDate != null'> AND action_time &lt;= #{endDate} </if>",
+            "</where>",
+            "ORDER BY action_time DESC",
+            "<if test='limit != null and offset != null'> LIMIT #{limit} OFFSET #{offset} </if>",
+            "</script>"})
+    @Results(id = "learningLogResultMap", value = {
             @Result(property = "id", column = "id", id = true),
             @Result(property = "userId", column = "user_id"),
             @Result(property = "targetType", column = "target_type"),
@@ -78,6 +89,7 @@ public interface LogMapper {
 
     /**
      * 根据条件统计学习日志记录总数，用于分页。
+     * 使用 @Select 注解定义动态 SQL，替代原有的 @SelectProvider。
      *
      * @param userId     用户ID (可选)
      * @param targetType 目标类型 (可选)
@@ -86,12 +98,31 @@ public interface LogMapper {
      * @param endDate    结束时间 (可选)
      * @return 学习日志总数
      */
-    @SelectProvider(type = LearningLogSqlProvider.class, method = "countLearningLogsSql")
+    @Select({"<script>",
+            "SELECT COUNT(id)",
+            "FROM learning_logs",
+            "<where>",
+            "<if test='userId != null'> AND user_id = #{userId} </if>",
+            "<if test='targetType != null'> AND target_type = #{targetType} </if>",
+            "<if test='actionType != null'> AND action_type = #{actionType} </if>",
+            "<if test='startDate != null'> AND action_time >= #{startDate} </if>",
+            "<if test='endDate != null'> AND action_time &lt;= #{endDate} </if>",
+            "</where>",
+            "</script>"})
     int countLearningLogs(@Param("userId") Long userId,
                           @Param("targetType") String targetType,
                           @Param("actionType") String actionType,
                           @Param("startDate") LocalDateTime startDate,
                           @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 根据 conceptId 获取相关的学习日志记录。
+     *
+     * @param conceptId 概念ID
+     * @return 学习日志列表
+     */
+    @Select("SELECT * FROM learning_logs WHERE target_id = #{conceptId} AND target_type = 'CONCEPT'")
+    List<LearningLog> getLogsByConceptId(int conceptId);
 
     /**
      * 统计用户在特定课程中完成的章节数量。
@@ -147,6 +178,4 @@ public interface LogMapper {
                              @Param("targetId") Long targetId,
                              @Param("actionType") String actionType);
 
-    @Select("SELECT * FROM learning_logs WHERE concept_id = #{id}")
-    List<LearningLog> getLogsByConceptId(int id);
 }
