@@ -1,7 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
 
-import com.dd.ai_smart_course.service.dto.request.SearchRequest;
+import com.dd.ai_smart_course.dto.request.SearchRequest;
 import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.service.exception.BusinessException;
 import com.dd.ai_smart_course.service.impl.UserImpl;

@@ -1,4 +1,4 @@
-package com.dd.ai_smart_course.service.dto;
+package com.dd.ai_smart_course.dto;
 
 import lombok.Data;
 

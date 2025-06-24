@@ -1,7 +1,7 @@
 package com.dd.ai_smart_course.service.base;
 
 
-import com.dd.ai_smart_course.service.dto.ChapterDTO;
+import com.dd.ai_smart_course.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 

@@ -3,7 +3,7 @@ package com.dd.ai_smart_course.controller;
 import com.dd.ai_smart_course.service.base.QAService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dd.ai_smart_course.service.dto.QuestionDTO;
+import com.dd.ai_smart_course.dto.QuestionDTO;
 import com.dd.ai_smart_course.service.base.DifyService;
 import com.dd.ai_smart_course.R.Result;
 import org.springframework.web.bind.annotation.PostMapping;

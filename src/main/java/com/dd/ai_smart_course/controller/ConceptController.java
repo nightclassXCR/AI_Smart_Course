@@ -1,7 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
 
-import com.dd.ai_smart_course.service.dto.ConceptDTO;
+import com.dd.ai_smart_course.dto.ConceptDTO;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Question;
 import com.dd.ai_smart_course.R.Result;

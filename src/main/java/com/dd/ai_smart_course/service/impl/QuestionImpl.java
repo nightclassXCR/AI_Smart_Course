@@ -1,7 +1,7 @@
 package com.dd.ai_smart_course.service.impl;
 
-import com.dd.ai_smart_course.service.dto.OptionDTO;
-import com.dd.ai_smart_course.service.dto.QuestionDTO;
+import com.dd.ai_smart_course.dto.OptionDTO;
+import com.dd.ai_smart_course.dto.QuestionDTO;
 import com.dd.ai_smart_course.entity.Question;
 import com.dd.ai_smart_course.entity.Option;
 import com.dd.ai_smart_course.mapper.QuestionMapper;

@@ -1,6 +1,6 @@
 package com.dd.ai_smart_course.service.base;
 
-import com.dd.ai_smart_course.service.dto.QuestionDTO;
+import com.dd.ai_smart_course.dto.QuestionDTO;
 
 import java.util.List;
 

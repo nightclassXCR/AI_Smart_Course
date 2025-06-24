@@ -1,7 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
-import com.dd.ai_smart_course.service.dto.LearningLogDTO;
-import com.dd.ai_smart_course.service.dto.LearningStatsDTO;
+import com.dd.ai_smart_course.dto.LearningLogDTO;
+import com.dd.ai_smart_course.dto.LearningStatsDTO;
 import com.dd.ai_smart_course.R.PaginationResult;
 import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.service.AnalysisService;
