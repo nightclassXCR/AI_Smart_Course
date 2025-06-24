@@ -20,6 +20,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dd.ai_smart_course.dto.LearningStatsDto;
+import com.dd.ai_smart_course.mapper.ScoreMapper;
+
 @Service
 public class AnalysisService {
 
@@ -36,6 +39,8 @@ public class AnalysisService {
     private ConceptMapper conceptMapper; // 用于获取概念名
     @Autowired
     private ChapterMapper chapterMapper; // 用于获取章节数
+    @Autowired
+    private ScoreMapper scoreMapper;
 
     /**
      * 获取学习日志。
@@ -153,4 +158,60 @@ public class AnalysisService {
 //
 //        return dto;
 //    }
+
+    /**
+     * 获取用户的学习统计数据。
+     *
+     * @param userId 用户ID
+     * @param startDate 开始时间（可选）
+     * @param endDate 结束时间（可选）
+     * @return LearningStatsDto
+     */
+    @Transactional(readOnly = true)
+    public LearningStatsDto getLearningStats(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        LearningStatsDto stats = new LearningStatsDto();
+        stats.setUserId(userId);
+        // 用户名
+        User user = userMapper.getUserById(userId.intValue());
+        if (user != null) {
+            stats.setUsername(user.getUsername());
+        }
+        // 获取所有日志（可加时间范围）
+        List<LearningLog> logs = learningLogMapper.findLearningLogs(userId, null, null, startDate, endDate, null, null);
+        // 总学习时长（秒）
+        long totalStudyTime = logs.stream().mapToLong(l -> l.getDuration() == 0 ? 0 : l.getDuration()).sum();
+        stats.setTotalStudyTime(totalStudyTime);
+        // 总操作次数
+        stats.setTotalActions(logs.size());
+        // 完成章节数（targetType=CHAPTER, actionType=COMPLETE）
+        long completedChapters = logs.stream().filter(l -> "CHAPTER".equalsIgnoreCase(l.getTargetType()) && "COMPLETE".equalsIgnoreCase(l.getActionType())).map(LearningLog::getTargetId).distinct().count();
+        stats.setCompletedChapters((int) completedChapters);
+        // 完成概念数（统计 concept_mastery 表中 mastery_level >= 60 的数量）
+        List<com.dd.ai_smart_course.entity.Concept_mastery> masteries = conceptMasteryMapper.findMasteriesByUserId(userId);
+        long completedConcepts = masteries.stream()
+            .filter(m -> {
+                Double level = m.getMastery_level();
+                return level != null && level >= 60.0;
+            })
+            .count();
+        stats.setCompletedConcepts((int) completedConcepts);
+        // 平均分数（取 scores 表中 finalScore 平均值）
+        double averageScore = 0.0;
+        try {
+            List<com.dd.ai_smart_course.entity.Score> scores = scoreMapper.getScoreByUserId(userId.intValue());
+            if (scores != null && !scores.isEmpty()) {
+                averageScore = scores.stream().filter(s -> s.getFinalScore() != null).mapToDouble(s -> s.getFinalScore().doubleValue()).average().orElse(0.0);
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        stats.setAverageScore(averageScore);
+        // 最后活动时间
+        LocalDateTime lastActivityTime = logs.stream().map(l -> l.getActionTime() != null ? l.getActionTime().toLocalDateTime() : null).filter(t -> t != null).max(LocalDateTime::compareTo).orElse(null);
+        stats.setLastActivityTime(lastActivityTime);
+        // 活跃天数（按 actionTime 的日期去重计数）
+        long activeDays = logs.stream().map(l -> l.getActionTime() != null ? l.getActionTime().toLocalDateTime().toLocalDate() : null).filter(d -> d != null).distinct().count();
+        stats.setActiveDays((int) activeDays);
+        return stats;
+    }
 }
