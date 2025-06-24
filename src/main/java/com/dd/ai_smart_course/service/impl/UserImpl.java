@@ -98,7 +98,12 @@ public class UserImpl implements UserService {
 
     @Override
     public int addUser(User user) {
-        return userMapper.addUser(user);
+
+        try {
+            return userMapper.addUser(user);
+        }catch (Exception e){
+            return 0;
+        }
     }
 
     @Override
@@ -109,5 +114,47 @@ public class UserImpl implements UserService {
     @Override
     public int deleteUser(int id) {
         return userMapper.deleteUser(id);
+    }
+
+    //检验是否能进行更改和增加的操作
+
+
+    //检验用户名称唯一性
+    public boolean isNameUnique(String name){
+        //调用mapper
+        Integer db_id = userMapper.getIDByName(name);
+        if(db_id==null){
+            //用户不存在，凭证唯一
+            return true;
+        }else {
+            //用户存在，凭证不唯一
+            return false;
+        }
+    }
+
+    //检验电话号码唯一性
+    public boolean isPhoneNumberUnique(String phoneNumber){
+        //调用mapper
+        Integer db_id = userMapper.getIDByPhoneNumber(phoneNumber);
+        if(db_id==null){
+            //用户不存在，凭证唯一
+            return true;
+        }else {
+            //用户存在，凭证不唯一
+            return false;
+        }
+    }
+
+    //检验邮箱号码唯一性
+    public boolean isEmailUnique(String email){
+        //调用mapper
+        Integer db_id = userMapper.getIDByEmail(email);
+        if(db_id==null){
+            //用户不存在，凭证唯一
+            return true;
+        }else {
+            //用户存在，凭证不唯一
+            return false;
+        }
     }
 }

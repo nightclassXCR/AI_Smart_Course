@@ -18,5 +18,4 @@ public class User {
     private Timestamp lastActivityAt;
     private String status;  //"STATUS_NORMAL" OR "STATUS_BANNED"
 
-
 }

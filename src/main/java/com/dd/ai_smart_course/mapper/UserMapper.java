@@ -16,7 +16,19 @@ public interface UserMapper {
     @Select("SELECT * FROM users WHERE id = #{id}")
     User getUserById(int id);
 
-    //获得指定用户(限定比较指标，比较参数，排序指标，排序方向，数目和偏移量)
+    //使用邮箱获得用户ID
+    @Select("SELECT id FROM users where email = #{email};")
+    Integer getIDByEmail(String email);
+
+    //使用电话号码获得用户ID
+    @Select("SELECT id FROM users where phone_number = #{phoneNumber};")
+    Integer getIDByPhoneNumber(String phoneNumber);
+
+    //使用电话号码获得用户ID
+    @Select("SELECT id FROM users where name = #{name};")
+    Integer getIDByName(String name);
+
+   //获得指定用户(限定比较指标，比较参数，排序指标，排序方向，数目和偏移量)
     //#{}: 参数可被自动转义，可防止SQL注入
     //用于替换SQL中的值（如 WHERE column = ?）
     //${}: 参数值会直接拼接到SQL中，有SQL注入风险
