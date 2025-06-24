@@ -1,4 +1,4 @@
-package com.dd.ai_smart_course.listener;
+package com.dd.ai_smart_course.component;
 
 
 import com.dd.ai_smart_course.entity.LearningLog;
