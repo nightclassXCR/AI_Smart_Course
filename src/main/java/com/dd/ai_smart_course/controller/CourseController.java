@@ -126,6 +126,26 @@ public class CourseController {
         return Result.success("获取成功", groupedConcepts);
     }
 
-
-
+    /**
+     * 用户选课
+     * @param courseId 课程ID
+     * @return 选课结果
+     */
+    @PostMapping("/enroll/{courseId}")
+    public Result<String> enrollUserInCourse(@PathVariable("courseId") Long courseId, @RequestBody Map<String, Long> requestBody) {
+        Long userId = requestBody.get("userId");
+        courseService.enrollUserInCourse(userId, courseId);
+        return Result.success("选课成功");
+    }
+    /**
+     * 用户退课
+     * @param courseId 课程ID
+     * @return 退课结果
+     */
+    @PostMapping("/unenroll/{courseId}")
+    public Result<String> unenrollUserFromCourse(@PathVariable("courseId") Long courseId, @RequestBody Map<String, Long> requestBody) {
+        Long userId = requestBody.get("userId");
+        courseService.unenrollUserFromCourse(userId, courseId);
+        return Result.success("退课成功");
+    }
 }

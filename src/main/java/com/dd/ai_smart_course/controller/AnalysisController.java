@@ -1,9 +1,9 @@
 package com.dd.ai_smart_course.controller;
 
-import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.dto.LearningLogDTO;
 import com.dd.ai_smart_course.dto.LearningStatsDto;
-import com.dd.ai_smart_course.entity.LearningLog;
-import com.dd.ai_smart_course.entity.User;
+import com.dd.ai_smart_course.R.PaginationResult;
+import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.service.AnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -70,7 +70,8 @@ public class AnalysisController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime
     ) {
-        long count = analysisService.getLearningLogs(userId, targetType, actionType, startTime, endTime, 0, 1).getTotalElements();
+        PaginationResult<LearningLogDTO> result = analysisService.getLearningLogs(userId, targetType, actionType, startTime, endTime, 0, 1);
+        long count = result != null ? result.getTotalElements() : 0;
         return Result.success("统计成功", count);
     }
 

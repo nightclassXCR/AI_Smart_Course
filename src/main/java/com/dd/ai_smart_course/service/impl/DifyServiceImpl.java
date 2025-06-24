@@ -26,6 +26,11 @@ public class DifyServiceImpl implements DifyService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
+    public String getAnswerFromDify(String question) {
+        return "";
+    }
+
+    @Override
     public String askQuestion(String question, Long userId, Long courseId) {
         try {
             HttpHeaders headers = new HttpHeaders();

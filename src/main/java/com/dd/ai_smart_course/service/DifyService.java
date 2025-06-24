@@ -1,6 +1,13 @@
 package com.dd.ai_smart_course.service;
 
 public interface DifyService {
+    
+    /**
+     * 调用 Dify 智能体获取问题的答案
+     * @param question 用户的问题内容
+     * @return 智能体返回的答案
+     */
+    String getAnswerFromDify(String question);
 
     /**
      * 向Dify发送问题并获取答案
