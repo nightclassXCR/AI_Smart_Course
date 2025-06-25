@@ -6,13 +6,11 @@ import com.dd.ai_smart_course.entity.Question;
 import com.dd.ai_smart_course.entity.Option;
 import com.dd.ai_smart_course.mapper.QuestionMapper;
 import com.dd.ai_smart_course.mapper.OptionMapper;
-import com.dd.ai_smart_course.service.QuestionService;
+import com.dd.ai_smart_course.service.base.QuestionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 

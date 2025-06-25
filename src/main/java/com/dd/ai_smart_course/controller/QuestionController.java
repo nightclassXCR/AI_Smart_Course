@@ -2,7 +2,7 @@
 
 // import com.dd.ai_smart_course.dto.QuestionDTO;
 // import com.dd.ai_smart_course.entity.Question;
-// import com.dd.ai_smart_course.service.QuestionService;
+// import com.dd.ai_smart_course.service.base.QuestionService;
 // import lombok.extern.slf4j.Slf4j;
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.http.ResponseEntity;

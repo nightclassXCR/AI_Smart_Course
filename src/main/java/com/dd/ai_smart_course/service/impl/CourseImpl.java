@@ -4,7 +4,7 @@ import com.dd.ai_smart_course.R.PaginationResult;
 import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
-import com.dd.ai_smart_course.service.CourseService;
+import com.dd.ai_smart_course.service.base.CourseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
