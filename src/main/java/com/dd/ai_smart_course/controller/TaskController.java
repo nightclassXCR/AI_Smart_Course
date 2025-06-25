@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.entity.Resource;
 import com.dd.ai_smart_course.entity.Task;
 import com.dd.ai_smart_course.entity.Task_question;
 import com.dd.ai_smart_course.service.TaskService;
@@ -15,7 +16,7 @@ import java.util.List;
 @Data
 @RestController
 @Slf4j
-@RequestMapping("/api/tasks")
+@RequestMapping("/homework")
 public class TaskController {
 
     @Autowired
@@ -30,7 +31,7 @@ public class TaskController {
 
     @GetMapping("/{courseId}")
     //@ApiOperation("通过课程id获取任务列表")
-    public Result<List< Task>> listByCourseId(@PathVariable int courseId){
+    public Result<List<Task>> listByCourseId(@PathVariable int courseId){
         log.info("listByCourseId: {}", courseId);
         List<Task> tasks = taskService.listByCourseId(courseId);
         return Result.success(tasks);
@@ -50,6 +51,7 @@ public class TaskController {
         taskService.update(task);
         return Result.success();
     }
+
 
 
 
