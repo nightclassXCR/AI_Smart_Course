@@ -36,5 +36,10 @@ public class ResourceServiceImpl implements ResourceService {
         return resourceMapper.selectByFilter(resource);
     }
 
+    @Override
+    public Resource list() {
+        return resourceMapper.list();
+    }
+
 
 }
