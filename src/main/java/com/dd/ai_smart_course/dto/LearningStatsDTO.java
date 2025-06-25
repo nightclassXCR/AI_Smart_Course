@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class LearningStatsDto {
+public class LearningStatsDTO {
     private Long userId;
     private String username;
     private Long totalStudyTime; // 总学习时长（秒）

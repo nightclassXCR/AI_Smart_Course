@@ -6,7 +6,7 @@ import com.dd.ai_smart_course.entity.Question;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.ChapterMapper;
 import com.dd.ai_smart_course.mapper.ConceptMapper;
-import com.dd.ai_smart_course.service.ConceptService;
+import com.dd.ai_smart_course.service.base.ConceptService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service

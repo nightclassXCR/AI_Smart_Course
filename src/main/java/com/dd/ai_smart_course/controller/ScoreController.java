@@ -2,7 +2,7 @@ package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.entity.Score;
-import com.dd.ai_smart_course.service.ScoreService;
+import com.dd.ai_smart_course.service.base.ScoreService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
