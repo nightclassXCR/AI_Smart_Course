@@ -2,15 +2,16 @@ package com.dd.ai_smart_course.controller;
 
 
 import com.dd.ai_smart_course.R.PaginationResult;
-import com.dd.ai_smart_course.component.JwtTokenUtil;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
 import com.dd.ai_smart_course.R.Result;
-import com.dd.ai_smart_course.service.CourseService;
+import com.dd.ai_smart_course.service.base.CourseService;
+import com.dd.ai_smart_course.component.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,9 @@ public class CourseController {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     /**
      * 获取所有课程
@@ -157,16 +161,17 @@ public class CourseController {
      * @return 用户已选课程列表
      */
     @GetMapping("/my-courses")
-    public Result<List<Course>> getMyCourses() {
+    public Result<List<Course>> getMyCourses(HttpServletRequest request) {
         log.info("getMyCourses");
-        Long userId = 1L;// TODO: 从token中获取用户ID
-        return Result.success(courseService.getMyCourses(userId));
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        return Result.success(courseService.getMyCourses(userId.longValue()));
     }
 
-    @GetMapping
+    @GetMapping("/pagination")
     public PaginationResult<Course> getCourses(@RequestParam(defaultValue = "1") int pageNum,
                                              @RequestParam(defaultValue = "10") int pageSize) {
-
         return courseService.getCourses(pageNum, pageSize);
     }
     /**
@@ -174,9 +179,11 @@ public class CourseController {
      * @param keyword 关键词
      */
     @GetMapping("/search")
-    public Result<List<Course>> searchCourses(@RequestParam String keyword) {
-        Long userId = 1L; // TODO: 从token中获取用户ID
-        List<Course> courses = courseService.searchCourses(keyword, userId);
+    public Result<List<Course>> searchCourses(@RequestParam String keyword, HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        List<Course> courses = courseService.searchCourses(keyword, userId.longValue());
         return Result.success("查询成功", courses);
     }
 

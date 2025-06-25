@@ -10,10 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequestMapping("/auth")
-@Controller
+@RestController
 public class AuthController {
     @Autowired
     AuthServiceImpl authService;
@@ -27,9 +28,11 @@ public class AuthController {
         System.out.println("get a LoginByPhoneNumber request: " + "email = " + email + "; password = " + password); // 添加日志
         try {
             LocalToken response = authService.loginByEmail(email, password);
+            log.info("生成 token: {}", response.getToken());
             return response;
         }catch (BusinessException be){
             log.warn("LoginByPhoneNumber request status: " + be.getMessage());
+            log.error("生成 token 时出现异常: ", be);
             throw be;
         }
 
@@ -40,8 +43,8 @@ public class AuthController {
     public LocalToken loginByPhoneNumber(@RequestBody AuthRequest request) throws BusinessException{
         String phoneNumber = request.getPhoneNumber();
         String password = request.getPassword();
-
-        log.info("get a LoginByPhoneNumber request: " + "phoneNumber = " + phoneNumber + "; password = " + password);
+        log.info("get a LoginByPhoneNumber request: " + "phoneNumber = "
+ + phoneNumber + "; password = " + password);
         try {
             LocalToken response = authService.loginByPhoneNumber(phoneNumber, password);
             log.info("LoginByPhoneNumber request status: success");

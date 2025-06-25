@@ -13,9 +13,11 @@ public class User {
     private String phoneNumber;
     private String password;
     private String name;
-    private String role;    //"ROLE_ADMIN" OR "ROLE_USER"
+    private String role;    //"ROLE_ADMIN" OR "ROLE_USER" OR "ROLE_TEACHER"
     private Timestamp createdAt;
     private Timestamp lastActivityAt;
     private String status;  //"STATUS_NORMAL" OR "STATUS_BANNED"
 
 }
+
+
