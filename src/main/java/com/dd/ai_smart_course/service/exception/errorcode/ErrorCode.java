@@ -20,6 +20,9 @@ public enum ErrorCode {
     EMAIL_NULL(5001, "邮箱为空"),
     PHONE_NULL(5002, "手机号为空"),
     USERNAME_NULL(5003, "用户名为空"),
+    ROLE_NULL(5004, "用户角色为空"),
+
+    ROLE_ERROR(5051,"用户角色参数错误"),
 
     // 登录模块
     USER_NOT_EXISTS(6001, "用户不存在"),

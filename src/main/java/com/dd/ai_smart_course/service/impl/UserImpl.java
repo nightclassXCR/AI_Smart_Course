@@ -23,8 +23,9 @@ public class UserImpl implements UserService {
 
     //User类的role属性常量
     private static final String USER_ROLE_ADMIN = "ROLE_ADMIN";
-    private static final String USER_ROLE_USER = "ROLE_USER";
-    public static final List<String> ALLOWED_USER_ROLE = Arrays.asList(USER_ROLE_ADMIN, USER_ROLE_USER);
+    private static final String USER_ROLE_TEACHER = "ROLE_TEACHER";
+    private static final String USER_ROLE_STUDENT = "ROLE_STUDENT";
+    public static final List<String> ALLOWED_USER_ROLE = Arrays.asList(USER_ROLE_ADMIN, USER_ROLE_TEACHER, USER_ROLE_STUDENT);
 
     //User类的status属性常量
     private static final String USER_STATUS_NORMAL = "NORMAL";
@@ -137,12 +138,13 @@ public class UserImpl implements UserService {
     @Override
     public int addUser(User user) throws BusinessException {
         try {
+            checkFactor(user);
             return userMapper.addUser(user);
         } catch (BusinessException be){
-            log.error("can't add in \"users\" table.BE code = " + be.getCode());
+            log.error("can't add in \"users\" table: " + be.getMessage());
             throw be;
         } catch (Exception e){
-            log.error("can't add in \"users\" table because of unknown error." + e.getMessage());
+            log.error("can't add in \"users\" table: " + e.getMessage());
             throw new BusinessException(ErrorCode.FAILURE);
         }
     }
@@ -150,7 +152,7 @@ public class UserImpl implements UserService {
     @Override
     public int updateUser(User user) throws BusinessException {
         try{
-            chechFactor(user);
+            checkFactor(user);
             return userMapper.updateUser(user);
         } catch (BusinessException be){
             log.error("can't update in \"users\" table.BE code = " + be.getCode());
@@ -173,11 +175,20 @@ public class UserImpl implements UserService {
 
     //检验关键数据是否为空
     //若姓名、邮箱和电话为空，则抛出对应异常
-    public void chechFactor(User user) throws BusinessException{
+    public void checkFactor(User user) throws BusinessException{
 
+        String role = user.getRole();
         String name = user.getName();
         String phoneNumber = user.getPhoneNumber();
         String email = user.getEmail();
+
+        //检查用户角色
+        if(role == null){
+            throw new BusinessException(ErrorCode.ROLE_NULL);
+        }
+        if(ALLOWED_USER_ROLE.contains(role)){
+            throw new BusinessException(ErrorCode.ROLE_ERROR);
+        }
 
         //检查用户名
         if(name == null){
@@ -186,6 +197,7 @@ public class UserImpl implements UserService {
         if(!isNameUnique(name)){
             throw new BusinessException(ErrorCode.USERNAME_EXISTS);
         }
+
         //检查电话号码
         if(phoneNumber == null){
             throw new BusinessException(ErrorCode.PHONE_NULL);
@@ -193,6 +205,7 @@ public class UserImpl implements UserService {
         if(!isPhoneNumberUnique(phoneNumber)){
             throw new BusinessException(ErrorCode.PHONE_EXISTS);
         }
+
         //检查邮箱号码
         if(email == null){
             throw new BusinessException(ErrorCode.EMAIL_NULL);

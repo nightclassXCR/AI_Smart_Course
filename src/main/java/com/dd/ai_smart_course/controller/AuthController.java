@@ -2,6 +2,7 @@ package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.dto.request.AuthRequest;
 import com.dd.ai_smart_course.entity.LocalToken;
+import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.service.exception.BusinessException;
 import com.dd.ai_smart_course.service.impl.AuthServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -53,4 +54,11 @@ public class AuthController {
 
     }
 
+    //注册
+    @PostMapping("/register")
+    public boolean register(@RequestBody User user){
+        //稍后改
+        log.info("get a register request");
+        return authService.register(user);
+    }
 }

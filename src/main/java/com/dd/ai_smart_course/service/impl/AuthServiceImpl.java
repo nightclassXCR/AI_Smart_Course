@@ -7,9 +7,11 @@ import com.dd.ai_smart_course.mapper.UserMapper;
 import com.dd.ai_smart_course.service.base.AuthService;
 import com.dd.ai_smart_course.service.exception.BusinessException;
 import com.dd.ai_smart_course.service.exception.errorcode.ErrorCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -20,6 +22,9 @@ public class AuthServiceImpl implements AuthService {
     //JWT令牌相关
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private UserImpl userService;
 
 
     //使用邮箱地址登录
@@ -62,6 +67,21 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
+    }
+
+    //注册
+    @Override
+    public boolean register(User user) throws BusinessException{
+        try {
+            int result = userService.addUser(user);
+            if(result == 1){
+                return true;
+            }
+        }catch (BusinessException be){
+            log.error("fails to register: " + be.getMessage());
+        }finally {
+            return false;
+        }
     }
 
     //使用电话号码得到User
