@@ -12,13 +12,20 @@ public enum ErrorCode {
     NOT_FOUND(404, "资源不存在"),
 
     // 业务错误
+    // 查询用户
     EMAIL_EXISTS(4001, "邮箱已被注册"),
     PHONE_EXISTS(4002, "手机号已被注册"),
     USERNAME_EXISTS(4003, "用户名已存在"),
 
-    EMAIL_NULL(5001, "邮箱已被注册"),
-    PHONE_NULL(5002, "手机号已被注册"),
-    USERNAME_NULL(5003, "用户名已存在");
+    EMAIL_NULL(5001, "邮箱为空"),
+    PHONE_NULL(5002, "手机号为空"),
+    USERNAME_NULL(5003, "用户名为空"),
+
+    // 登录模块
+    USER_NOT_EXISTS(6001, "用户不存在"),
+    PASSWORD_WRONG(6002, "密码错误");
+
+
 
     private final int code;     // 错误码
     private final String message;   // 错误信息

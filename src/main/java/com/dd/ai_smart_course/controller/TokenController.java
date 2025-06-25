@@ -4,10 +4,7 @@ import com.dd.ai_smart_course.entity.LocalToken;
 import com.dd.ai_smart_course.service.impl.TokenImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/token")
@@ -16,8 +13,21 @@ public class TokenController {
     @Autowired
     TokenImpl tokenImpl;
 
-    @PostMapping("/normalCheck")
-    public boolean checkToken(LocalToken localToken){
+    @PostMapping("/checkToken")
+    public boolean checkToken(@RequestBody LocalToken localToken){
+        log.info("get a checkToken request");
         return tokenImpl.checkToken(localToken);
+    }
+
+    @PostMapping("/checkAdmin")
+    public boolean checkAdmin(@RequestBody LocalToken localToken){
+        log.info("get a checkAdmin request");
+        return  tokenImpl.checkAdmin(localToken);
+    }
+
+    @PostMapping("/checkNormal")
+    public boolean checkNormal(@RequestBody LocalToken localToken){
+        log.info("get a checkNormal request");
+        return  tokenImpl.checkNormal(localToken);
     }
 }

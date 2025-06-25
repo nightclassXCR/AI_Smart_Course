@@ -4,9 +4,14 @@ import com.dd.ai_smart_course.component.JwtTokenUtil;
 import com.dd.ai_smart_course.entity.LocalToken;
 import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.mapper.UserMapper;
+import com.dd.ai_smart_course.service.base.AuthService;
+import com.dd.ai_smart_course.service.exception.BusinessException;
+import com.dd.ai_smart_course.service.exception.errorcode.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class AuthServiceImpl {
+@Service
+public class AuthServiceImpl implements AuthService {
 
     //接入数据库中user图表
     @Autowired
@@ -18,61 +23,45 @@ public class AuthServiceImpl {
 
 
     //使用邮箱地址登录
-    public LocalToken loginByEmail(String email, String password){
+    @Override
+    public LocalToken loginByEmail(String email, String password) throws BusinessException{
         LocalToken response = new LocalToken();
-        String token = "";
-        String status = "";
+
 
         User user = getUserByEmail(email);
         if(user == null){
             //用户不存在，提示注册
-            token = generateToken(user);
-            status = "wrong credential";
+            throw new BusinessException(ErrorCode.USER_NOT_EXISTS);
         }else {
             String db_password = user.getPassword();
             if(password.equals(db_password)){
                 //用户名和密码匹配
-                status = "ok";
+                return encapsulateToken(user);
             }else{
-                status =  "wrong password";
+                throw new BusinessException(ErrorCode.PASSWORD_WRONG);
             }
         }
-
-        //清空敏感数据
-        user.setPassword("");
-
-        response.setToken(token);
-        response.setUser(user);
-
-        return response;
     }
 
     //使用电话号码登录
-    public LocalToken loginByPhoneNumber(String phoneNumber, String password){
+    @Override
+    public LocalToken loginByPhoneNumber(String phoneNumber, String password) throws BusinessException{
         LocalToken response = new LocalToken();
-        String token = "";
-        String status = "";
 
         User user = getUserByPhone(phoneNumber);
         if(user == null){
             //用户不存在，提示注册
-            status = "wrong credential";
+            throw new BusinessException(ErrorCode.USER_NOT_EXISTS);
         }else {
             String db_password = user.getPassword();
             if(password.equals(db_password)){
                 //用户名和密码匹配
-                token = generateToken(user);
-                status = "ok";
+                return encapsulateToken(user);
             }else{
-                status = "wrong password";
+                throw new BusinessException(ErrorCode.PASSWORD_WRONG);
             }
         }
 
-
-        response.setToken(token);
-        response.setUser(user);
-
-        return response;
     }
 
     //使用电话号码得到User
@@ -97,7 +86,7 @@ public class AuthServiceImpl {
 
     //创建token
     public String generateToken(User user){
-        String token = jwtTokenUtil.generateToken("LOGIN", String.valueOf(user.getId()), user.getUsername(), user.getRole(), user.getStatus());
+        String token = jwtTokenUtil.generateToken("USER_LOCAL_TOKEN", String.valueOf(user.getId()), user.getUsername(), user.getRole(), user.getStatus());
         return token;
     }
 
