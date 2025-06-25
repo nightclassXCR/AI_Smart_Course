@@ -21,17 +21,17 @@ public class LogImpl implements LogService {
 
     @Override
     public LearningLog getLogById(int id) {
-        return logMapper.getLogById(id);
+        return logMapper.getLogById((long) id);
     }
 
     @Override
     public int addLog(LearningLog learnlog) {
-        return logMapper.addLog(learnlog);
+        return logMapper.insertLearningLog(learnlog);
     }
 
     @Override
     public int updateLog(LearningLog learnlog) {
-        return logMapper.updateLog(learnlog);
+        return logMapper.updateLearningLog(learnlog);
     }
 
     @Override

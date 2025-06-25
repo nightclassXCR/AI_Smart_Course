@@ -1,4 +1,4 @@
-package com.dd.ai_smart_course.Config;
+package com.dd.ai_smart_course.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -5,6 +5,7 @@ import com.dd.ai_smart_course.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;

@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.mapper;
 
 
+import com.dd.ai_smart_course.R.PaginationResult;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
@@ -12,23 +13,22 @@ import java.util.List;
 public interface CourseMapper {
 
     // 获取所有课程
-    @Select("SELECT * FROM course")
+    @Select("SELECT * FROM courses")
     List<Course> getAllCourses();
 
     // 获取课程详情
-    @Select("SELECT * FROM course WHERE id = #{id}")
+    @Select("SELECT * FROM courses WHERE id = #{id}")
     Course getCourseById(int id);
 
     // 添加课程
-    @Insert("INSERT INTO course (name, teacher_id, description, created_at) VALUES (#{name}, #{teacherId}, #{description}, #{createdAt})")
+    @Insert("INSERT INTO courses (name, teacher_id, description, created_at) VALUES (#{name}, #{teacherId}, #{description}, #{createdAt})")
     int addCourse(Course course);
 
     // 更新课程信息
-    @Update("UPDATE course SET name = #{name}, teacher_id = #{teacherId}, description = #{description}, created_at = #{createdAt} WHERE id = #{id}")
+    @Update("UPDATE courses SET name = #{name}, teacher_id = #{teacherId}, description = #{description}, created_at = #{createdAt} WHERE id = #{id}")
     int updateCourse(Course course);
 
     // 删除课程
-    // Todo: 添加逻辑删除功能
     @Delete("DELETE FROM courses WHERE id = #{id}")
     // 注意：删除课程可能需要处理级联删除（例如：相关章节、知识点、用户课程关联、学习日志、成绩等）
     // 在实际生产中，通常会使用逻辑删除（软删除）或者在Service层进行事务管理和相关联数据的删除操作。
@@ -39,9 +39,17 @@ public interface CourseMapper {
     List<Course> getCoursesByTeacherId(@Param("teacherId") Long teacherId);
 
     /**
+     * 根据课程ID列表获取课程
+     * @param courseIds 课程ID列表
+     * @return 课程列表
+     */
+    @Select("<script>SELECT * FROM courses WHERE id IN <foreach item='id' collection='courseIds' open='(' separator=',' close=')'>#{id}</foreach></script>")
+    List<Course> getCoursesByIds(@Param("courseIds") List<Long> courseIds);
+
+    /**
      * 获取课程下所有知识点 (通过 chapters 表关联)
      */
-    @Select("SELECT c.id, c.chapter_id, c.name, c.description " + // 假设 Concept 实体有 description
+    @Select("SELECT c.id, c.chapter_id, c.name, c.description " +
             "FROM concepts c " +
             "JOIN chapters chap ON c.chapter_id = chap.id " +
             "WHERE chap.course_id = #{courseId}")
@@ -77,4 +85,11 @@ public interface CourseMapper {
 
     @Delete("DELETE FROM concepts WHERE course_id = #{courseId}")
     int deleteByCourseId(int courseId);
+
+    @Select("SELECT * FROM courses ORDER BY created_at DESC")
+    PaginationResult<Course> getCourses(int pageNum, int pageSize);
+
+    @Select("SELECT * FROM course_user WHERE user_id = #{userId}")
+    List<Course> getMyCourses(@Param("userId") Long userId);
+
 }

@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.service.impl;
 
+import com.dd.ai_smart_course.R.PaginationResult;
 import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
@@ -58,6 +60,8 @@ public class CourseImpl implements CourseService {
     @Override
     @Transactional
     public int addCourse(Course course) {
+
+
         return courseMapper.addCourse(course);
     }
 
@@ -359,5 +363,33 @@ public class CourseImpl implements CourseService {
                 null,
                 "{\"action\":\"COMPLETE_CHAPTER\", \"description\":\"用户完成了章节: " + chapterId + "\"}" // detail 明确行为
         ));
+    }
+
+    @Override
+    public List<Course> getMyCourses(Long userId) {
+        List<Course_user> courseUsers = courseUserMapper.findCoursesByUserId(userId);
+        List<Long> courseIds = courseUsers.stream().map(cu -> (long) cu.getCourseId()).collect(Collectors.toList());
+        if (courseIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return courseMapper.getCoursesByIds(courseIds);
+    }
+
+
+    @Override
+    public PaginationResult<Course> getCourses(int pageNum, int pageSize) {
+        return courseMapper.getCourses(pageNum, pageSize);
+    }
+
+    // 搜索课程在用户已有课程中
+    @Override
+    public List<Course> searchCourses(String keyword, Long userId) {
+        List<Course> courses= courseMapper.getMyCourses(userId);
+        for (Course course : courses) {
+            if (course.getName().contains(keyword)) {
+                return List.of(course);
+            }
+        }
+        return Collections.emptyList();
     }
 }

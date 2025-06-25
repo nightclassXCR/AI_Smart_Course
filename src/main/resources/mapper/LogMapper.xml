@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dd.ai_smart_course.mapper.LogMapper">
+
+    <select id="findLearningLogs" resultType="com.dd.ai_smart_course.entity.LearningLog">
+        SELECT * FROM learning_logs
+        <where>
+        <if test="userId != null"> AND user_id = #{userId} </if>
+        <if test="targetType != null"> AND target_type = #{targetType} </if>
+        <if test="actionType != null"> AND action_type = #{actionType} </if>
+        <if test="startDate != null"> AND action_time >= #{startDate} </if>
+        <if test="endDate != null"> AND action_time &gt;= #{endDate} </if>
+        <if test="offset != null and limit != null"> LIMIT #{offset}, #{limit} </if>
+        <if test="offset == null and limit != null"> LIMIT #{limit} </if>
+        <if test="offset != null and limit == null"> LIMIT #{offset} </if>
+        <if test="offset == null and limit == null"> LIMIT 0, 10 </if>
+
+        </where>
+    </select>
+    <select id="countLearningLogs" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM learning_logs
+        <where>
+        <if test="userId != null"> AND user_id = #{userId} </if>
+        <if test="targetType != null"> AND target_type = #{targetType} </if>
+        <if test="actionType != null"> AND action_type = #{actionType} </if>
+        <if test="startDate != null"> AND action_time >= #{startDate} </if>
+        <if test="endDate != null"> AND action_time &gt;= #{endDate} </if>
+        </where>
+    </select>
+</mapper>

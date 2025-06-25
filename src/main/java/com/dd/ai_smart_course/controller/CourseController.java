@@ -1,11 +1,15 @@
 package com.dd.ai_smart_course.controller;
 
 
+import com.dd.ai_smart_course.R.PaginationResult;
+import com.dd.ai_smart_course.component.JwtTokenUtil;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.entity.LocalToken;
 import com.dd.ai_smart_course.service.CourseService;
+import com.dd.ai_smart_course.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +25,12 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+//    @Autowired
+//    private JwtTokenUtil JwtTokenUtil;
+
+    @Autowired
+    private TokenService tokenService;
+
     /**
      * 获取所有课程
      * @return 所有课程
@@ -29,6 +39,11 @@ public class CourseController {
     public Result<List<Course>>getAllCourse() {
         return Result.success(courseService.getAllCourse());
     }
+
+    /**
+     * 获取课程列表
+     * @return 课程列表
+     */
 
     /**
      * 获取课程详情
@@ -148,4 +163,33 @@ public class CourseController {
         courseService.unenrollUserFromCourse(userId, courseId);
         return Result.success("退课成功");
     }
+
+    /**
+     * 获取我的课程
+     * @return 用户已选课程列表
+     */
+    @GetMapping("/my-courses")
+    public Result<List<Course>> getMyCourses() {
+        log.info("getMyCourses");
+        Long userId = 1L;// TODO: 从token中获取用户ID
+        return Result.success(courseService.getMyCourses(userId));
+    }
+
+    @GetMapping
+    public PaginationResult<Course> getCourses(@RequestParam(defaultValue = "1") int pageNum,
+                                             @RequestParam(defaultValue = "10") int pageSize) {
+
+        return courseService.getCourses(pageNum, pageSize);
+    }
+    /**
+     * 模糊查询在用户已有的课程进行查询
+     * @param keyword 关键词
+     */
+    @GetMapping("/search")
+    public Result<List<Course>> searchCourses(@RequestParam String keyword) {
+        Long userId = 1L; // TODO: 从token中获取用户ID
+        List<Course> courses = courseService.searchCourses(keyword, userId);
+        return Result.success("查询成功", courses);
+    }
+
 }
