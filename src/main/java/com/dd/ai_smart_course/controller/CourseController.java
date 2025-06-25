@@ -47,6 +47,7 @@ public class CourseController {
      */
     @PostMapping
     public Result<String> addCourse(@RequestBody Course course) {
+        log.info("Adding course: {}", course);
         if(courseService.addCourse(course) > 0){
             return Result.success("添加成功");
         }else {
