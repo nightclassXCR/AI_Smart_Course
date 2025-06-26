@@ -390,6 +390,8 @@ public class CourseImpl implements CourseService {
                 dto.setName(course.getName());
                 dto.setDescription(course.getDescription());
                 dto.setTeacherId(course.getTeacherId());
+                dto.setStatusSelf(course.getStatusSelf());
+                dto.setStatusStudent(course.getStatusStudent());
                 if (course.getTeacherId() != 0) {
                     String teacherName = courseMapper.getUserNameById((long) course.getTeacherId());
                     dto.setTeacherName(teacherName);
@@ -437,6 +439,8 @@ public class CourseImpl implements CourseService {
                     dto.setName(course.getName());
                     dto.setDescription(course.getDescription());
                     dto.setTeacherId(course.getTeacherId());
+                    dto.setStatusSelf(course.getStatusSelf());
+                    dto.setStatusStudent(course.getStatusStudent());
                     // ！！！ 关键：根据 teacherId 查询教师名字 ！！！
                     // 这里需要再次调用 mapper 获取教师名字
                     if (course.getTeacherId() != 0) {

@@ -11,6 +11,7 @@ public class CoursesDTO {
     private String description;
     private int teacherId; // 可以保留教师ID
     private String teacherName; // <-- 这是你想要添加的教师名字字段
-    // private String status;
+    private String statusSelf;
+    private String statusStudent;
 
 }

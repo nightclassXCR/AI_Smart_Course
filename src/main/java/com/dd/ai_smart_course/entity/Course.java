@@ -11,8 +11,9 @@ public class Course {
     private String name;
     private int teacherId;
     private String description;
-    private String status;// published,draft,archived
+    private String statusSelf;// published,draft,archived
     private Timestamp createdAt;
+    private String statusStudent;
 
     @Override
     public String toString() {
@@ -21,7 +22,7 @@ public class Course {
                 ", name='" + name + '\'' +
                 ", teacherId=" + teacherId +
                 ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
+                ", status='" + statusSelf + '\'' +
                 '}';
     }
 

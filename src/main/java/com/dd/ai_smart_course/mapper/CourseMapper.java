@@ -35,7 +35,8 @@ public interface CourseMapper {
     // 这里仅删除课程本身。
     int deleteCourse(int id);
 
-    @Select("SELECT id, name, teacher_id, description, status FROM courses WHERE teacher_id = #{teacherId}")
+
+    @Select("SELECT id, name, teacher_id, description FROM courses WHERE teacher_id = #{teacherId}")
     List<Course> getCoursesByTeacherId(@Param("teacherId") Long teacherId);
 
     /**
@@ -48,7 +49,7 @@ public interface CourseMapper {
     // - 使用 AS 别名将教师名字命名为 `teacher_real_name`
     @Select("<script>" +
             "SELECT " +
-            "c.id, c.name, c.description, c.teacher_id, c.status, " + // Course 实体中有的字段
+            "c.id, c.name, c.description, c.teacher_id, c.status_self, c.status_student, " + // Course 实体中有的字段
             "u.name AS teacher_real_name " + // <-- ！！！ 关键：额外查询教师的名字并起别名 ！！！
             "FROM courses c " +
             "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
@@ -106,7 +107,8 @@ public interface CourseMapper {
             "c.id, " +
             "c.name, " +
             "c.description, " +
-            "c.teacher_id, " +           // 课程中已有的教师ID
+            "c.teacher_id, " +// 课程中已有的教师ID
+            "c.status_student"+
             "u.name AS teacher_real_name " + // <-- ！！！ 额外查询教师的名字，并给它一个独特的别名 ！！！
             "FROM courses c " +
             "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
