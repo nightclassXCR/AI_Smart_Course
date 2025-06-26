@@ -2,8 +2,7 @@ package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.entity.Resource;
 import com.dd.ai_smart_course.R.Result;
-import com.dd.ai_smart_course.mapper.ResourceMapper;
-import com.dd.ai_smart_course.service.ResourceService;
+import com.dd.ai_smart_course.service.base.ResourceService;
 import com.dd.ai_smart_course.utils.AliOssUtil;
 import io.swagger.annotations.ApiOperation;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/resources")
+@RequestMapping("/resource")
 @Slf4j
 
 public class ResourceController {
@@ -31,7 +30,7 @@ public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
-    @PostMapping
+    @PostMapping("/create")
     @ApiOperation("文件上传")
     public Result<String> upload(MultipartFile file, @RequestBody Resource resource) {
         log.info("文件上传：{}", file);
@@ -42,6 +41,9 @@ public class ResourceController {
             //构造新文件名称
             String objectName = UUID.randomUUID().toString() + extension;
             String filePath = aliOssUtil.upload(file.getBytes(), objectName);
+            resource.setFileUrl(filePath);
+            resource.setName(originalFileName);
+
             resourceService.save(resource);
             return Result.success(filePath);
         } catch (IOException e) {
@@ -100,6 +102,11 @@ public class ResourceController {
             log.error("下载失败", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/list")
+    public Result<Resource> list(){
+        return Result.success(resourceService.list());
     }
 
 

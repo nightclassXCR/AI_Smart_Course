@@ -25,4 +25,6 @@ public interface ResourceMapper {
     List<Resource> selectByFilter(Resource resource);
 
 
+    @Select("SELECT * FROM resources")
+    Resource list();
 }

@@ -5,7 +5,7 @@ import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
 import com.dd.ai_smart_course.R.Result;
-import com.dd.ai_smart_course.service.CourseService;
+import com.dd.ai_smart_course.service.base.CourseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +47,7 @@ public class CourseController {
      */
     @PostMapping
     public Result<String> addCourse(@RequestBody Course course) {
+        log.info("Adding course: {}", course);
         if(courseService.addCourse(course) > 0){
             return Result.success("添加成功");
         }else {

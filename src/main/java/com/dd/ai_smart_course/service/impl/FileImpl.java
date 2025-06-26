@@ -3,7 +3,7 @@ package com.dd.ai_smart_course.service.impl;
 import com.dd.ai_smart_course.entity.File;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.FileMapper;
-import com.dd.ai_smart_course.service.FileService;
+import com.dd.ai_smart_course.service.base.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

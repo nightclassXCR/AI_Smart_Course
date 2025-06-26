@@ -1,14 +1,19 @@
 package com.dd.ai_smart_course.service.impl;
 
+import com.dd.ai_smart_course.dto.TaskDTO;
 import com.dd.ai_smart_course.entity.Question;
 import com.dd.ai_smart_course.entity.Score;
 import com.dd.ai_smart_course.entity.Task;
+import com.dd.ai_smart_course.entity.Task_question;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.QuestionMapper;
 import com.dd.ai_smart_course.mapper.ScoreMapper;
 import com.dd.ai_smart_course.mapper.TaskMapper;
-import com.dd.ai_smart_course.service.ConceptMasteryService;
-import com.dd.ai_smart_course.service.TaskService;
+import com.dd.ai_smart_course.mapper.TaskQuestionMapper;
+import com.dd.ai_smart_course.service.base.ConceptMasteryService;
+import com.dd.ai_smart_course.service.base.TaskService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -19,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class TaskServiceImpl implements TaskService {
 
@@ -27,7 +32,9 @@ public class TaskServiceImpl implements TaskService {
     private TaskMapper taskMapper;
     @Autowired
     private ScoreMapper scoreMapper;
+    @Autowired
 
+    private TaskQuestionMapper  tqMapper;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
@@ -38,14 +45,33 @@ public class TaskServiceImpl implements TaskService {
     private QuestionMapper questionMapper;
 
 
+
+
     @Override
-    public void insertBatch(List<Task> tasks) {
-            taskMapper.insertBatch(tasks);
+    @Transactional
+    public void insertBatch(TaskDTO taskDTO) {
+        Task task = new Task();
+        BeanUtils.copyProperties(taskDTO, task);
+        task.setCreatedAt(LocalDateTime.now());
+        task.setType(Task.Type.homework);
+        log.info("insertBatch: {}", task);
+        taskMapper.insertBatch(task);
+        int taskId = task.getId();
+        List<Question> questions = taskDTO.getQuestions();
+        for (Question question : questions){
+            Task_question tq = new Task_question();
+            tq.setTask_id(taskId);
+            questionMapper.insert(question);
+            tq.setQuestion_id(question.getId());
+            tqMapper.insert(tq);
+        }
+
+
     }
 
     @Override
     public List<Task> listByCourseId(int courseId) {
-        List<Task> tasks =taskMapper.listByCourseId(courseId);
+        List<Task> tasks = taskMapper.listByCourseId(courseId);
 
 
         return tasks;
@@ -55,10 +81,14 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void delete(int taskId) {
         List<Score> scores = scoreMapper.listByTaskId(taskId);
-        for(Score score:scores)
+        for (Score score : scores)
             scoreMapper.deleteById(score.getId());
         List<Question> questions = questionMapper.findByTaskId(taskId);
-        questionMapper.deleteBatch(questions.stream().map(Question::getId).toList());
+
+        if (questions!=null && !questions.isEmpty()) {
+            questionMapper.deleteBatch(questions.stream().map(Question::getId).toList());
+            tqMapper.deleteBatch(taskId);
+        }
 
         taskMapper.deleteByTaskId(taskId);
     }
@@ -71,7 +101,8 @@ public class TaskServiceImpl implements TaskService {
 
 
     /**
-     *  用户开始任务
+     * 用户开始任务
+     *
      * @param taskId
      * @param userId
      */
@@ -98,9 +129,10 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * 用户提交整个任务或测验。
-     * @param taskId 任务ID
-     * @param userId 用户ID
-     * @param rawScore 原始得分
+     *
+     * @param taskId            任务ID
+     * @param userId            用户ID
+     * @param rawScore          原始得分
      * @param submissionContent 提交内容 (可以是JSON字符串)
      * @return Score对象
      */
@@ -115,7 +147,7 @@ public class TaskServiceImpl implements TaskService {
         score.setUserId(userId);
         score.setTaskId(taskId);
         score.setTotalScore(rawScore);
-        List<Score> scores=new ArrayList<>();
+        List<Score> scores = new ArrayList<>();
         scores.add(score);
         scoreMapper.insertBatch(scores);
         System.out.println("User " + userId + " submitted task " + taskId + " with score " + rawScore);
@@ -140,9 +172,9 @@ public class TaskServiceImpl implements TaskService {
      * 用户回答单个问题。
      *
      * @param questionId 问题ID
-     * @param userId 用户ID
+     * @param userId     用户ID
      * @param userAnswer 用户答案
-     * @param isCorrect 是否正确
+     * @param isCorrect  是否正确
      */
     @Transactional
     public void answerQuestion(Long questionId, Long userId, String userAnswer, boolean isCorrect) {

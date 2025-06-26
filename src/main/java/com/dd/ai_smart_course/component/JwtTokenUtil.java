@@ -45,12 +45,11 @@ public class JwtTokenUtil {
             String userIDString = claims.get("userID").toString();
             userID = Integer.valueOf(userIDString);
         }catch (Exception e){
-            log.error("token解析用户ID失败: ", e);
+            log.error("resolve fails: ", e);
         }
 
         return userID;
     }
-
 
     //"::" 是 Java 8 引入的 方法引用（Method Reference）语法，用于简化 Lambda 表达式
     //方法引用允许你直接引用现有方法，而不必显式编写 Lambda 表达式的完整形式。
