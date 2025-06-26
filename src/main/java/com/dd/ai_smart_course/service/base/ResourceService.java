@@ -11,5 +11,5 @@ public interface ResourceService {
     void delete(Long id);
     List<Resource> filter(Resource resource);
 
-    Resource list();
+    List<Resource> list();
 }

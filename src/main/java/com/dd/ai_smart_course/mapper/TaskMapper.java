@@ -17,6 +17,8 @@ public interface TaskMapper {
     void insertBatch(Task task);
 
     List<Task> listByCourseId(int courseId);
+    List<Task> listByCourseIds(List<Integer> courseIds);
+
 
 
     @Delete("DELETE FROM tasks WHERE id = #{taskId}")
@@ -26,4 +28,7 @@ public interface TaskMapper {
 
     @Select("SELECT * FROM tasks WHERE id = #{taskId}")
     Optional<Task> findById(int taskId);
+
+    @Select("SELECT * FROM tasks WHERE course_id = #{courseId}")
+    List<Task> listByUserId(int userId);
 }

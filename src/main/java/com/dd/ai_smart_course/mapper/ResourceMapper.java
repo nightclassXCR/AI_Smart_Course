@@ -26,5 +26,5 @@ public interface ResourceMapper {
 
 
     @Select("SELECT * FROM resources")
-    Resource list();
+    List<Resource> list();
 }

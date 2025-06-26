@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.mapper;
 
 import com.dd.ai_smart_course.entity.User;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -61,4 +62,7 @@ public interface UserMapper {
 
     @Select("SELECT id FROM users")
     List<Long> findAllUserIds();
+
+    @Select("SELECT course_id FROM course_user WHERE user_id = #{userId}")
+    List<Integer> getCourseIdsByUserId(int userId);
 }

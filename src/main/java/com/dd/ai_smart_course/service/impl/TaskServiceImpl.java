@@ -1,15 +1,9 @@
 package com.dd.ai_smart_course.service.impl;
 
 import com.dd.ai_smart_course.dto.TaskDTO;
-import com.dd.ai_smart_course.entity.Question;
-import com.dd.ai_smart_course.entity.Score;
-import com.dd.ai_smart_course.entity.Task;
-import com.dd.ai_smart_course.entity.Task_question;
+import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.event.LearningActionEvent;
-import com.dd.ai_smart_course.mapper.QuestionMapper;
-import com.dd.ai_smart_course.mapper.ScoreMapper;
-import com.dd.ai_smart_course.mapper.TaskMapper;
-import com.dd.ai_smart_course.mapper.TaskQuestionMapper;
+import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.base.ConceptMasteryService;
 import com.dd.ai_smart_course.service.base.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 @Slf4j
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -34,7 +29,7 @@ public class TaskServiceImpl implements TaskService {
     private ScoreMapper scoreMapper;
     @Autowired
 
-    private TaskQuestionMapper  tqMapper;
+    private TaskQuestionMapper tqMapper;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
@@ -44,12 +39,13 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private QuestionMapper questionMapper;
 
-
+    @Autowired
+    private UserMapper userMapper;
 
 
     @Override
     @Transactional
-    public void insertBatch(TaskDTO taskDTO) {
+    public void insert(TaskDTO taskDTO) {
         Task task = new Task();
         BeanUtils.copyProperties(taskDTO, task);
         task.setCreatedAt(LocalDateTime.now());
@@ -58,7 +54,7 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.insertBatch(task);
         int taskId = task.getId();
         List<Question> questions = taskDTO.getQuestions();
-        for (Question question : questions){
+        for (Question question : questions) {
             Task_question tq = new Task_question();
             tq.setTask_id(taskId);
             questionMapper.insert(question);
@@ -85,7 +81,7 @@ public class TaskServiceImpl implements TaskService {
             scoreMapper.deleteById(score.getId());
         List<Question> questions = questionMapper.findByTaskId(taskId);
 
-        if (questions!=null && !questions.isEmpty()) {
+        if (questions != null && !questions.isEmpty()) {
             questionMapper.deleteBatch(questions.stream().map(Question::getId).toList());
             tqMapper.deleteBatch(taskId);
         }
@@ -97,6 +93,16 @@ public class TaskServiceImpl implements TaskService {
     public void update(Task task) {
         task.setUpdatedAt(LocalDateTime.now());
         taskMapper.update(task);
+    }
+
+    @Override
+    public List<Task> listByUserId(int userId) {
+
+        List<Integer> courseIds = userMapper.getCourseIdsByUserId(userId);
+        List<Task> tasks = taskMapper.listByCourseIds(courseIds);
+        return tasks;
+
+
     }
 
 
