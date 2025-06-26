@@ -1,5 +1,7 @@
 package com.dd.ai_smart_course.service.impl;
 
+import com.dd.ai_smart_course.R.PaginationResult;
+import com.dd.ai_smart_course.dto.CoursesDTO;
 import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
@@ -58,6 +61,8 @@ public class CourseImpl implements CourseService {
     @Override
     @Transactional
     public int addCourse(Course course) {
+
+
         return courseMapper.addCourse(course);
     }
 
@@ -359,5 +364,95 @@ public class CourseImpl implements CourseService {
                 null,
                 "{\"action\":\"COMPLETE_CHAPTER\", \"description\":\"用户完成了章节: " + chapterId + "\"}" // detail 明确行为
         ));
+    }
+
+    @Override
+    public List<CoursesDTO> getMyCourses(Long userId) {
+        List<Course_user> courseUsers = courseUserMapper.findCoursesByUserId(userId);
+        List<CoursesDTO> coursesdto =  new ArrayList<>();
+       List<Integer> courseIds = courseUsers.stream()
+                .map(Course_user::getCourseId)
+                .collect(Collectors.toList());
+       if (courseIds.isEmpty()){
+           return Collections.emptyList();
+       }
+        // 将 List<Integer> 转换为 List<Long>
+        List<Long> longIds = courseIds.stream()
+                .map(Integer::longValue) // 或者 .map(i -> Long.valueOf(i))
+                .collect(Collectors.toList());
+
+       List<Course> courses = courseMapper.getCoursesByIds(longIds);
+        for (Course course : courses) {
+            // 确保 course 对象不为 null
+            if (course != null) {
+                CoursesDTO dto = new CoursesDTO();
+                dto.setId(course.getId());
+                dto.setName(course.getName());
+                dto.setDescription(course.getDescription());
+                dto.setTeacherId(course.getTeacherId());
+                dto.setStatusSelf(course.getStatusSelf());
+                dto.setStatusStudent(course.getStatusStudent());
+                if (course.getTeacherId() != 0) {
+                    String teacherName = courseMapper.getUserNameById((long) course.getTeacherId());
+                    dto.setTeacherName(teacherName);
+                } else {
+                    dto.setTeacherName("未知教师"); // 默认值
+                }
+                coursesdto.add(dto);
+            }
+        }
+        return coursesdto;
+    }
+
+
+    @Override
+    public PaginationResult<Course> getCourses(int pageNum, int pageSize) {
+        return courseMapper.getCourses(pageNum, pageSize);
+    }
+
+    // 搜索课程在用户已有课程中
+    @Override
+    public List<CoursesDTO> searchCourses(String keyword, Long userId) {
+        // 1. 获取用户的所有课程
+        List<Course> courses = courseMapper.getMyCourses(userId);
+
+        List<CoursesDTO> matchingCourseDTOs = new ArrayList<>();
+
+        log.info("Searching for courses with keyword: {}", keyword);
+        log.info("User's courses: {}", courses);
+
+        // 提前检查：如果用户的课程列表为空，立即返回空列表。
+        // 这是最常导致“课程为空”的原因。
+        if (courses == null || courses.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 3. 遍历原始 Course 列表，进行数据转换
+        for (Course course : courses) {
+            // 再次进行 null 检查，以防 mapper 返回的列表中有 null 元素
+            if (course != null) {
+                // 确保课程名称不为空，并包含关键字
+                if (course.getName() != null && course.getName().contains(keyword)) {
+                    // 创建 CourseDTO 对象
+                    CoursesDTO dto = new CoursesDTO();
+                    dto.setId(course.getId());
+                    dto.setName(course.getName());
+                    dto.setDescription(course.getDescription());
+                    dto.setTeacherId(course.getTeacherId());
+                    dto.setStatusSelf(course.getStatusSelf());
+                    dto.setStatusStudent(course.getStatusStudent());
+                    // ！！！ 关键：根据 teacherId 查询教师名字 ！！！
+                    // 这里需要再次调用 mapper 获取教师名字
+                    if (course.getTeacherId() != 0) {
+                        String teacherName = courseMapper.getUserNameById((long) course.getTeacherId());
+                        dto.setTeacherName(teacherName);
+                    } else {
+                        dto.setTeacherName("未知教师"); // 或者其他默认值
+                    }
+                    matchingCourseDTOs.add(dto);
+                }
+            }
+        }
+        return matchingCourseDTOs;
     }
 }

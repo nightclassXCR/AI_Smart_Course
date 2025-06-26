@@ -1,14 +1,18 @@
 package com.dd.ai_smart_course.controller;
 
 
+import com.dd.ai_smart_course.R.PaginationResult;
+import com.dd.ai_smart_course.dto.CoursesDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
 import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.service.base.CourseService;
+import com.dd.ai_smart_course.component.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +24,9 @@ public class CourseController {
 
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     /**
      * 获取所有课程
@@ -149,4 +156,42 @@ public class CourseController {
         courseService.unenrollUserFromCourse(userId, courseId);
         return Result.success("退课成功");
     }
+
+    /**
+     * 获取我的课程
+     * @return 用户已选课程列表
+     */
+    @GetMapping("/my-courses")
+    public Result<List<CoursesDTO>> getMyCourses(HttpServletRequest request) {
+        log.info("getMyCourses");
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        log.info("userId: {}", userId);
+        log.info("我的课程列表: {}", courseService.getMyCourses(userId.longValue()));
+        List<CoursesDTO> myCourses = courseService.getMyCourses(Long.valueOf(userId));
+        return Result.success(myCourses);
+    }
+
+    @GetMapping("/pagination")
+    public PaginationResult<Course> getCourses(@RequestParam(defaultValue = "1") int pageNum,
+                                             @RequestParam(defaultValue = "10") int pageSize) {
+        return courseService.getCourses(pageNum, pageSize);
+    }
+    /**
+     * 模糊查询在用户已有的课程进行查询
+     * 能查到但是会崩溃
+     * @param keyword 关键词
+     */
+    @GetMapping("/search")
+    public List<CoursesDTO> searchCourses(
+            @RequestParam("keyword") String keyword,
+            @RequestParam("userId") Long userId) {
+
+        System.out.println("userId: " + userId);
+        List<CoursesDTO> myCourses = courseService.searchCourses(keyword, userId); // 返回 DTO 列表
+        System.out.println("我的课程列表: " + myCourses); // 打印 DTO 列表
+        return myCourses;
+    }
+
 }

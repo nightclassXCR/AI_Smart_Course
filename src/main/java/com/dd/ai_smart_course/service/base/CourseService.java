@@ -1,5 +1,7 @@
 package com.dd.ai_smart_course.service.base;
 
+import com.dd.ai_smart_course.R.PaginationResult;
+import com.dd.ai_smart_course.dto.CoursesDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
@@ -29,6 +31,7 @@ public interface CourseService {
 
     // 用户选课
     void enrollUserInCourse(Long userId, Long courseId);
+
     // 用户退课
     void unenrollUserFromCourse(Long userId, Long courseId);
 
@@ -36,8 +39,14 @@ public interface CourseService {
     void completeCourse(Long courseId, Long userId);
 
     // 用户开始查看章节
-    public void startViewingChapter(Long chapterId, Long userId);
+    void startViewingChapter(Long chapterId, Long userId);
 
+    // 学生获取课程
+    List<CoursesDTO> getMyCourses(Long userId);
 
+    // 分页获取课程
+    PaginationResult<Course> getCourses(int pageNum, int pageSize);
 
+    // 搜索课程
+    List<CoursesDTO> searchCourses(String keyword, Long userId);
 }

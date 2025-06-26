@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.mapper;
 
 
+import com.dd.ai_smart_course.R.PaginationResult;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
@@ -28,20 +29,41 @@ public interface CourseMapper {
     int updateCourse(Course course);
 
     // 删除课程
-    // Todo: 添加逻辑删除功能
     @Delete("DELETE FROM courses WHERE id = #{id}")
     // 注意：删除课程可能需要处理级联删除（例如：相关章节、知识点、用户课程关联、学习日志、成绩等）
     // 在实际生产中，通常会使用逻辑删除（软删除）或者在Service层进行事务管理和相关联数据的删除操作。
     // 这里仅删除课程本身。
     int deleteCourse(int id);
 
-    @Select("SELECT id, name, teacher_id, description, status FROM courses WHERE teacher_id = #{teacherId}")
+
+    @Select("SELECT id, name, teacher_id, description FROM courses WHERE teacher_id = #{teacherId}")
     List<Course> getCoursesByTeacherId(@Param("teacherId") Long teacherId);
+
+    /**
+     * 根据课程ID列表获取课程
+     * @param courseIds 课程ID列表
+     * @return 课程列表
+     */
+    // 修改 getCoursesByIds 方法：
+    // - 联查 user 表以获取教师名字
+    // - 使用 AS 别名将教师名字命名为 `teacher_real_name`
+    @Select("<script>" +
+            "SELECT " +
+            "c.id, c.name, c.description, c.teacher_id, c.status_self, c.status_student, " + // Course 实体中有的字段
+            "u.name AS teacher_real_name " + // <-- ！！！ 关键：额外查询教师的名字并起别名 ！！！
+            "FROM courses c " +
+            "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
+            "WHERE c.id IN " +
+            "<foreach item='id' collection='courseIds' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<Course> getCoursesByIds(@Param("courseIds") List<Long> courseIds);
 
     /**
      * 获取课程下所有知识点 (通过 chapters 表关联)
      */
-    @Select("SELECT c.id, c.chapter_id, c.name, c.description " + // 假设 Concept 实体有 description
+    @Select("SELECT c.id, c.chapter_id, c.name, c.description " +
             "FROM concepts c " +
             "JOIN chapters chap ON c.chapter_id = chap.id " +
             "WHERE chap.course_id = #{courseId}")
@@ -77,4 +99,25 @@ public interface CourseMapper {
 
     @Delete("DELETE FROM concepts WHERE course_id = #{courseId}")
     int deleteByCourseId(int courseId);
+
+    @Select("SELECT * FROM courses ORDER BY created_at DESC")
+    PaginationResult<Course> getCourses(int pageNum, int pageSize);
+
+    @Select("SELECT " +
+            "c.id, " +
+            "c.name, " +
+            "c.description, " +
+            "c.teacher_id, " +// 课程中已有的教师ID
+            "c.status_student"+
+            "u.name AS teacher_real_name " + // <-- ！！！ 额外查询教师的名字，并给它一个独特的别名 ！！！
+            "FROM courses c " +
+            "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
+            "JOIN course_user cu ON c.id = cu.course_id " + // 联接课程-用户关联表
+            "WHERE cu.user_id = #{userId}")
+    List<Course> getMyCourses(@Param("userId") Long userId);
+
+
+    // 此外，你可能还需要一个单独的方法来根据 ID 获取教师的名字，以备不时之需
+    @Select("SELECT name FROM users WHERE id = #{userId}")
+    String getUserNameById(@Param("userId") Long userId);
 }

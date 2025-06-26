@@ -15,10 +15,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/concepts")
 @Slf4j
+
 public class ConceptController {
 
     @Autowired
     private ConceptService conceptService;
+
 
     /**
      * 获取所有概念
