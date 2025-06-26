@@ -32,7 +32,6 @@ public class AuthServiceImpl implements AuthService {
     public LocalToken loginByEmail(String email, String password) throws BusinessException{
         LocalToken response = new LocalToken();
 
-
         User user = getUserByEmail(email);
         if(user == null){
             //用户不存在，提示注册
@@ -77,10 +76,10 @@ public class AuthServiceImpl implements AuthService {
             if(result == 1){
                 return true;
             }
+            return false;
         }catch (BusinessException be){
             log.error("fails to register: " + be.getMessage());
-        }finally {
-            return false;
+            throw be;
         }
     }
 

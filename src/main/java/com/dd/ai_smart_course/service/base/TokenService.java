@@ -10,6 +10,9 @@ public interface TokenService {
     //检验admin身份
     boolean checkAdmin(LocalToken localToken);
 
+    //检验teacher身份
+    boolean checkTeacher(LocalToken localToken);
+
     //检验normal状态
     boolean checkNormal(LocalToken localToken);
 }
