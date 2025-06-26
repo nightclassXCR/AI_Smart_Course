@@ -14,7 +14,7 @@ public interface UserMapper {
 
     // 使用id获取用户详情
     @Select("SELECT * FROM users WHERE id = #{id}")
-    User getUserById(int id);
+    User getUserById(long id);
 
     //使用邮箱获得用户ID
     @Select("SELECT id FROM users where email = #{email};")
@@ -49,15 +49,15 @@ public interface UserMapper {
 
     //更新用户状态
     @Update("UPDATE users SET status = #{status} where userID = #{userID}")
-    void updateUserStatus(int userID, String status);
+    void updateUserStatus(long userID, String status);
 
     //更新用户角色
     @Update("UPDATE users SET role = #{role} where userID = #{userID}")
-    void updateUserRole(int userID, String role);
+    void updateUserRole(long userID, String role);
 
     // 删除用户
     @Delete("DELETE FROM users WHERE id = #{id}")
-    int deleteUser(int id);
+    int deleteUser(long id);
 
     @Select("SELECT id FROM users")
     List<Long> findAllUserIds();

@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface UserService {
     List<User> getAllUsers();
-    User getUserById(int id);
+    User getUserById(long id);
     int addUser(User user);
     int updateUser(User user);
-    int deleteUser(int id);
+    int deleteUser(long id);
 
     //根据状态获取用户
     List<User> getUsersByStatus(String status, boolean isDESC, String order, Integer limit, Integer offset);
@@ -28,5 +28,5 @@ public interface UserService {
 
     //根据userId检查用户是否存在
     //针对update
-    void checkUserExists(Integer userId) throws BusinessException;
+    void checkUserExists(Long userId) throws BusinessException;
 }

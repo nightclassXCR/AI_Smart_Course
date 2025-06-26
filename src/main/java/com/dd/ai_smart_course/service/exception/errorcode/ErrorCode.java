@@ -31,7 +31,15 @@ public enum ErrorCode {
     // QA模块
     QA_ID_NULL(6001, "QA记录ID为空"),
     QA_QUESTION_TEXT_NULL(6002, "QA问题内容为空"),
-    QA_NOT_EXISTS(6003, "QA记录不存在");
+    QA_NOT_EXISTS(6003, "QA记录不存在"),
+
+    // Log模块
+    LOG_NOT_EXISTS(7001, "日志记录不存在"),
+    LOG_TARGET_ID_NULL(7002, "日志目标ID为空"),
+    LOG_TARGET_TYPE_NULL(7003, "日志目标类型为空"),
+    LOG_ACTION_TYPE_NULL(7004, "日志操作类型为空"),
+    LOG_TARGET_TYPE_INVALID(7005, "日志目标类型参数错误"),
+    LOG_ACTION_TYPE_INVALID(7006, "日志操作类型参数错误");
 
 
 

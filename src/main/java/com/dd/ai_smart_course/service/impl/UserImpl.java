@@ -58,7 +58,7 @@ public class UserImpl implements UserService {
     }
 
     @Override
-    public User getUserById(int id) {
+    public User getUserById(long id) {
         return userMapper.getUserById(id);
     }
 
@@ -165,7 +165,7 @@ public class UserImpl implements UserService {
     }
 
     @Override
-    public int deleteUser(int id) {
+    public int deleteUser(long id) {
         int result = userMapper.deleteUser(id);
         if(result == 0){
             log.warn("can't delete in \"users\" table");
@@ -221,7 +221,7 @@ public class UserImpl implements UserService {
     //根据userId检查用户是否存在
     //针对update
     @Override
-    public void checkUserExists(Integer userId) throws BusinessException{
+    public void checkUserExists(Long userId) throws BusinessException{
         if(userId == null){
             throw new BusinessException(ErrorCode.USER_ID_NULL);
         }

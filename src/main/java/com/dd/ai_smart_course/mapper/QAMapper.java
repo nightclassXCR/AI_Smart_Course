@@ -14,7 +14,7 @@ public interface QAMapper {
 
     // 获取QA记录详情
     @Select("SELECT * FROM qa_records WHERE id = #{id}")
-    QA getQAById(int id);
+    QA getQAById(long id);
 
     // 添加QA记录
     @Insert("INSERT INTO qa_records (user_id, course_id, concept_id, responder_id, question_text, answer_text, responder_type, created_at, answered_at, status, rating)" +
@@ -28,8 +28,8 @@ public interface QAMapper {
 
     // 删除QA记录
     @Delete("DELETE FROM qa_records WHERE id = #{id}")
-    int deleteQA(int id);
+    int deleteQA(long id);
 
     @Delete("DELETE FROM qa_records WHERE course_id = #{id}")
-    int deleteByCourseId(int id);
+    int deleteByCourseId(long id);
 }
