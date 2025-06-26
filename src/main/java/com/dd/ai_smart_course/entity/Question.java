@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 @Data
 public class Question {
     private int id;//问题ID
-    private String context;//问题内容
+    private String content;//问题内容
     private QuestionDifficulty difficulty;//问题难度
     private Timestamp createdAt;//问题创建时间
     private Timestamp updatedAt;//问题更新时间
