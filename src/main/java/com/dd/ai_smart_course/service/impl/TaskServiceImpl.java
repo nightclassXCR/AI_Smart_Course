@@ -113,8 +113,8 @@ public class TaskServiceImpl implements TaskService {
      * @param userId
      */
     @Transactional
-    public void startTask(Long taskId, Long userId) {
-        Optional<Task> taskOptional = taskMapper.findById(Integer.parseInt(String.valueOf(taskId)));
+    public void startTask(int taskId, int userId) {
+        Optional<Task> taskOptional = taskMapper.findById(taskId);
         if (taskOptional.isEmpty()) {
             throw new IllegalArgumentException("Task not found: " + taskId);
         }
@@ -124,7 +124,7 @@ public class TaskServiceImpl implements TaskService {
         // **修正：发布用户开始任务事件，使用 'click'**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "task",
                 taskId,
                 "click",       // actionType: 使用 'click'
@@ -161,16 +161,15 @@ public class TaskServiceImpl implements TaskService {
         // **添加：发布用户提交任务事件，使用 'submit'**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "task",
-                Long.parseLong(String.valueOf(taskId)),
+                taskId,
                 "submit",    // actionType: 使用 'submit'
                 null,
                 "{\"score\":" + rawScore + ", \"content\":\"" + submissionContent + "\"}" // detail
         ));
 
-        conceptMasteryService.updateMasteryForTaskSubmission(Long.parseLong(String.valueOf(userId)), Long.parseLong(String.valueOf(taskId)));
-
+        conceptMasteryService.updateMasteryForTaskSubmission(userId, taskId);
         return score;
     }
 
@@ -183,9 +182,9 @@ public class TaskServiceImpl implements TaskService {
      * @param isCorrect  是否正确
      */
     @Transactional
-    public void answerQuestion(Long questionId, Long userId, String userAnswer, boolean isCorrect) {
+    public void answerQuestion(int questionId, int userId, String userAnswer, boolean isCorrect) {
 
-        Optional<Question> questionOptional = Optional.ofNullable(questionMapper.findById(Integer.parseInt(String.valueOf(questionId))));
+        Optional<Question> questionOptional = Optional.ofNullable(questionMapper.findById(questionId));
         if (questionOptional.isEmpty()) {
             throw new IllegalArgumentException("Question not found: " + questionId);
         }

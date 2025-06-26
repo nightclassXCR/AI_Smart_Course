@@ -38,7 +38,7 @@ public interface LogMapper {
 //            @Result(property = "detail", column = "detail")
 //    })
 
-    List<LearningLog> findLearningLogs(@Param("userId") Long userId,
+    List<LearningLog> findLearningLogs(@Param("userId") int userId,
                                        @Param("targetType") String targetType,
                                        @Param("actionType") String actionType,
                                        @Param("startDate") LocalDateTime startDate,
@@ -68,7 +68,7 @@ public interface LogMapper {
 //            "<if test='endDate != null'> AND " + ACTION_TIME + " <= #{endDate} </if>"+
 //            "</where>"+
 //            "</script>"})
-    int countLearningLogs(@Param("userId") Long userId,
+    int countLearningLogs(@Param("userId") int userId,
                           @Param("targetType") String targetType,
                           @Param("actionType") String actionType,
                           @Param("startDate") LocalDateTime startDate,
@@ -110,7 +110,7 @@ public interface LogMapper {
             "AND ll.target_type = 'CHAPTER' " +
             "AND ll.action_type = 'COMPLETE' " +
             "AND c.course_id = #{courseId}")
-    int countCompletedChaptersByUserAndCourse(@Param("userId") Long userId, @Param("courseId") Long courseId);
+    int countCompletedChaptersByUserAndCourse(@Param("userId") int userId, @Param("courseId") int courseId);
 
     /**
      * 计算用户在特定目标类型和目标ID上的总学习时长。
@@ -154,12 +154,12 @@ public interface LogMapper {
     List<LearningLog> getAllLogs();
 
     @Select("SELECT * FROM learning_logs WHERE id = #{id}")
-    LearningLog getLogById(Long id);
+    LearningLog getLogById(int id);
 
-//    @Insert("INSERT INTO learning_logs (user_id, target_type, target_id, action_type, action_time, duration, detail) " +
-//            "VALUES (#{userId}, #{targetType}, #{targetId}, #{actionType}, #{actionDate}, #{duration}, #{detail})")
-//    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-//    int insertLearningLog(LearningLog log);
+    @Insert("INSERT INTO learning_logs (user_id, target_type, target_id, action_type, action_time, duration, detail) " +
+            "VALUES (#{userId}, #{targetType}, #{targetId}, #{actionType}, #{actionDate}, #{duration}, #{detail})")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    int addLog(LearningLog log);
 
     @Update("UPDATE learning_logs SET " +
             "user_id = #{userId}, " +
@@ -170,7 +170,7 @@ public interface LogMapper {
             "duration = #{duration}, " +
             "detail = #{detail} " +
             "WHERE id = #{id}")
-    int updateLearningLog(LearningLog log);
+    int updateLog(LearningLog log);
 
     @Delete("DELETE FROM learning_logs WHERE id = #{id}")
     int deleteLog(int id);

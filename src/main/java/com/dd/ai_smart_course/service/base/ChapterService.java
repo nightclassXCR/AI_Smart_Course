@@ -25,10 +25,10 @@ public interface ChapterService {
     int deleteChapter(int id);
 
     // 重新排序章节
-    void reorderChapters(Long courseId, List<Long> orderedChapterIds);
+    void reorderChapters(int courseId, List<Integer> orderedChapterIds);
 
     // 获取某课程下的所有知识点
-    List<Concept> getConceptsByChapterId(Long chapterId);
+    List<Concept> getConceptsByChapterId(int chapterId);
 
 
 

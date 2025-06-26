@@ -82,19 +82,19 @@ public class ChapterImpl implements ChapterService {
     // 重新排序章节
     @Override
     @Transactional
-    public void reorderChapters(Long courseId, List<Long> orderedChapterIds) {
+    public void reorderChapters(int courseId, List<Integer> orderedChapterIds) {
         if (orderedChapterIds == null || orderedChapterIds.isEmpty()) {
             return;
         }
 
         // 1. 校验传入的章节ID是否都属于该课程，并获取现有章节信息
-        List<Chapter> existingChapters = chapterMapper.getChaptersByCourseId(courseId.intValue()); // courseId是Long，但mapper参数是int，注意转换
+        List<Chapter> existingChapters = chapterMapper.getChaptersByCourseId(courseId); // courseId是Long，但mapper参数是int，注意转换!转换牛魔酬宾，sblong
         Map<Integer, Chapter> existingChapterMap = existingChapters.stream()
                 .collect(Collectors.toMap(Chapter::getId, java.util.function.Function.identity()));
 
         // 2. 遍历新的排序列表，更新每个章节的sequence
         for (int i = 0; i < orderedChapterIds.size(); i++) {
-            Long chapterId = orderedChapterIds.get(i);
+            int chapterId = Math.toIntExact(orderedChapterIds.get(i));
             // 校验章节是否存在且属于当前课程
             if (!existingChapterMap.containsKey(chapterId) || !Objects.equals(existingChapterMap.get(chapterId).getCourseId(), courseId)) {
                 throw new IllegalArgumentException("Chapter ID " + chapterId + " is invalid or does not belong to course " + courseId);
@@ -111,7 +111,7 @@ public class ChapterImpl implements ChapterService {
 
     // 根据章节id查询 concepts
     @Override
-    public List<Concept> getConceptsByChapterId(Long chapterId) {
+    public List<Concept> getConceptsByChapterId(int chapterId) {
         return chapterMapper.getConceptsByChapterId(chapterId);
     }
 

@@ -65,7 +65,7 @@ public interface UserMapper {
     int deleteUser(int id);
 
     @Select("SELECT id FROM users")
-    List<Long> findAllUserIds();
+    List<Integer> findAllUserIds();
 
     @Select("SELECT course_id FROM course_user WHERE user_id = #{userId}")
     List<Integer> getCourseIdsByUserId(int userId);

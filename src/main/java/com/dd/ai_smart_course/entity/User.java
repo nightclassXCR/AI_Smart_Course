@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 
 @Data
 public class User {
-    private long id;
+    private int id;
     private String username;
     private String email;
     private String phoneNumber;

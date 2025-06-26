@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class LearningStatsDTO {
-    private Long userId;
+    private int userId;
     private String username;
     private Long totalStudyTime; // 总学习时长（秒）
     private Integer totalActions; // 总操作次数

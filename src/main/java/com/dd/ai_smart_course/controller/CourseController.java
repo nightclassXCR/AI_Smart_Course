@@ -96,7 +96,7 @@ public class CourseController {
      * @return 教师授课的课程列表
      */
     @GetMapping("/byTeacher/{teacherId}")
-    public Result<List<Course>> getCoursesByTeacherId(@PathVariable("teacherId") Long teacherId) {
+    public Result<List<Course>> getCoursesByTeacherId(@PathVariable("teacherId") int teacherId) {
         List<Course> courses = courseService.getCoursesByTeacherId(teacherId);
         return Result.success("获取成功", courses);
     }
@@ -107,7 +107,7 @@ public class CourseController {
      * @return 章节列表
      */
     @GetMapping("/chapters/{courseId}")
-    public Result<List<Chapter>> getChaptersByCourse(@PathVariable("courseId") Long courseId) {
+    public Result<List<Chapter>> getChaptersByCourse(@PathVariable("courseId") int courseId) {
         List<Chapter> chapters = courseService.getChaptersByCourse(courseId);
         return Result.success("获取成功", chapters);
     }
@@ -118,7 +118,7 @@ public class CourseController {
      * @return 概念列表
      */
     @GetMapping("/concepts/{courseId}")
-    public Result<List<Concept>> getConceptsByCourse(@PathVariable("courseId") Long courseId) {
+    public Result<List<Concept>> getConceptsByCourse(@PathVariable("courseId") int courseId) {
         List<Concept> concepts = courseService.getConceptsByCourse(courseId);
         return Result.success("获取成功", concepts);
     }
@@ -129,7 +129,7 @@ public class CourseController {
      * @return 按章节分组的知识点Map
      */
     @GetMapping("/groupedConcepts/{courseId}")
-    public Result<Map<Chapter, List<Concept>>> getConceptsGroupedByChapter(@PathVariable("courseId") Long courseId) {
+    public Result<Map<Chapter, List<Concept>>> getConceptsGroupedByChapter(@PathVariable("courseId") int courseId) {
         Map<Chapter, List<Concept>> groupedConcepts = courseService.getConceptsGroupedByChapter(courseId);
         return Result.success("获取成功", groupedConcepts);
     }
@@ -140,8 +140,8 @@ public class CourseController {
      * @return 选课结果
      */
     @PostMapping("/enroll/{courseId}")
-    public Result<String> enrollUserInCourse(@PathVariable("courseId") Long courseId, @RequestBody Map<String, Long> requestBody) {
-        Long userId = requestBody.get("userId");
+    public Result<String> enrollUserInCourse(@PathVariable("courseId") int courseId, @RequestBody Map<String, Integer> requestBody) {
+        int userId = requestBody.get("userId");
         courseService.enrollUserInCourse(userId, courseId);
         return Result.success("选课成功");
     }
@@ -151,8 +151,8 @@ public class CourseController {
      * @return 退课结果
      */
     @PostMapping("/unenroll/{courseId}")
-    public Result<String> unenrollUserFromCourse(@PathVariable("courseId") Long courseId, @RequestBody Map<String, Long> requestBody) {
-        Long userId = requestBody.get("userId");
+    public Result<String> unenrollUserFromCourse(@PathVariable("courseId") int courseId, @RequestBody Map<String, Integer> requestBody) {
+        int userId = requestBody.get("userId");
         courseService.unenrollUserFromCourse(userId, courseId);
         return Result.success("退课成功");
     }
@@ -168,8 +168,8 @@ public class CourseController {
         String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
         Integer userId = jwtTokenUtil.getUserIDFromToken(token);
         log.info("userId: {}", userId);
-        log.info("我的课程列表: {}", courseService.getMyCourses(userId.longValue()));
-        List<CoursesDTO> myCourses = courseService.getMyCourses(Long.valueOf(userId));
+        log.info("我的课程列表: {}", courseService.getMyCourses(userId));
+        List<CoursesDTO> myCourses = courseService.getMyCourses(userId);
         return Result.success(myCourses);
     }
 
@@ -186,7 +186,7 @@ public class CourseController {
     @GetMapping("/search")
     public List<CoursesDTO> searchCourses(
             @RequestParam("keyword") String keyword,
-            @RequestParam("userId") Long userId) {
+            @RequestParam("userId") int userId) {
 
         System.out.println("userId: " + userId);
         List<CoursesDTO> myCourses = courseService.searchCourses(keyword, userId); // 返回 DTO 列表

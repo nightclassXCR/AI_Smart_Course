@@ -30,12 +30,12 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Resource findById(Long id) {
+    public Resource findById(int id) {
         return resourceMapper.selectById(id);
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(int id) {
         resourceMapper.deleteById(id);
     }
 

@@ -6,11 +6,11 @@ import java.sql.Timestamp;
 
 @Data
 public class QA {
-    private long id;
-    private long userId;
-    private long courseId;
-    private long conceptId;
-    private long responderId;
+    private int id;
+    private int userId;
+    private int courseId;
+    private int conceptId;
+    private int responderId;
     private String questionText;
     private String answerText;
     private String responderType; // ai, teacher, student

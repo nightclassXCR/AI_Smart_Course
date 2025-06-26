@@ -9,10 +9,10 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 public class LearningLog {
-    private long id;
-    private long userId;
+    private int id;
+    private int userId;
     private String targetType; // course, chapter, concept, task
-    private long targetId;
+    private int targetId;
     private String actionType; // view, click, play, answer
     private Timestamp actionTime;
     private int duration; // 秒

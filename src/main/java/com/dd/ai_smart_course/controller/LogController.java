@@ -25,7 +25,7 @@ public class LogController {
 
     //根据 ID 查询学习日志
     @GetMapping("/get/{id}")
-    public Result<LearningLog> getLogById(@PathVariable long id) {
+    public Result<LearningLog> getLogById(@PathVariable int id) {
         LearningLog data = logService.getLogById(id);
         return Result.success(data);
     }
@@ -54,7 +54,7 @@ public class LogController {
 
     //删除学习日志
     @GetMapping("/delete/{id}")
-    public Result<Integer> deleteLog(@PathVariable long id) {
+    public Result<Integer> deleteLog(@PathVariable int id) {
         Integer rowsAffected = logService.deleteLog(id);
         return Result.success(rowsAffected);
     }

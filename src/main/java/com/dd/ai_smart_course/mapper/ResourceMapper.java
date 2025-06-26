@@ -16,10 +16,10 @@ public interface ResourceMapper {
     void insert(Resource resource);
 
     @Select("SELECT * FROM resources WHERE id = #{id}")
-    Resource selectById(Long id);
+    Resource selectById(int id);
 
     @Delete("DELETE FROM resources WHERE id = #{id}")
-    void deleteById(Long id);
+    void deleteById(int id);
 
 
     List<Resource> selectByFilter(Resource resource);

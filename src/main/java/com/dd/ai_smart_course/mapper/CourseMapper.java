@@ -37,7 +37,7 @@ public interface CourseMapper {
 
 
     @Select("SELECT id, name, teacher_id, description FROM courses WHERE teacher_id = #{teacherId}")
-    List<Course> getCoursesByTeacherId(@Param("teacherId") Long teacherId);
+    List<Course> getCoursesByTeacherId(@Param("teacherId") int teacherId);
 
     /**
      * 根据课程ID列表获取课程
@@ -58,7 +58,7 @@ public interface CourseMapper {
             "#{id}" +
             "</foreach>" +
             "</script>")
-    List<Course> getCoursesByIds(@Param("courseIds") List<Long> courseIds);
+    List<Course> getCoursesByIds(@Param("courseIds") List<Integer> courseIds);
 
     /**
      * 获取课程下所有知识点 (通过 chapters 表关联)
@@ -67,7 +67,7 @@ public interface CourseMapper {
             "FROM concepts c " +
             "JOIN chapters chap ON c.chapter_id = chap.id " +
             "WHERE chap.course_id = #{courseId}")
-    List<Concept> getConceptsByCourse(@Param("courseId") Long courseId);
+    List<Concept> getConceptsByCourse(@Param("courseId") int courseId);
 
     /**
      * 【辅助方法】用于 CourseService 中按章节分组知识点时获取所有章节的知识点，
@@ -89,13 +89,13 @@ public interface CourseMapper {
             // Concept 实体中没有 chapter_id_fk, course_id, chapter_title, chapter_sequence这些字段
             // 这些字段是辅助用于Service层进行分组的，不会直接映射到Concept实体
     })
-    List<Concept> getConceptsWithChapterInfoByCourse(@Param("courseId") Long courseId);
+    List<Concept> getConceptsWithChapterInfoByCourse(@Param("courseId") int courseId);
 
     // 获取所有章节的详细信息，用于分组。
     // 这个方法可以复用 getChaptersByCourse，或者专门定义一个。
     // 为了 getConceptsGroupedByChapter 的方便，这里直接获取所有相关章节
     @Select("SELECT id, course_id, title, sequence FROM chapters WHERE course_id = #{courseId} ORDER BY sequence ASC")
-    List<Chapter> findChaptersForGrouping(@Param("courseId") Long courseId);
+    List<Chapter> findChaptersForGrouping(@Param("courseId") int courseId);
 
     @Delete("DELETE FROM concepts WHERE course_id = #{courseId}")
     int deleteByCourseId(int courseId);
@@ -114,10 +114,10 @@ public interface CourseMapper {
             "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
             "JOIN course_user cu ON c.id = cu.course_id " + // 联接课程-用户关联表
             "WHERE cu.user_id = #{userId}")
-    List<Course> getMyCourses(@Param("userId") Long userId);
+    List<Course> getMyCourses(@Param("userId") int userId);
 
 
     // 此外，你可能还需要一个单独的方法来根据 ID 获取教师的名字，以备不时之需
     @Select("SELECT name FROM users WHERE id = #{userId}")
-    String getUserNameById(@Param("userId") Long userId);
+    String getUserNameById(@Param("userId") int userId);
 }

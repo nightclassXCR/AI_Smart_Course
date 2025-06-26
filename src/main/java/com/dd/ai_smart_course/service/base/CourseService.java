@@ -21,32 +21,32 @@ public interface CourseService {
     // 删除课程
     int deleteCourse(int id);
     // 获取指定教师授课的课程
-    List<Course> getCoursesByTeacherId(Long teacherId);
+    List<Course> getCoursesByTeacherId(int teacherId);
     // 获取课程下所有章节
-    List<Chapter> getChaptersByCourse(Long courseId);
+    List<Chapter> getChaptersByCourse(int courseId);
     // 获取课程下所有知识点
-    List<Concept> getConceptsByCourse(Long courseId);
+    List<Concept> getConceptsByCourse(int courseId);
     // 按章节分组的知识点
-    Map<Chapter, List<Concept>> getConceptsGroupedByChapter(Long courseId);
+    Map<Chapter, List<Concept>> getConceptsGroupedByChapter(int courseId);
 
     // 用户选课
-    void enrollUserInCourse(Long userId, Long courseId);
+    void enrollUserInCourse(int userId, int courseId);
 
     // 用户退课
-    void unenrollUserFromCourse(Long userId, Long courseId);
+    void unenrollUserFromCourse(int userId, int courseId);
 
     // 用户是否完成课程
-    void completeCourse(Long courseId, Long userId);
+    void completeCourse(int courseId, int userId);
 
     // 用户开始查看章节
-    void startViewingChapter(Long chapterId, Long userId);
+    void startViewingChapter(int chapterId, int userId);
 
     // 学生获取课程
-    List<CoursesDTO> getMyCourses(Long userId);
+    List<CoursesDTO> getMyCourses(int userId);
 
     // 分页获取课程
     PaginationResult<Course> getCourses(int pageNum, int pageSize);
 
     // 搜索课程
-    List<CoursesDTO> searchCourses(String keyword, Long userId);
+    List<CoursesDTO> searchCourses(String keyword, int userId);
 }

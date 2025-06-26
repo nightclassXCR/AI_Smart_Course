@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ConceptMasteryMapper {
     // 根据用户ID和概念ID查找
     @Select("SELECT * FROM concept_mastery WHERE user_id = #{userId} AND concept_id = #{conceptId}")
-    Optional<Concept_mastery> findByUserIdAndConceptId(@Param("userId") Long userId, @Param("conceptId") Long conceptId);
+    Optional<Concept_mastery> findByUserIdAndConceptId(@Param("userId") int userId, @Param("conceptId") int conceptId);
     // 插入
     @Insert("INSERT INTO concept_mastery (user_id, concept_id, mastery_level, last_updated)" +
             "VALUES (#{userId}, #{conceptId}, #{masteryLevel}, #{lastUpdated}")
@@ -25,5 +25,5 @@ public interface ConceptMasteryMapper {
     List<Concept_mastery> findAllMasteries();
     // 用于获取特定用户
     @Select("SELECT * FROM concept_mastery WHERE user_id = #{userId}")
-    List<Concept_mastery> findMasteriesByUserId(@Param("userId") Long userId);
+    List<Concept_mastery> findMasteriesByUserId(@Param("userId") int userId);
 }
