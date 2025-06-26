@@ -43,7 +43,20 @@ public interface CourseMapper {
      * @param courseIds 课程ID列表
      * @return 课程列表
      */
-    @Select("<script>SELECT * FROM courses WHERE id IN <foreach item='id' collection='courseIds' open='(' separator=',' close=')'>#{id}</foreach></script>")
+    // 修改 getCoursesByIds 方法：
+    // - 联查 user 表以获取教师名字
+    // - 使用 AS 别名将教师名字命名为 `teacher_real_name`
+    @Select("<script>" +
+            "SELECT " +
+            "c.id, c.name, c.description, c.teacher_id, c.status, " + // Course 实体中有的字段
+            "u.name AS teacher_real_name " + // <-- ！！！ 关键：额外查询教师的名字并起别名 ！！！
+            "FROM courses c " +
+            "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
+            "WHERE c.id IN " +
+            "<foreach item='id' collection='courseIds' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
     List<Course> getCoursesByIds(@Param("courseIds") List<Long> courseIds);
 
     /**
@@ -89,7 +102,20 @@ public interface CourseMapper {
     @Select("SELECT * FROM courses ORDER BY created_at DESC")
     PaginationResult<Course> getCourses(int pageNum, int pageSize);
 
-    @Select("SELECT * FROM course_user WHERE user_id = #{userId}")
+    @Select("SELECT " +
+            "c.id, " +
+            "c.name, " +
+            "c.description, " +
+            "c.teacher_id, " +           // 课程中已有的教师ID
+            "u.name AS teacher_real_name " + // <-- ！！！ 额外查询教师的名字，并给它一个独特的别名 ！！！
+            "FROM courses c " +
+            "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
+            "JOIN course_user cu ON c.id = cu.course_id " + // 联接课程-用户关联表
+            "WHERE cu.user_id = #{userId}")
     List<Course> getMyCourses(@Param("userId") Long userId);
 
+
+    // 此外，你可能还需要一个单独的方法来根据 ID 获取教师的名字，以备不时之需
+    @Select("SELECT name FROM users WHERE id = #{userId}")
+    String getUserNameById(@Param("userId") Long userId);
 }

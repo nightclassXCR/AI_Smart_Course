@@ -2,6 +2,7 @@ package com.dd.ai_smart_course.controller;
 
 
 import com.dd.ai_smart_course.R.PaginationResult;
+import com.dd.ai_smart_course.dto.CoursesDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
@@ -161,12 +162,15 @@ public class CourseController {
      * @return 用户已选课程列表
      */
     @GetMapping("/my-courses")
-    public Result<List<Course>> getMyCourses(HttpServletRequest request) {
+    public Result<List<CoursesDTO>> getMyCourses(HttpServletRequest request) {
         log.info("getMyCourses");
         String authHeader = request.getHeader("Authorization");
         String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
         Integer userId = jwtTokenUtil.getUserIDFromToken(token);
-        return Result.success(courseService.getMyCourses(userId.longValue()));
+        log.info("userId: {}", userId);
+        log.info("我的课程列表: {}", courseService.getMyCourses(userId.longValue()));
+        List<CoursesDTO> myCourses = courseService.getMyCourses(Long.valueOf(userId));
+        return Result.success(myCourses);
     }
 
     @GetMapping("/pagination")
@@ -176,15 +180,18 @@ public class CourseController {
     }
     /**
      * 模糊查询在用户已有的课程进行查询
+     * 能查到但是会崩溃
      * @param keyword 关键词
      */
     @GetMapping("/search")
-    public Result<List<Course>> searchCourses(@RequestParam String keyword, HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
-        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
-        List<Course> courses = courseService.searchCourses(keyword, userId.longValue());
-        return Result.success("查询成功", courses);
+    public List<CoursesDTO> searchCourses(
+            @RequestParam("keyword") String keyword,
+            @RequestParam("userId") Long userId) {
+
+        System.out.println("userId: " + userId);
+        List<CoursesDTO> myCourses = courseService.searchCourses(keyword, userId); // 返回 DTO 列表
+        System.out.println("我的课程列表: " + myCourses); // 打印 DTO 列表
+        return myCourses;
     }
 
 }

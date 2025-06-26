@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.controller;
 
+import com.dd.ai_smart_course.component.JwtTokenUtil;
 import com.dd.ai_smart_course.dto.LearningLogDTO;
 import com.dd.ai_smart_course.dto.LearningStatsDTO;
 import com.dd.ai_smart_course.R.PaginationResult;
@@ -17,6 +18,9 @@ public class AnalysisController {
 
     @Autowired
     private AnalysisService analysisService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     // 暂时硬编码用户ID，实际应该从JWT或Session中获取
     private Long getCurrentUserId() {

@@ -7,12 +7,15 @@ import com.dd.ai_smart_course.mapper.UserMapper;
 import com.dd.ai_smart_course.service.base.AuthService;
 import com.dd.ai_smart_course.service.exception.BusinessException;
 import com.dd.ai_smart_course.service.exception.errorcode.ErrorCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
     //接入数据库中user图表
     @Autowired
     private UserMapper userMapper;
@@ -81,6 +84,7 @@ public class AuthServiceImpl implements AuthService {
             return null;
         }
         User user = userMapper.getUserById(dbID);
+
         return user;
     }
 

@@ -14,6 +14,10 @@ public interface UserMapper {
 
     // 使用id获取用户详情
     @Select("SELECT * FROM users WHERE id = #{id}")
+    @Results({
+            @Result(property = "phoneNumber", column = "phone_number"),
+
+    })
     User getUserById(int id);
 
     //使用邮箱获得用户ID
@@ -40,7 +44,7 @@ public interface UserMapper {
 
 
     // 添加用户
-    @Insert("INSERT INTO users (username, email, phoneNumber, password, name, role, createdAt, lastActivityAt, status) VALUES (#{username}, #{email}, #{phoneNumber}, #{password}, #{name}, #{role}, #{createdAt}, #{lastActivityAt}, #{status})")
+    @Insert("INSERT INTO users (username, email, phone_number, password, name, role, createdAt, lastActivityAt, status) VALUES (#{username}, #{email}, #{phoneNumber}, #{password}, #{name}, #{role}, #{createdAt}, #{lastActivityAt}, #{status})")
     int addUser(User user);
 
     // 更新用户信息
