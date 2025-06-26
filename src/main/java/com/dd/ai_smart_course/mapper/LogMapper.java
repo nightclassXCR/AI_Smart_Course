@@ -15,7 +15,7 @@ public interface LogMapper {
 
     // 获取日志记录详情
     @Select("SELECT * FROM learning_logs WHERE id = #{id}")
-    LearningLog getLogById(int id);
+    LearningLog getLogById(long id);
 
     // 添加日志记录
     @Insert("INSERT INTO learning_logs (user_id, target_type, target_id, action_type, action_time, duration, detail)" +
@@ -29,7 +29,7 @@ public interface LogMapper {
 
     // 删除日志记录
     @Delete("DELETE FROM learning_logs WHERE id = #{id}")
-    int deleteLog(int id);
+    int deleteLog(long id);
 
     /**
      * 插入一条学习日志记录。

@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.service.base;
 
 import com.dd.ai_smart_course.entity.LearningLog;
+import com.dd.ai_smart_course.service.exception.BusinessException;
 
 import java.util.List;
 
@@ -8,13 +9,13 @@ public interface LogService {
     // 获取所有日志
     List<LearningLog> getAllLogs();
     // 获取日志详情
-    LearningLog getLogById(int id);
+    LearningLog getLogById(long id);
     // 添加日志
     int addLog(LearningLog learnlog);
     // 更新日志信息
     int updateLog(LearningLog learnlog);
     // 删除日志
-    int deleteLog(int id);
+    int deleteLog(long id);
 
     /**
      * 根据条件查询学习日志记录。
@@ -39,4 +40,10 @@ public interface LogService {
      * @return 学习日志总数
      */
     int countLearningLogs(Long userId, String targetType, String actionType, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate);
+
+    // 校验 LearningLog 实体的关键字段
+    void checkFactor(LearningLog log) throws BusinessException;
+
+    // 检查日志是否存在
+    void checkLogExists(long logId) throws BusinessException;
 }

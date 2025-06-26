@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.controller;
 
+import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.entity.LocalToken;
 import com.dd.ai_smart_course.service.impl.TokenImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -14,20 +15,26 @@ public class TokenController {
     TokenImpl tokenImpl;
 
     @PostMapping("/checkToken")
-    public boolean checkToken(@RequestBody LocalToken localToken){
+    public Result<Boolean> checkToken(@RequestBody LocalToken localToken){
         log.info("get a checkToken request");
-        return tokenImpl.checkToken(localToken);
+        return Result.success(tokenImpl.checkToken(localToken));
     }
 
     @PostMapping("/checkAdmin")
-    public boolean checkAdmin(@RequestBody LocalToken localToken){
+    public Result<Boolean> checkAdmin(@RequestBody LocalToken localToken){
         log.info("get a checkAdmin request");
-        return  tokenImpl.checkAdmin(localToken);
+        return Result.success(tokenImpl.checkAdmin(localToken));
+    }
+
+    @PostMapping("/checkTeacher")
+    public Result<Boolean> checkTeacher(@RequestBody LocalToken localToken){
+        log.info("get a checkAdmin request");
+        return Result.success(tokenImpl.checkTeacher(localToken));
     }
 
     @PostMapping("/checkNormal")
-    public boolean checkNormal(@RequestBody LocalToken localToken){
+    public Result<Boolean> checkNormal(@RequestBody LocalToken localToken){
         log.info("get a checkNormal request");
-        return  tokenImpl.checkNormal(localToken);
+        return Result.success(tokenImpl.checkNormal(localToken));
     }
 }

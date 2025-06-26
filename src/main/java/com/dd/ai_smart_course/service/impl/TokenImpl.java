@@ -21,6 +21,7 @@ public class TokenImpl implements TokenService {
 
     private static final String USER_STATUS_NORMAL = "STATUS_NORMAL";   //初步定义用户的正常状态
     private static final String USER_ROLE_ADMIN = "ROLE_ADMIN"; //初步定义用户的管理员身份
+    private static final String USER_ROLE_TEACHER = "ROLE_TEACHER"; //初步定义用户的管理员身份
 
     // 检测token的有效性
     @Override
@@ -61,6 +62,25 @@ public class TokenImpl implements TokenService {
         log.info("LocalToken ADMIN role resolution result: " + isAdmin);
 
         return isAdmin;
+    }
+
+    //从令牌中验证老师身份有效性
+    @Override
+    public boolean checkTeacher(LocalToken localToken){
+        //判断令牌有效性
+        boolean isTokenValid = checkToken(localToken);
+        User tokenUser = getDBUser(localToken);
+        boolean isTeacher = false;
+
+        if(isTokenValid){
+            String token = localToken.getToken();
+            isTeacher =  tokenUser.getRole().equals(USER_ROLE_TEACHER);
+        }
+
+        //生成日志
+        log.info("LocalToken ADMIN role resolution result: " + isTeacher);
+
+        return isTeacher;
     }
 
     //从令牌中验证用户状态正常
