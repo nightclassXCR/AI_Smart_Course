@@ -152,6 +152,7 @@ public class UserImpl implements UserService {
     @Override
     public int updateUser(User user) throws BusinessException {
         try{
+            checkUserExists(user.getId());
             checkFactor(user);
             return userMapper.updateUser(user);
         } catch (BusinessException be){
@@ -173,8 +174,10 @@ public class UserImpl implements UserService {
     }
 
 
-    //检验关键数据是否为空
-    //若姓名、邮箱和电话为空，则抛出对应异常
+    //检验关键数据是否非法
+    //若姓名、邮箱和电话非法，则抛出对应异常
+    //针对add，update
+    @Override
     public void checkFactor(User user) throws BusinessException{
 
         String role = user.getRole();
@@ -212,6 +215,18 @@ public class UserImpl implements UserService {
         }
         if(!isEmailUnique(email)){
             throw new BusinessException(ErrorCode.EMAIL_EXISTS);
+        }
+    }
+
+    //根据userId检查用户是否存在
+    //针对update
+    @Override
+    public void checkUserExists(Integer userId) throws BusinessException{
+        if(userId == null){
+            throw new BusinessException(ErrorCode.USER_ID_NULL);
+        }
+        if(userMapper.getUserById(userId) == null){
+            throw new BusinessException(ErrorCode.USER_NOT_EXISTS);
         }
     }
 

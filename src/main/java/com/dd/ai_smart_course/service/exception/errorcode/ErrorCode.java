@@ -12,7 +12,7 @@ public enum ErrorCode {
     NOT_FOUND(404, "资源不存在"),
 
     // 业务错误
-    // 查询用户
+    // 用户模块
     EMAIL_EXISTS(4001, "邮箱已被注册"),
     PHONE_EXISTS(4002, "手机号已被注册"),
     USERNAME_EXISTS(4003, "用户名已存在"),
@@ -21,12 +21,17 @@ public enum ErrorCode {
     PHONE_NULL(5002, "手机号为空"),
     USERNAME_NULL(5003, "用户名为空"),
     ROLE_NULL(5004, "用户角色为空"),
+    USER_ID_NULL(5005, "用户ID为空"),
 
     ROLE_ERROR(5051,"用户角色参数错误"),
 
-    // 登录模块
-    USER_NOT_EXISTS(6001, "用户不存在"),
-    PASSWORD_WRONG(6002, "密码错误");
+    USER_NOT_EXISTS(5091, "用户不存在"),
+    PASSWORD_WRONG(5092, "密码错误"),
+
+    // QA模块
+    QA_ID_NULL(6001, "QA记录ID为空"),
+    QA_QUESTION_TEXT_NULL(6002, "QA问题内容为空"),
+    QA_NOT_EXISTS(6003, "QA记录不存在");
 
 
 
