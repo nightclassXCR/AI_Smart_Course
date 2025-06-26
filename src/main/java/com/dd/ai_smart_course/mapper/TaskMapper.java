@@ -2,6 +2,7 @@ package com.dd.ai_smart_course.mapper;
 
 import com.dd.ai_smart_course.entity.Task;
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -12,7 +13,8 @@ import java.util.Optional;
 public interface TaskMapper {
 
 
-    void insertBatch(List<Task> tasks);
+
+    void insertBatch(Task task);
 
     List<Task> listByCourseId(int courseId);
 

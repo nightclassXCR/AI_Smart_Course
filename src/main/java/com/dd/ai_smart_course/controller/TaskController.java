@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.dto.TaskDTO;
 import com.dd.ai_smart_course.entity.Resource;
 import com.dd.ai_smart_course.entity.Task;
 import com.dd.ai_smart_course.service.base.TaskService;
@@ -21,12 +22,14 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @PostMapping
-    public Result<List<Task>> createTask(@RequestBody List<Task> tasks){
-        log.info("insertBatch: {}", tasks);
-        taskService.insertBatch(tasks);
-        return Result.success(tasks);
+    @PostMapping("/create")
+    public Result<TaskDTO> createTask(@RequestBody TaskDTO taskDTO){
+        log.info("insertBatch: {}", taskDTO);
+        taskService.insertBatch(taskDTO);
+        return Result.success(taskDTO);
     }
+
+
 
     @GetMapping("/{courseId}")
     //@ApiOperation("通过课程id获取任务列表")
@@ -36,7 +39,16 @@ public class TaskController {
         return Result.success(tasks);
     }
 
-    @DeleteMapping("/{id}")
+    @GetMapping("/list")
+    //@ApiOperation("通过课程id获取任务列表")
+    public Result<List<Task>> listByCourseId(){
+        int courseId = 14;
+        List<Task> tasks = taskService.listByCourseId(courseId);
+        log.info("listByCourseId:{}", tasks);
+        return Result.success(tasks);
+    }
+
+    @DeleteMapping("/delete/{id}")
     public Result delete(@PathVariable int id){
         log.info("delete: {}", id);
         taskService.delete(id);

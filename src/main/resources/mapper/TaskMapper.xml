@@ -4,10 +4,8 @@
 <mapper namespace="com.dd.ai_smart_course.mapper.TaskMapper">
     <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id" >
         insert into tasks(course_id, title, type, deadline, created_at)
-        values
-            <foreach collection="list" item="ts" separator=",">
-                (#{ts.courseId}, #{ts.title}, #{ts.type}, #{ts.deadline}, #{ts.createdAt}})
-            </foreach>
+        values (#{courseId}, #{title}, #{type}, #{deadline}, #{createdAt})
+
     </insert>
     <select id="listByCourseId" resultType="com.dd.ai_smart_course.entity.Task">
         select * from tasks where course_id = #{courseId}
