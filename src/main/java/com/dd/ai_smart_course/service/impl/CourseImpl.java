@@ -55,6 +55,7 @@ public class CourseImpl implements CourseService {
 
     @Override
     public Course getCourseById(int id) {
+
         return courseMapper.getCourseById(id);
     }
 
@@ -222,7 +223,7 @@ public class CourseImpl implements CourseService {
         if (courseUserMapper.findByCourseIdAndUserId(courseId, userId).isPresent()) {
             throw new IllegalStateException("User already enrolled in this course.");
         }
-        Course_user courseUser = new Course_user(courseId, userId, "STUDENT");
+        Course_user courseUser = new Course_user(courseId, userId, "ROLE_STUDENT");
         courseUserMapper.insertCourseUser(courseUser);
         System.out.println("User " + userId + " enrolled in course " + courseId);
 
@@ -242,7 +243,7 @@ public class CourseImpl implements CourseService {
     @Transactional
     public void unenrollUserFromCourse(int userId, int courseId) {
         Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
-        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+        if (cu.isEmpty() || !cu.get().getRole().equals("ROLE_STUDENT")) {
             throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
         }
         courseUserMapper.deleteCourseUser(courseId, userId);
@@ -265,7 +266,7 @@ public class CourseImpl implements CourseService {
     @Transactional
     public void completeCourse(int courseId, int userId) {
         Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
-        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+        if (cu.isEmpty() || !cu.get().getRole().equals("ROLE_STUDENT")) {
             throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
         }
         boolean actuallyCompleted = checkAndMarkCourseCompletion(courseId, userId);
@@ -454,5 +455,22 @@ public class CourseImpl implements CourseService {
             }
         }
         return matchingCourseDTOs;
+    }
+
+
+    @Override
+    public List<CoursesDTO> getCoursesNotMyCourses(int useId) {
+        return courseMapper.getNotMyCourses(useId);
+    }
+
+    @Override
+    public String getUserNameById(int userId) {
+        return courseMapper.getUserNameById(userId);
+    }
+
+    // 结课
+    @Override
+    public void comleteCourse(int courseId) {
+        courseMapper.completeCourse(courseId);
     }
 }

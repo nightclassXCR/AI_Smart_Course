@@ -49,4 +49,11 @@ public interface CourseService {
 
     // 搜索课程
     List<CoursesDTO> searchCourses(String keyword, int userId);
+    // 获取未选课程
+    List<CoursesDTO> getCoursesNotMyCourses(int userId);
+    // 根据ID获取用户名
+    String getUserNameById(int userId);
+
+    // 结课
+    void comleteCourse(int courseId);
 }

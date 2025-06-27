@@ -2,6 +2,7 @@ package com.dd.ai_smart_course.mapper;
 
 
 import com.dd.ai_smart_course.R.PaginationResult;
+import com.dd.ai_smart_course.dto.CoursesDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
@@ -22,10 +23,16 @@ public interface CourseMapper {
 
     // 添加课程
     @Insert("INSERT INTO courses (name, teacher_id, description, created_at) VALUES (#{name}, #{teacherId}, #{description}, #{createdAt})")
+    @Results({
+            @Result(property = "description", column = "description")
+    })
     int addCourse(Course course);
 
     // 更新课程信息
     @Update("UPDATE courses SET name = #{name}, teacher_id = #{teacherId}, description = #{description}, created_at = #{createdAt} WHERE id = #{id}")
+    @Results({
+            @Result(property = "description", column = "description")
+    })
     int updateCourse(Course course);
 
     // 删除课程
@@ -37,6 +44,9 @@ public interface CourseMapper {
 
 
     @Select("SELECT id, name, teacher_id, description FROM courses WHERE teacher_id = #{teacherId}")
+    @Results({
+            @Result(property = "description", column = "description")
+    })
     List<Course> getCoursesByTeacherId(@Param("teacherId") int teacherId);
 
     /**
@@ -58,15 +68,21 @@ public interface CourseMapper {
             "#{id}" +
             "</foreach>" +
             "</script>")
+    @Results({
+            @Result(property = "description", column = "description")
+    })
     List<Course> getCoursesByIds(@Param("courseIds") List<Integer> courseIds);
 
     /**
      * 获取课程下所有知识点 (通过 chapters 表关联)
      */
-    @Select("SELECT c.id, c.chapter_id, c.name, c.description " +
+    @Select("SELECT c.id, c.chapter_id, c.name, c.description,c.importance " +
             "FROM concepts c " +
             "JOIN chapters chap ON c.chapter_id = chap.id " +
             "WHERE chap.course_id = #{courseId}")
+    @Results({
+            @Result(property = "description", column = "description")
+    })
     List<Concept> getConceptsByCourse(@Param("courseId") int courseId);
 
     /**
@@ -108,12 +124,19 @@ public interface CourseMapper {
             "c.name, " +
             "c.description, " +
             "c.teacher_id, " +// 课程中已有的教师ID
-            "c.status_student"+
+            "c.status_student,"+
             "u.name AS teacher_real_name " + // <-- ！！！ 额外查询教师的名字，并给它一个独特的别名 ！！！
             "FROM courses c " +
             "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
             "JOIN course_user cu ON c.id = cu.course_id " + // 联接课程-用户关联表
             "WHERE cu.user_id = #{userId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "description", column = "description"),
+            @Result(property = "teacherId", column = "teacher_id"),
+            @Result(property = "statusStudent", column = "status_student")
+    })
     List<Course> getMyCourses(@Param("userId") int userId);
 
 
@@ -121,6 +144,35 @@ public interface CourseMapper {
     @Select("SELECT name FROM users WHERE id = #{userId}")
     String getUserNameById(@Param("userId") int userId);
 
+    // 查询我没选过的所有课程
+    @Select("SELECT " +
+            "c.id, " +
+            "c.name, " +
+            "c.description, " +
+            "c.status_self AS statusSelf, " +        // 新增字段映射
+            "c.status_student AS statusStudent, " +  // 新增字段映射
+            "c.teacher_id AS teacherId, " +
+            "tu.name AS teacherName " +                 // 从 users 表获取教师姓名
+            "FROM " +
+            "courses c " +
+            "JOIN " +
+            "users tu ON c.teacher_id = tu.id " +       // 1. 联合 users 表获取教师姓名
+            "JOIN " +
+            "course_user tcu ON c.id = tcu.course_id AND tcu.role = 'ROLE_TEACHER' " + // 2. 确保课程有教师角色关联
+            "LEFT JOIN " +
+            "course_user scu ON c.id = scu.course_id AND scu.user_id = #{userId} AND scu.role = 'ROLE_STUDENT' " + // 3. 检查学生是否已选
+            "WHERE " +
+            "scu.course_id IS NULL")
+    @Results({
+            @Result(property = "description", column = "description")
+    })
+    List<CoursesDTO> getNotMyCourses(@Param("userId") int userId);
+
+    // 教师将课程的 status_student 字段更新为 'completed'
+    @Update("UPDATE courses SET status_student = 'completed' WHERE id = #{courseId}")
+    int completeCourse(@Param("courseId") int courseId);
+
     @Select("SELECT id FROM courses WHERE name like concat('%',#{courseName},'%')")
     Integer getCourseIdByCourseName(String courseName);
+
 }

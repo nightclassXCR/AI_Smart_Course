@@ -32,6 +32,7 @@ public class JwtTokenUtil {
                 .compact();     //将三部分拼装
         log.info("id:{}", userID);
         BaseContext.setCurrentId(Integer.parseInt(userID));
+        log.info("id:{}", BaseContext.getCurrentId());
         log.info("生成token: "+ token);
 //        //生成日志
 //        System.out.println("生成令牌: " + token);

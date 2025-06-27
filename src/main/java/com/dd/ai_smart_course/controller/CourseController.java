@@ -10,10 +10,12 @@ import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.service.base.CourseService;
 import com.dd.ai_smart_course.component.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +45,12 @@ public class CourseController {
      * @return 课程详情
      */
     @GetMapping("/{id}")
-    public Result<Course> getCourseById(@PathVariable int id) {
-        return Result.success(courseService.getCourseById(id));
+    public Result<CoursesDTO> getCourseById(@PathVariable int id) {
+        Course course = courseService.getCourseById(id);
+        CoursesDTO coursesDTO = new CoursesDTO();
+        BeanUtils.copyProperties(course, coursesDTO);
+        coursesDTO.setTeacherName(courseService.getUserNameById(course.getTeacherId()));
+        return Result.success(coursesDTO);
     }
 
     /**
@@ -129,9 +135,14 @@ public class CourseController {
      * @return 按章节分组的知识点Map
      */
     @GetMapping("/groupedConcepts/{courseId}")
-    public Result<Map<Chapter, List<Concept>>> getConceptsGroupedByChapter(@PathVariable("courseId") int courseId) {
-        Map<Chapter, List<Concept>> groupedConcepts = courseService.getConceptsGroupedByChapter(courseId);
-        return Result.success("获取成功", groupedConcepts);
+    public Result<Map<Integer, List<Concept>>> getConceptsGroupedByChapter(@PathVariable("courseId") int courseId) {
+        Map<Chapter, List<Concept>> map = courseService.getConceptsGroupedByChapter(courseId);
+        // 新建一个以章节id为key的map
+        Map<Integer, List<Concept>> idKeyMap = new HashMap<>();
+        for (Map.Entry<Chapter, List<Concept>> entry : map.entrySet()) {
+            idKeyMap.put(entry.getKey().getId(), entry.getValue());
+        }
+        return Result.success("获取成功", idKeyMap);
     }
 
     /**
@@ -140,8 +151,19 @@ public class CourseController {
      * @return 选课结果
      */
     @PostMapping("/enroll/{courseId}")
-    public Result<String> enrollUserInCourse(@PathVariable("courseId") int courseId, @RequestBody Map<String, Integer> requestBody) {
-        int userId = requestBody.get("userId");
+    public Result<String> enrollUserInCourse(HttpServletRequest request,@PathVariable("courseId") int courseId) {
+        // 从请求头中获取 JWT 令牌
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Result.error("缺少或无效的令牌");
+        }
+
+        String token = authHeader.substring(7); // 去掉 "Bearer " 前缀
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+
+        if (userId == null) {
+            return Result.error("无效的令牌");
+        }
         courseService.enrollUserInCourse(userId, courseId);
         return Result.success("选课成功");
     }
@@ -151,8 +173,16 @@ public class CourseController {
      * @return 退课结果
      */
     @PostMapping("/unenroll/{courseId}")
-    public Result<String> unenrollUserFromCourse(@PathVariable("courseId") int courseId, @RequestBody Map<String, Integer> requestBody) {
-        int userId = requestBody.get("userId");
+    public Result<String> unenrollUserFromCourse(HttpServletRequest request,@PathVariable("courseId") int courseId) {
+        // 从请求头中获取 JWT 令牌
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Result.error("缺少或无效的令牌");
+        }
+
+        String token = authHeader.substring(7); // 去掉 "Bearer " 前缀
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+
         courseService.unenrollUserFromCourse(userId, courseId);
         return Result.success("退课成功");
     }
@@ -163,7 +193,7 @@ public class CourseController {
      */
     @GetMapping("/my-courses")
     public Result<List<CoursesDTO>> getMyCourses(HttpServletRequest request) {
-        log.info("getMyCourses");
+
         String authHeader = request.getHeader("Authorization");
         String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
         Integer userId = jwtTokenUtil.getUserIDFromToken(token);
@@ -180,7 +210,6 @@ public class CourseController {
     }
     /**
      * 模糊查询在用户已有的课程进行查询
-     * 能查到但是会崩溃
      * @param keyword 关键词
      */
     @GetMapping("/search")
@@ -192,6 +221,20 @@ public class CourseController {
         List<CoursesDTO> myCourses = courseService.searchCourses(keyword, userId); // 返回 DTO 列表
         System.out.println("我的课程列表: " + myCourses); // 打印 DTO 列表
         return myCourses;
+    }
+
+    /**
+     * 查询不是我所选的所有课程
+     * @return
+     */
+    @GetMapping("/NotMyCourses")
+    public Result<List<CoursesDTO>> getCoursesNotMyCourses(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        List<CoursesDTO> courses = courseService.getCoursesNotMyCourses(userId);
+        log.info("我的课程列表: {}", courses);
+        return Result.success("获取成功", courses);
     }
 
 }
