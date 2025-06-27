@@ -13,12 +13,10 @@
     <select id="listByCourseIds" resultType="com.dd.ai_smart_course.entity.Task">
         select * from tasks
         <where>
-            <if test="courseIds != null and !courseIds.isEmpty()">
                 and course_id in
                 <foreach item="courseId" collection="courseIds" separator="," open="(" close=")">
                     #{courseId}
                 </foreach>
-            </if>
         </where>
     </select>
 

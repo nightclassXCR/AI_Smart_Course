@@ -7,7 +7,6 @@ import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.base.ConceptMasteryService;
 import com.dd.ai_smart_course.service.base.TaskService;
 import com.dd.ai_smart_course.service.exception.SQLDataNotFoundException;
-import com.dd.ai_smart_course.utils.BaseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +108,10 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> listByUserId(int userId) {
 
         List<Integer> courseIds = userMapper.getCourseIdsByUserId(userId);
+        log.info("listByUserId:{}", courseIds);
+        if (courseIds.isEmpty()){
+            throw new SQLDataNotFoundException("课程id为空");
+        }
         List<Task> tasks = taskMapper.listByCourseIds(courseIds);
         return tasks;
 
