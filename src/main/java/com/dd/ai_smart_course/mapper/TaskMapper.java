@@ -2,6 +2,7 @@ package com.dd.ai_smart_course.mapper;
 
 import com.dd.ai_smart_course.entity.Task;
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -12,9 +13,12 @@ import java.util.Optional;
 public interface TaskMapper {
 
 
-    void insertBatch(List<Task> tasks);
+
+    void insertBatch(Task task);
 
     List<Task> listByCourseId(int courseId);
+    List<Task> listByCourseIds(List<Integer> courseIds);
+
 
 
     @Delete("DELETE FROM tasks WHERE id = #{taskId}")
@@ -24,4 +28,7 @@ public interface TaskMapper {
 
     @Select("SELECT * FROM tasks WHERE id = #{taskId}")
     Optional<Task> findById(int taskId);
+
+    @Select("SELECT * FROM tasks WHERE course_id = #{courseId}")
+    List<Task> listByUserId(int userId);
 }

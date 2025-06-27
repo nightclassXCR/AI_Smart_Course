@@ -1,7 +1,8 @@
 package com.dd.ai_smart_course.controller;
 
+import com.dd.ai_smart_course.component.JwtTokenUtil;
 import com.dd.ai_smart_course.dto.LearningLogDTO;
-import com.dd.ai_smart_course.dto.LearningStatsDto;
+import com.dd.ai_smart_course.dto.LearningStatsDTO;
 import com.dd.ai_smart_course.R.PaginationResult;
 import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.service.AnalysisService;
@@ -10,7 +11,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/analysis")
@@ -19,9 +19,12 @@ public class AnalysisController {
     @Autowired
     private AnalysisService analysisService;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     // 暂时硬编码用户ID，实际应该从JWT或Session中获取
-    private Long getCurrentUserId() {
-        return 1L; // TODO: 从认证信息中获取
+    private int getCurrentUserId() {
+        return 1; // TODO: 从认证信息中获取
     }
 
     /**
@@ -36,7 +39,7 @@ public class AnalysisController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Long userId = getCurrentUserId();
+        int userId = getCurrentUserId();
         // 调用Service
         var result = analysisService.getLearningLogs(userId, targetType, actionType, startTime, endTime, page, size);
         return Result.success("获取成功", result);
@@ -47,7 +50,7 @@ public class AnalysisController {
      */
     @GetMapping("/all-logs")
     public Result<?> getAllLearningLogs(
-            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) int userId,
             @RequestParam(required = false) String targetType,
             @RequestParam(required = false) String actionType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
@@ -64,7 +67,7 @@ public class AnalysisController {
      */
     @GetMapping("/all-logs/count")
     public Result<Long> countAllLearningLogs(
-            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) int userId,
             @RequestParam(required = false) String targetType,
             @RequestParam(required = false) String actionType,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
@@ -79,12 +82,12 @@ public class AnalysisController {
      * 获取当前用户的学习统计数据
      */
     @GetMapping("/my-stats")
-    public Result<LearningStatsDto> getMyLearningStats(
+    public Result<LearningStatsDTO> getMyLearningStats(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime
     ) {
-        Long userId = getCurrentUserId();
-        LearningStatsDto stats = analysisService.getLearningStats(userId, startTime, endTime);
+        int userId = getCurrentUserId();
+        LearningStatsDTO stats = analysisService.getLearningStats(userId, startTime, endTime);
         return Result.success("获取成功", stats);
     }
 
@@ -92,12 +95,12 @@ public class AnalysisController {
      * 获取指定用户的学习统计数据（管理员功能）
      */
     @GetMapping("/user-stats/{userId}")
-    public Result<LearningStatsDto> getUserLearningStats(
-            @PathVariable Long userId,
+    public Result<LearningStatsDTO> getUserLearningStats(
+            @PathVariable int userId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime
     ) {
-        LearningStatsDto stats = analysisService.getLearningStats(userId, startTime, endTime);
+        LearningStatsDTO stats = analysisService.getLearningStats(userId, startTime, endTime);
         return Result.success("获取成功", stats);
     }
 }

@@ -1,4 +1,4 @@
-package com.dd.ai_smart_course.service;
+package com.dd.ai_smart_course.service.base;
 
 import com.dd.ai_smart_course.entity.Resource;
 
@@ -7,8 +7,9 @@ import java.util.List;
 public interface ResourceService {
 
     void save(Resource resource);
-    Resource findById(Long id);
-    void delete(Long id);
+    Resource findById(int id);
+    void delete(int id);
     List<Resource> filter(Resource resource);
 
+    List<Resource> list();
 }

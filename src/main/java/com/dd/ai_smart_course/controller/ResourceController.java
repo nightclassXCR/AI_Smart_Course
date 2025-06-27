@@ -2,14 +2,14 @@ package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.entity.Resource;
 import com.dd.ai_smart_course.R.Result;
-import com.dd.ai_smart_course.mapper.ResourceMapper;
-import com.dd.ai_smart_course.service.ResourceService;
+import com.dd.ai_smart_course.service.base.ResourceService;
 import com.dd.ai_smart_course.utils.AliOssUtil;
 import io.swagger.annotations.ApiOperation;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/resources")
+@RequestMapping("/resource")
 @Slf4j
 
 public class ResourceController {
@@ -31,23 +31,30 @@ public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
-    @PostMapping
+    @PostMapping(value="/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation("文件上传")
-    public Result<String> upload(MultipartFile file, @RequestBody Resource resource) {
-        log.info("文件上传：{}", file);
+    public Result<String> upload(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("name") String name,
+            @RequestParam("type") String type) {
+
         try {
+            Resource resource = new Resource();
             String originalFileName = file.getOriginalFilename();
-            //截取原始文件名后缀
             String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
-            //构造新文件名称
             String objectName = UUID.randomUUID().toString() + extension;
             String filePath = aliOssUtil.upload(file.getBytes(), objectName);
+
+            resource.setFileUrl(filePath);
+            resource.setName(name);  // 使用前端传来的name
+            resource.setFileType(Resource.FileType.valueOf(type));  // 使用前端传来的type
+
             resourceService.save(resource);
             return Result.success(filePath);
         } catch (IOException e) {
-            log.error("文件上传失败：{}",e);
+            log.error("文件上传失败：{}", e);
+            return Result.error("文件上传失败");
         }
-        return Result.error("文件上传失败");
     }
 
     /**
@@ -63,9 +70,9 @@ public class ResourceController {
     /**
      * 删除资源
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @ApiOperation("删除资源")
-    public Result<Void> delete(@PathVariable Long id) {
+    public Result<Void> delete(@PathVariable int id) {
         Resource resource = resourceService.findById(id);
         if (resource == null) {
             return Result.error("资源不存在");
@@ -82,7 +89,7 @@ public class ResourceController {
      */
     @GetMapping("/download/{id}")
     @ApiOperation("下载资源")
-    public void download(@PathVariable Long id, HttpServletResponse response) {
+    public void download(@PathVariable int id, HttpServletResponse response) {
         Resource resource = resourceService.findById(id);
         if (resource == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -102,5 +109,9 @@ public class ResourceController {
         }
     }
 
-
+    @GetMapping("/list")
+    public Result <List<Resource>> list(){
+        List<Resource> resources=resourceService.list();
+        return Result.success(resources);
+    }
 }

@@ -30,7 +30,7 @@ public class JwtTokenUtil {
                 .signWith(SignatureAlgorithm.HS256, KEY)  //加密算法及其密钥
                 .compact();     //将三部分拼装
 
-        log.info("生成token: ");
+        log.info("生成token: "+ token);
 //        //生成日志
 //        System.out.println("生成令牌: " + token);
 
@@ -45,12 +45,11 @@ public class JwtTokenUtil {
             String userIDString = claims.get("userID").toString();
             userID = Integer.valueOf(userIDString);
         }catch (Exception e){
-            log.error("token解析用户ID失败: ", e);
+            log.error("resolve fails: ", e);
         }
 
         return userID;
     }
-
 
     //"::" 是 Java 8 引入的 方法引用（Method Reference）语法，用于简化 Lambda 表达式
     //方法引用允许你直接引用现有方法，而不必显式编写 Lambda 表达式的完整形式。

@@ -20,16 +20,16 @@ public interface ChapterMapper {
     List<Chapter> getChaptersByCourseId(int courseId);
 
     // 添加章节
-    @Insert("INSERT INTO chapters (course_id, title, content, sort_order) VALUES (#{courseId}, #{title}, #{content}, #{sortOrder})")
+    @Insert("INSERT INTO chapters (course_id, title, content, sequence) VALUES (#{courseId}, #{title}, #{content}, #{sequence})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int addChapter(Chapter chapter);
 
     // 根据课程名称获取课程ID
-    @Select("SELECT id FROM course WHERE name = #{courseName}")
+    @Select("SELECT id FROM courses WHERE name = #{courseName}")
     Integer getCourseIdByCourseName(String courseName);
 
     // 根据章节ID更新章节信息
-    @Update("UPDATE chapters SET course_id = #{courseId}, title = #{title}, content = #{content}, sort_order = #{sortOrder} WHERE id = #{id}")
+    @Update("UPDATE chapters SET course_id = #{courseId}, title = #{title}, content = #{content}, sequence = #{sequence} WHERE id = #{id}")
     int updateChapter(Chapter chapter);
 
     //  根据章节ID删除章节
@@ -43,7 +43,7 @@ public interface ChapterMapper {
      * 更新章节的顺序 (sequence)
      */
     @Update("UPDATE chapters SET sequence = #{sequence} WHERE id = #{id}")
-    int updateChapterSequence(@Param("id") Long id, @Param("sequence") int sequence);
+    int updateChapterSequence(@Param("id") int id, @Param("sequence") int sequence);
 
     // --- Chapter-Concept Related Queries ---
 
@@ -53,15 +53,15 @@ public interface ChapterMapper {
      * 但在 ChapterService 中调用 ChapterMapper 更符合领域驱动设计中对章节边界的封装。
      */
     @Select("SELECT id, chapter_id, name, description FROM concepts WHERE chapter_id = #{chapterId}")
-    List<Concept> getConceptsByChapterId(@Param("chapterId") Long chapterId);
+    List<Concept> getConceptsByChapterId(@Param("chapterId") int chapterId);
 
     @Delete("DELETE FROM chapters WHERE course_id = #{courseId}")
     int deleteByCourseId(int courseId);
 
     @Select("SELECT * FROM chapters WHERE id = #{id}")
-    Optional<Chapter> findById(@Param("id") Long chapterId);
+    Optional<Chapter> findById(@Param("id") int chapterId);
 
 
     @Select("SELECT COUNT(*) FROM chapters WHERE course_id = #{courseId}")
-    int countChaptersInCourse(Long courseId);
+    int countChaptersInCourse(int courseId);
 }

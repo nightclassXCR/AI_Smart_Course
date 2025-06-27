@@ -7,12 +7,12 @@ import org.springframework.context.event.EventListener;
 public class LearningActionEvent extends ApplicationEvent {
     private final int userId;
     private final String targetType; // <--- 从 TargetType 枚举改为 String
-    private final Long targetId;
+    private final int targetId;
     private final String actionType; // <--- 从 ActionType 枚举改为 String
     private Integer duration; // 新增字段
     private String detail;     // 新增字段
 
-    public LearningActionEvent(Object source, int userId, String targetType, Long targetId, String actionType, Integer duration, String detail) {
+    public LearningActionEvent(Object source, int userId, String targetType, int targetId, String actionType, Integer duration, String detail) {
         super(source);
         this.userId = userId;
         this.targetType = targetType;
@@ -30,7 +30,7 @@ public class LearningActionEvent extends ApplicationEvent {
         return targetType;
     }
 
-    public Long getTargetId() {
+    public int getTargetId() {
         return targetId;
     }
 

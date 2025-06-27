@@ -5,7 +5,7 @@ import com.dd.ai_smart_course.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.R.Result;
-import com.dd.ai_smart_course.service.ChapterService;
+import com.dd.ai_smart_course.service.base.ChapterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -87,7 +87,7 @@ public class ChapterController {
      * @return 排序结果
      */
     @PutMapping("/reorder/{courseId}")
-    public Result reorderChapters(@PathVariable("courseId") Long courseId, @RequestBody List<Long> orderedChapterIds) {
+    public Result reorderChapters(@PathVariable("courseId") int courseId, @RequestBody List<Integer> orderedChapterIds) {
         try {
             chapterService.reorderChapters(courseId, orderedChapterIds);
             return Result.success("排序成功");
@@ -104,7 +104,7 @@ public class ChapterController {
      * @return 知识点列表
      */
     @GetMapping("/{chapterId}/concepts")
-    public Result<List<Concept>> getConceptsByChapterId(@PathVariable("chapterId") Long chapterId) {
+    public Result<List<Concept>> getConceptsByChapterId(@PathVariable("chapterId") int chapterId) {
         List<Concept> concepts = chapterService.getConceptsByChapterId(chapterId);
         return Result.success("获取成功", concepts);
     }

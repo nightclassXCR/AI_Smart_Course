@@ -1,9 +1,11 @@
 package com.dd.ai_smart_course.service.impl;
 
+import com.dd.ai_smart_course.R.PaginationResult;
+import com.dd.ai_smart_course.dto.CoursesDTO;
 import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
-import com.dd.ai_smart_course.service.CourseService;
+import com.dd.ai_smart_course.service.base.CourseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
@@ -58,6 +61,8 @@ public class CourseImpl implements CourseService {
     @Override
     @Transactional
     public int addCourse(Course course) {
+
+
         return courseMapper.addCourse(course);
     }
 
@@ -143,7 +148,7 @@ public class CourseImpl implements CourseService {
      * @return
      */
     @Override
-    public List<Course> getCoursesByTeacherId(Long teacherId) {
+    public List<Course> getCoursesByTeacherId(int teacherId) {
         return courseMapper.getCoursesByTeacherId(teacherId);
     }
 
@@ -153,7 +158,7 @@ public class CourseImpl implements CourseService {
      * @return
      */
     @Override
-    public List<Chapter> getChaptersByCourse(Long courseId) {
+    public List<Chapter> getChaptersByCourse(int courseId) {
         return courseMapper.findChaptersForGrouping(courseId);
     }
 
@@ -163,7 +168,7 @@ public class CourseImpl implements CourseService {
      * @return
      */
     @Override
-    public List<Concept> getConceptsByCourse(Long courseId) {
+    public List<Concept> getConceptsByCourse(int courseId) {
         return courseMapper.getConceptsByCourse(courseId);
     }
 
@@ -173,7 +178,7 @@ public class CourseImpl implements CourseService {
      * @return
      */
     @Override
-    public Map<Chapter, List<Concept>> getConceptsGroupedByChapter(Long courseId) {
+    public Map<Chapter, List<Concept>> getConceptsGroupedByChapter(int courseId) {
         // 1. 获取课程的所有章节，并按顺序排序
         List<Chapter> chapters = courseMapper.findChaptersForGrouping(courseId);
 
@@ -213,7 +218,7 @@ public class CourseImpl implements CourseService {
      */
     @Override
     @Transactional
-    public void enrollUserInCourse(Long userId, Long courseId) {
+    public void enrollUserInCourse(int userId, int courseId) {
         if (courseUserMapper.findByCourseIdAndUserId(courseId, userId).isPresent()) {
             throw new IllegalStateException("User already enrolled in this course.");
         }
@@ -224,7 +229,7 @@ public class CourseImpl implements CourseService {
         // **添加：发布用户注册课程事件**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "course",    // targetType
                 courseId,    // targetId
                 "click",    // actionType: 注册/选课
@@ -235,7 +240,7 @@ public class CourseImpl implements CourseService {
 
     @Override
     @Transactional
-    public void unenrollUserFromCourse(Long userId, Long courseId) {
+    public void unenrollUserFromCourse(int userId, int courseId) {
         Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
         if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
             throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
@@ -246,7 +251,7 @@ public class CourseImpl implements CourseService {
         // **修正：发布用户取消注册课程事件，使用 'click' 并用 detail 区分**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "course",
                 courseId,
                 "click",       // actionType: 映射为 click (用户点击“退课”按钮)
@@ -258,7 +263,7 @@ public class CourseImpl implements CourseService {
 
     @Override
     @Transactional
-    public void completeCourse(Long courseId, Long userId) {
+    public void completeCourse(int courseId, int userId) {
         Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
         if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
             throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
@@ -270,7 +275,7 @@ public class CourseImpl implements CourseService {
             // **修正：发布用户完成课程事件，使用 'click' 或 'view' 并用 detail 区分**
             eventPublisher.publishEvent(new LearningActionEvent(
                     this,
-                    Math.toIntExact(userId),
+                    userId,
                     "course",
                     courseId,
                     "click",       // actionType: 映射为 click (如果用户点击“标记完成”按钮)
@@ -289,7 +294,7 @@ public class CourseImpl implements CourseService {
      * @param userId
      * @return
      */
-    private boolean checkAndMarkCourseCompletion(Long courseId, Long userId) {
+    private boolean checkAndMarkCourseCompletion(int courseId, int userId) {
         List<Chapter> chapters = chapterMapper.getChaptersByCourseId(Math.toIntExact(courseId));
         for (Chapter chapter : chapters) {
             List<Concept> concepts = conceptMapper.getConceptsByChapterId(chapter.getId());
@@ -307,13 +312,13 @@ public class CourseImpl implements CourseService {
 
     @Override
     @Transactional
-    public void startViewingChapter(Long chapterId, Long userId) {
+    public void startViewingChapter(int chapterId, int userId) {
         Optional<Chapter> chapterOptional = chapterMapper.findById(chapterId);
         if (chapterOptional.isEmpty()) {
             throw new IllegalArgumentException("Chapter not found: " + chapterId);
         }
         Chapter chapter = chapterOptional.get();
-        Long courseId = (long) chapter.getCourseId();
+        int courseId = chapter.getCourseId();
 
         Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
         if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
@@ -325,7 +330,7 @@ public class CourseImpl implements CourseService {
         // **修正：发布用户开始查看章节事件，使用 'view'**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "chapter",
                 chapterId,
                 "view",        // actionType: 使用 'view'
@@ -334,13 +339,13 @@ public class CourseImpl implements CourseService {
         ));
     }
     @Transactional
-    public void completeChapter(Long chapterId, Long userId) {
+    public void completeChapter(int chapterId, int userId) {
         Optional<Chapter> chapterOptional = chapterMapper.findById(chapterId);
         if (chapterOptional.isEmpty()) {
             throw new IllegalArgumentException("Chapter not found: " + chapterId);
         }
         Chapter chapter = chapterOptional.get();
-        Long courseId = (long) chapter.getCourseId();
+        int courseId = chapter.getCourseId();
 
         Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
         if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
@@ -352,12 +357,102 @@ public class CourseImpl implements CourseService {
         // **修正：发布用户完成章节事件，使用 'click' 并用 detail 区分**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "chapter",
                 chapterId,
                 "click",       // actionType: 映射为 click (如果用户点击“标记完成”按钮)
                 null,
                 "{\"action\":\"COMPLETE_CHAPTER\", \"description\":\"用户完成了章节: " + chapterId + "\"}" // detail 明确行为
         ));
+    }
+
+    @Override
+    public List<CoursesDTO> getMyCourses(int userId) {
+        List<Course_user> courseUsers = courseUserMapper.findCoursesByUserId(userId);
+        List<CoursesDTO> coursesdto =  new ArrayList<>();
+       List<Integer> courseIds = courseUsers.stream()
+                .map(Course_user::getCourseId)
+                .collect(Collectors.toList());
+       if (courseIds.isEmpty()){
+           return Collections.emptyList();
+       }
+//        // 将 List<Integer> 转换为 List<Long>
+//        List<Long> longIds = courseIds.stream()
+//                .map(Integer::longValue) // 或者 .map(i -> Long.valueOf(i))
+//                .collect(Collectors.toList());
+
+       List<Course> courses = courseMapper.getCoursesByIds(courseIds);
+        for (Course course : courses) {
+            // 确保 course 对象不为 null
+            if (course != null) {
+                CoursesDTO dto = new CoursesDTO();
+                dto.setId(course.getId());
+                dto.setName(course.getName());
+                dto.setDescription(course.getDescription());
+                dto.setTeacherId(course.getTeacherId());
+                dto.setStatusSelf(course.getStatusSelf());
+                dto.setStatusStudent(course.getStatusStudent());
+                if (course.getTeacherId() != 0) {
+                    String teacherName = courseMapper.getUserNameById(course.getTeacherId());
+                    dto.setTeacherName(teacherName);
+                } else {
+                    dto.setTeacherName("未知教师"); // 默认值
+                }
+                coursesdto.add(dto);
+            }
+        }
+        return coursesdto;
+    }
+
+
+    @Override
+    public PaginationResult<Course> getCourses(int pageNum, int pageSize) {
+        return courseMapper.getCourses(pageNum, pageSize);
+    }
+
+    // 搜索课程在用户已有课程中
+    @Override
+    public List<CoursesDTO> searchCourses(String keyword, int userId) {
+        // 1. 获取用户的所有课程
+        List<Course> courses = courseMapper.getMyCourses(userId);
+
+        List<CoursesDTO> matchingCourseDTOs = new ArrayList<>();
+
+        log.info("Searching for courses with keyword: {}", keyword);
+        log.info("User's courses: {}", courses);
+
+        // 提前检查：如果用户的课程列表为空，立即返回空列表。
+        // 这是最常导致“课程为空”的原因。
+        if (courses == null || courses.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 3. 遍历原始 Course 列表，进行数据转换
+        for (Course course : courses) {
+            // 再次进行 null 检查，以防 mapper 返回的列表中有 null 元素
+            if (course != null) {
+                // 确保课程名称不为空，并包含关键字
+                if (course.getName() != null && course.getName().contains(keyword)) {
+                    // 创建 CourseDTO 对象
+                    CoursesDTO dto = new CoursesDTO();
+                    dto.setId(course.getId());
+                    dto.setName(course.getName());
+                    dto.setDescription(course.getDescription());
+                    dto.setTeacherId(course.getTeacherId());
+                    dto.setStatusSelf(course.getStatusSelf());
+                    dto.setStatusStudent(course.getStatusStudent());
+                    // ！！！ 关键：根据 teacherId 查询教师名字 ！！！
+                    // 这里需要再次调用 mapper 获取教师名字
+                    if (course.getTeacherId() != 0) {
+                        String teacherName = courseMapper.getUserNameById( course.getTeacherId());
+                        dto.setTeacherName(teacherName);
+                    } else {
+                        dto.setTeacherName("未知教师"); // 或者其他默认值
+                    }
+                    matchingCourseDTOs.add(dto);
+                }
+            }
+        }
+        return matchingCourseDTOs;
     }
 }

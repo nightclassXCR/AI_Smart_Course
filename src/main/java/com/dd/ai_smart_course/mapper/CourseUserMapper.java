@@ -20,36 +20,36 @@ public interface CourseUserMapper {
      * 删除一条用户课程关联记录（学生退课）。
      */
     @Delete("DELETE FROM course_user WHERE course_id = #{courseId} AND user_id = #{userId}")
-    void deleteCourseUser(@Param("courseId") Long courseId, @Param("userId") Long userId);
+    void deleteCourseUser(@Param("courseId") int courseId, @Param("userId") int userId);
 
     /**
      * 根据课程ID获取所有关联用户。
      */
     @Select("SELECT course_id, user_id, role FROM course_user WHERE course_id = #{courseId}")
-    List<Course_user> findUsersByCourseId(@Param("courseId") Long courseId);
+    List<Course_user> findUsersByCourseId(@Param("courseId") int courseId);
 
     /**
      * 根据用户ID获取所有关联课程。
      */
     @Select("SELECT course_id, user_id, role FROM course_user WHERE user_id = #{userId}")
-    List<Course_user> findCoursesByUserId(@Param("userId") Long userId);
+    List<Course_user> findCoursesByUserId(@Param("userId") int userId);
 
     /**
      * 查找特定用户在特定课程中的角色。
      */
     @Select("SELECT course_id, user_id, role FROM course_user WHERE course_id = #{courseId} AND user_id = #{userId}")
-    Optional<Course_user> findByCourseIdAndUserId(@Param("courseId") Long courseId, @Param("userId") Long userId);
+    Optional<Course_user> findByCourseIdAndUserId(@Param("courseId") int courseId, @Param("userId") int userId);
 
     /**
      * 查找某个课程的所有学生用户ID。
      */
-    @Select("SELECT user_id FROM course_user WHERE course_id = #{courseId} AND role = 'STUDENT'")
-    List<Long> findStudentIdsByCourseId(@Param("courseId") Long courseId);
+    @Select("SELECT user_id FROM course_user WHERE course_id = #{courseId} AND role = 'ROLE_STUDENT'")
+    List<Long> findStudentIdsByCourseId(@Param("courseId") int courseId);
 
     /**
      * 查找某个用户作为教师所教授的所有课程ID。
      */
-    @Select("SELECT course_id FROM course_user WHERE user_id = #{userId} AND role = 'TEACHER'")
-    List<Long> findTeachingCourseIdsByTeacherId(@Param("userId") Long userId);
+    @Select("SELECT course_id FROM course_user WHERE user_id = #{userId} AND role = 'ROLE_TEACHER'")
+    List<Long> findTeachingCourseIdsByTeacherId(@Param("userId") int userId);
 }
 
