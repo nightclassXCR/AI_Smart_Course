@@ -120,4 +120,7 @@ public interface CourseMapper {
     // 此外，你可能还需要一个单独的方法来根据 ID 获取教师的名字，以备不时之需
     @Select("SELECT name FROM users WHERE id = #{userId}")
     String getUserNameById(@Param("userId") int userId);
+
+    @Select("SELECT id FROM courses WHERE name like concat('%',#{courseName},'%')")
+    Integer getCourseIdByCourseName(String courseName);
 }

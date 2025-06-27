@@ -6,6 +6,7 @@ import com.dd.ai_smart_course.entity.Task;
 import com.dd.ai_smart_course.mapper.CourseMapper;
 import com.dd.ai_smart_course.service.base.TaskService;
 //import io.swagger.annotations.ApiOperation;
+import com.dd.ai_smart_course.utils.BaseContext;
 import com.dd.ai_smart_course.vo.TaskVO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -54,8 +55,9 @@ public class TaskController {
     @GetMapping("/list")
     //@ApiOperation("通过user id获取任务列表")
     public Result<List<TaskVO>> listByUserId(){
-        int userId= 2;//TODO 获取当前用户id
-//        int userId= BaseContext.getCurrentId();
+//        int userId= 2;//TODO 获取当前用户id
+        Integer userId= BaseContext.getCurrentId();
+        log.info("listByUserId:{}", userId);
         List<Task> tasks = taskService.listByUserId(userId);
         List<TaskVO> tasksVO = new ArrayList<>();
         for (Task task : tasks) {

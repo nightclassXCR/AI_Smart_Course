@@ -6,6 +6,8 @@ import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.base.ConceptMasteryService;
 import com.dd.ai_smart_course.service.base.TaskService;
+import com.dd.ai_smart_course.service.exception.SQLDataNotFoundException;
+import com.dd.ai_smart_course.utils.BaseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +44,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private CourseMapper courseMapper;
 
 
     @Override
@@ -48,8 +53,14 @@ public class TaskServiceImpl implements TaskService {
     public void insert(TaskDTO taskDTO) {
         Task task = new Task();
         BeanUtils.copyProperties(taskDTO, task);
+        Integer courseId = courseMapper.getCourseIdByCourseName(taskDTO.getCourseName());
+        if (courseId==null){
+            log.info("Course not found: " + taskDTO.getCourseName());
+            throw new SQLDataNotFoundException("课程不存在");
+        }
         task.setCreatedAt(LocalDateTime.now());
         task.setType(Task.Type.homework);
+        task.setCourseId(courseId);
         log.info("insertBatch: {}", task);
         taskMapper.insertBatch(task);
         int taskId = task.getId();

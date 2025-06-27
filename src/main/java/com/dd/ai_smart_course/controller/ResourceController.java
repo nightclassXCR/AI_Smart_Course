@@ -108,4 +108,10 @@ public class ResourceController {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/list")
+    public Result <List<Resource>> list(){
+        List<Resource> resources=resourceService.list();
+        return Result.success(resources);
+    }
 }

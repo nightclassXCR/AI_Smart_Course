@@ -1,10 +1,12 @@
 package com.dd.ai_smart_course.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Builder
 @Data
 public class Course {
     private int id;

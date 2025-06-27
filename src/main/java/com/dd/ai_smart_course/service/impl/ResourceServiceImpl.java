@@ -21,7 +21,7 @@ public class ResourceServiceImpl implements ResourceService {
         resource.setCreatedAt(LocalDateTime.now());
 //        int ownerId =BaseContext.getCurrentId();
         //TODO 获取当前用户ID
-        resource.setOwnerId(2);
+        resource.setOwnerId(BaseContext.getCurrentId());
         resource.setOwnerType(Resource.OwnerType.task);
         resource.setCreatedAt(LocalDateTime.now());
         resource.setUpdatedAt(LocalDateTime.now());

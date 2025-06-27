@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.component;
 
+import com.dd.ai_smart_course.utils.BaseContext;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,8 @@ public class JwtTokenUtil {
                 //signature
                 .signWith(SignatureAlgorithm.HS256, KEY)  //加密算法及其密钥
                 .compact();     //将三部分拼装
-
+        log.info("id:{}", userID);
+        BaseContext.setCurrentId(Integer.parseInt(userID));
         log.info("生成token: "+ token);
 //        //生成日志
 //        System.out.println("生成令牌: " + token);
