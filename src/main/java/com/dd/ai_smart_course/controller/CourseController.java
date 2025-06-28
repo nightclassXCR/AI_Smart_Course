@@ -49,7 +49,7 @@ public class CourseController {
         Course course = courseService.getCourseById(id);
         CoursesDTO coursesDTO = new CoursesDTO();
         BeanUtils.copyProperties(course, coursesDTO);
-        coursesDTO.setTeacherName(courseService.getUserNameById(course.getTeacherId()));
+        coursesDTO.setTeacherRealName(courseService.getUserNameById(course.getTeacherId()));
         return Result.success(coursesDTO);
     }
 

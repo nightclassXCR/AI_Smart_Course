@@ -122,22 +122,23 @@ public interface CourseMapper {
     @Select("SELECT " +
             "c.id, " +
             "c.name, " +
-            "c.description, " +
-            "c.teacher_id, " +// 课程中已有的教师ID
+            "c.description AS course_description, " +
+            "c.teacher_id, " +
             "c.status_student,"+
-            "u.name AS teacher_real_name " + // <-- ！！！ 额外查询教师的名字，并给它一个独特的别名 ！！！
+            "u.name AS teacher_real_name " +
             "FROM courses c " +
-            "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
-            "JOIN course_user cu ON c.id = cu.course_id " + // 联接课程-用户关联表
+            "JOIN users u ON c.teacher_id = u.id " +
+            "JOIN course_user cu ON c.id = cu.course_id " +
             "WHERE cu.user_id = #{userId}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
-            @Result(property = "description", column = "description"),
+            @Result(property = "description", column = "course_description"),
             @Result(property = "teacherId", column = "teacher_id"),
-            @Result(property = "statusStudent", column = "status_student")
+            @Result(property = "statusStudent", column = "status_student"),
+            @Result(property = "teacherRealName", column = "teacher_real_name")
     })
-    List<Course> getMyCourses(@Param("userId") int userId);
+    List<CoursesDTO> getMyCourses(@Param("userId") int userId);
 
 
     // 此外，你可能还需要一个单独的方法来根据 ID 获取教师的名字，以备不时之需

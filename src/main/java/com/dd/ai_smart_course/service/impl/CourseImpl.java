@@ -395,9 +395,9 @@ public class CourseImpl implements CourseService {
                 dto.setStatusStudent(course.getStatusStudent());
                 if (course.getTeacherId() != 0) {
                     String teacherName = courseMapper.getUserNameById(course.getTeacherId());
-                    dto.setTeacherName(teacherName);
+                    dto.setTeacherRealName(teacherName);
                 } else {
-                    dto.setTeacherName("未知教师"); // 默认值
+                    dto.setTeacherRealName("未知教师"); // 默认值
                 }
                 coursesdto.add(dto);
             }
@@ -414,47 +414,20 @@ public class CourseImpl implements CourseService {
     // 搜索课程在用户已有课程中
     @Override
     public List<CoursesDTO> searchCourses(String keyword, int userId) {
-        // 1. 获取用户的所有课程
-        List<Course> courses = courseMapper.getMyCourses(userId);
-
-        List<CoursesDTO> matchingCourseDTOs = new ArrayList<>();
+        List<CoursesDTO> courses = courseMapper.getMyCourses(userId);
 
         log.info("Searching for courses with keyword: {}", keyword);
-        log.info("User's courses: {}", courses);
+        log.info("User's courses count: {}", courses.size());
 
         // 提前检查：如果用户的课程列表为空，立即返回空列表。
-        // 这是最常导致“课程为空”的原因。
-        if (courses == null || courses.isEmpty()) {
+        if (courses.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // 3. 遍历原始 Course 列表，进行数据转换
-        for (Course course : courses) {
-            // 再次进行 null 检查，以防 mapper 返回的列表中有 null 元素
-            if (course != null) {
-                // 确保课程名称不为空，并包含关键字
-                if (course.getName() != null && course.getName().contains(keyword)) {
-                    // 创建 CourseDTO 对象
-                    CoursesDTO dto = new CoursesDTO();
-                    dto.setId(course.getId());
-                    dto.setName(course.getName());
-                    dto.setDescription(course.getDescription());
-                    dto.setTeacherId(course.getTeacherId());
-                    dto.setStatusSelf(course.getStatusSelf());
-                    dto.setStatusStudent(course.getStatusStudent());
-                    // ！！！ 关键：根据 teacherId 查询教师名字 ！！！
-                    // 这里需要再次调用 mapper 获取教师名字
-                    if (course.getTeacherId() != 0) {
-                        String teacherName = courseMapper.getUserNameById( course.getTeacherId());
-                        dto.setTeacherName(teacherName);
-                    } else {
-                        dto.setTeacherName("未知教师"); // 或者其他默认值
-                    }
-                    matchingCourseDTOs.add(dto);
-                }
-            }
-        }
-        return matchingCourseDTOs;
+        // 关键词过滤：筛选课程名称或描述中包含关键词的课程
+        return courses.stream()
+                .filter(course -> course.getName().contains(keyword) || course.getDescription().contains(keyword))
+                .collect(Collectors.toList());
     }
 
 
