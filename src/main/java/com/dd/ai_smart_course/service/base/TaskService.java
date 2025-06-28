@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface TaskService {
 
-    void insertBatch(List<Task> tasks);
 
     void insert(TaskDTO taskDTO);
 

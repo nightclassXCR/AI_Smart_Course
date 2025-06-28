@@ -215,4 +215,11 @@ public class TaskServiceImpl implements TaskService {
                 "{\"userAnswer\":\"" + userAnswer + "\", \"isCorrect\":" + isCorrect + "}" // detail
         ));
     }
+
+    @Override
+    public List<Integer> findQuestionIdsByTaskId(int taskId) {
+        return List.of();
+    }
+
+
 }
