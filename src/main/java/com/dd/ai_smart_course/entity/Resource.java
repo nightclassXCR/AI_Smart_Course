@@ -18,7 +18,7 @@ public class Resource {
     }
 
     public enum OwnerType {
-        course, chapter, task, question
+        course, task, question
     }
 
     public Resource() {}
