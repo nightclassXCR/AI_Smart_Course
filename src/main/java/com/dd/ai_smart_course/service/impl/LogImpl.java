@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.service.impl;
 
+import com.dd.ai_smart_course.dto.LearningLogDTO;
 import com.dd.ai_smart_course.entity.LearningLog;
 import com.dd.ai_smart_course.mapper.LogMapper;
 import com.dd.ai_smart_course.service.base.LogService;
@@ -112,5 +113,12 @@ public class LogImpl implements LogService {
         if (existing == null) {
             throw new BusinessException(ErrorCode.LOG_NOT_EXISTS);
         }
+    }
+
+
+    // 获取最新的学习记录
+    @Override
+    public LearningLogDTO findLatestLearningLogInCourseDTO(int userId, int courseId) {
+        return logMapper.findLatestLearningLogInCourseDTO(userId, courseId);
     }
 }

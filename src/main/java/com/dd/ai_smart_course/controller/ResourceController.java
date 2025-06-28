@@ -114,4 +114,6 @@ public class ResourceController {
         List<Resource> resources=resourceService.list();
         return Result.success(resources);
     }
+
+
 }

@@ -150,6 +150,7 @@ public class CourseImpl implements CourseService {
      */
     @Override
     public List<Course> getCoursesByTeacherId(int teacherId) {
+
         return courseMapper.getCoursesByTeacherId(teacherId);
     }
 

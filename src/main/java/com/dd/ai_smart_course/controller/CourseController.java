@@ -237,4 +237,22 @@ public class CourseController {
         return Result.success("获取成功", courses);
     }
 
+
+    /**
+     * 根据教师ID获取课程名
+     * @return
+     */
+    @GetMapping("/getCourseNameByUserId")
+    public Result<List<Course>> getCourseNameByUserId(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        log.info("userId: {}", userId);
+        log.info("课程名: {}", courseService.getCoursesByTeacherId(userId));
+        return Result.success(courseService.getCoursesByTeacherId(userId));
+    }
+
+
+
+
 }
