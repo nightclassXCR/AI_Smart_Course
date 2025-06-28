@@ -26,5 +26,5 @@ public interface TaskQuestionMapper {
     int insertBatch(@Param("task_questions") List<Task_question> task_questions);
 
     //批量删除
-    int deleteBatch(@Param("task_ids") List< Integer> task_ids);
+    int deleteBatch(@Param("task_ids") Integer taskId);
 }

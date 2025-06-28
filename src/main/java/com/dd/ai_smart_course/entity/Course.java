@@ -6,7 +6,7 @@ import lombok.Data;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@Builder
+
 @Data
 public class Course {
     private int id;

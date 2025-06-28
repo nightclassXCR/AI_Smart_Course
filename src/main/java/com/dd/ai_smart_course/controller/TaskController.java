@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class TaskController {
     @GetMapping("/list")
     //@ApiOperation("通过user id获取任务列表")
     public Result<List<TaskVO>> listByUserId(){
-        int userId= BaseContext.getCurrentId();//TODO 获取当前用户id
+        int userId= BaseContext.getCurrentId();
         log.info("listByUserId:{}", userId);
         List<Task> tasks = taskService.listByUserId(userId);
         List<TaskVO> tasksVO = new ArrayList<>();

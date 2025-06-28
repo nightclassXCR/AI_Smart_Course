@@ -110,7 +110,9 @@ public class TaskServiceImpl implements TaskService {
         List<Integer> courseIds = userMapper.getCourseIdsByUserId(userId);
         log.info("listByUserId:{}", courseIds);
         if (courseIds.isEmpty()){
-            throw new SQLDataNotFoundException("课程id为空");
+            log.info("CourseIds is empty");
+            List<Task> tasks = new ArrayList<>();
+            return tasks;
         }
         List<Task> tasks = taskMapper.listByCourseIds(courseIds);
         return tasks;
@@ -215,4 +217,5 @@ public class TaskServiceImpl implements TaskService {
                 "{\"userAnswer\":\"" + userAnswer + "\", \"isCorrect\":" + isCorrect + "}" // detail
         ));
     }
+
 }
