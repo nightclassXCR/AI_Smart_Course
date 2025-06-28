@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.dd.ai_smart_course.mapper.TaskMapper">
+<mapper namespace="com.dd.ai_smart_course.mapper.TaskQuestionMapper">
     <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id" >
-        insert into tasks(course_id, title, type, deadline, created_at)
-        values (#{courseId}, #{title}, #{type}, #{deadline}, #{createdAt})
-
+        insert into task_question(task_id, question_id, max_score, sequence)
+        values
+        <foreach collection="list" item="ts" separator=",">
+            (#{ts.task_id}, #{ts.question_id}, #{ts.max_score}, #{ts.sequence})
+        </foreach>
     </insert>
-    <select id="listByCourseId" resultType="com.dd.ai_smart_course.entity.Task">
-        select * from tasks where course_id = #{courseId}
-    </select>
-    <select id="listByCourseIds" resultType="com.dd.ai_smart_course.entity.Task">
-        select * from tasks
-        <where>
-                and course_id in
-                <foreach item="courseId" collection="courseIds" separator="," open="(" close=")">
-                    #{courseId}
-                </foreach>
-        </where>
-    </select>
+
+    <delete id="deleteBatch">
+        DELETE FROM task_question WHERE task_id IN
+        <foreach collection="task_ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
 
     <update id="update" parameterType="Task">
         update tasks

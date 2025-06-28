@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     @Autowired
     AuthServiceImpl authService;
-
     //用邮箱登录
     @PostMapping({"/email"})
     public Result<LocalToken> loginByEmail(@RequestBody AuthRequest request){

@@ -45,7 +45,7 @@ public class TaskController {
         return Result.success(tasks);
     }
 
-    @GetMapping("")
+    @GetMapping
     //@ApiOperation("通过课程id获取任务列表")
     public Result<List<Task>> listByCourseId(){
         int courseId = 14;
@@ -56,8 +56,7 @@ public class TaskController {
     @GetMapping("/list")
     //@ApiOperation("通过user id获取任务列表")
     public Result<List<TaskVO>> listByUserId(){
-//        int userId= 2;//TODO 获取当前用户id
-        Integer userId= BaseContext.getCurrentId();
+        int userId= BaseContext.getCurrentId();//TODO 获取当前用户id
         log.info("listByUserId:{}", userId);
         List<Task> tasks = taskService.listByUserId(userId);
         List<TaskVO> tasksVO = new ArrayList<>();
