@@ -2,11 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.dd.ai_smart_course.mapper.TaskMapper">
-    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id" >
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" >
         insert into tasks(course_id, title, type, deadline, created_at)
         values (#{courseId}, #{title}, #{type}, #{deadline}, #{createdAt})
 
     </insert>
+    <insert id="insertUserTask">
+        insert into user_task(user_id, task_id, status)
+             values
+        <foreach collection="userIds" item="userId" separator=",">
+            (#{userId}, #{taskId}, 'uncompleted')
+        </foreach>
+    </insert>
+
     <select id="listByCourseId" resultType="com.dd.ai_smart_course.entity.Task">
         select * from tasks where course_id = #{courseId}
     </select>
@@ -41,8 +49,8 @@
             <if test="deadline != null">
                 deadline = #{deadline},
             </if>
-            <if test="updateAt != null">
-                updateAt=#{updatedAt},
+            <if test="updatedAt != null">
+                updated_at=#{updatedAt},
             </if>
 
         </set>

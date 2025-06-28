@@ -69,4 +69,7 @@ public interface UserMapper {
 
     @Select("SELECT course_id FROM course_user WHERE user_id = #{userId}")
     List<Integer> getCourseIdsByUserId(int userId);
+
+    @Select("SELECT user_id FROM course_user WHERE course_id = #{courseId} and role='ROLE_STUDENT'")
+    List<Integer> getStudentIdsByCourseId(int courseId);
 }

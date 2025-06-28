@@ -59,9 +59,12 @@ public class TaskServiceImpl implements TaskService {
         task.setCreatedAt(LocalDateTime.now());
         task.setType(Task.Type.homework);
         task.setCourseId(courseId);
+        UserTask userTask = new UserTask();
+        List<Integer> userIds = userMapper.getStudentIdsByCourseId(courseId);
         log.info("insertBatch: {}", task);
-        taskMapper.insertBatch(task);
+        taskMapper.insert(task);
         int taskId = task.getId();
+        taskMapper.insertUserTask(userIds, taskId);
         List<Question> questions = taskDTO.getQuestions();
         for (Question question : questions) {
             Task_question tq = new Task_question();
@@ -94,6 +97,7 @@ public class TaskServiceImpl implements TaskService {
             questionMapper.deleteBatch(questions.stream().map(Question::getId).toList());
             tqMapper.deleteBatch(taskId);
         }
+        taskMapper.deleteUserTaskByTaskId(taskId);
 
         taskMapper.deleteByTaskId(taskId);
     }
