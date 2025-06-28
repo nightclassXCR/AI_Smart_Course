@@ -7,7 +7,10 @@ import java.time.LocalDateTime;
 @Data
 public class TaskVO {
 
+    private Integer id;
     private String title;
     private String courseName;
     private LocalDateTime deadline;
+
+
 }

@@ -153,7 +153,7 @@ public interface CourseMapper {
             "c.status_self AS statusSelf, " +        // 新增字段映射
             "c.status_student AS statusStudent, " +  // 新增字段映射
             "c.teacher_id AS teacherId, " +
-            "tu.name AS teacherName " +                 // 从 users 表获取教师姓名
+            "tu.name AS teacherRealName " +                 // 从 users 表获取教师姓名
             "FROM " +
             "courses c " +
             "JOIN " +
