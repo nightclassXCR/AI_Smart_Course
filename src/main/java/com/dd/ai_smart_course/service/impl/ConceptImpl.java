@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class ConceptImpl implements ConceptService {
 
@@ -76,22 +77,22 @@ public class ConceptImpl implements ConceptService {
     }
 
     @Override
-    public void linkConceptToQuestion(Long conceptId, Long questionId) {
+    public void linkConceptToQuestion(int conceptId, int questionId) {
         conceptMapper.linkConceptToQuestion(conceptId, questionId);
     }
 
     @Override
-    public List<Question> getQuestionsByConcept(Long conceptId) {
+    public List<Question> getQuestionsByConcept(int conceptId) {
         return conceptMapper.getQuestionsByConcept(conceptId);
     }
 
     @Override
-    public void updateMasteryLevel(Long userId, Long conceptId, int masteryLevel) {
+    public void updateMasteryLevel(int userId, int conceptId, int masteryLevel) {
         conceptMapper.updateMasteryLevel(userId, conceptId, masteryLevel);
     }
 
     @Override
-    public int getMasteryLevel(Long userId, Long conceptId) {
+    public int getMasteryLevel(int userId, int conceptId) {
         Integer masteryLevel = conceptMapper.getMasteryLevel(userId, conceptId);
         return masteryLevel == null ? 0 : masteryLevel;
     }
@@ -108,7 +109,7 @@ public class ConceptImpl implements ConceptService {
 
     @Override
     @Transactional
-    public void viewConcept(Long conceptId, Long userId, Integer durationSeconds) {
+    public void viewConcept(int conceptId, int userId, Integer durationSeconds) {
         Optional<Concept> conceptOptional = conceptMapper.findById(conceptId);
         if (conceptOptional.isEmpty()) {
             throw new IllegalArgumentException("Concept not found: " + conceptId);
@@ -119,7 +120,7 @@ public class ConceptImpl implements ConceptService {
         // **修正：发布用户查看概念事件，使用 'view'**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "concept",
                 conceptId,
                 "view",      // actionType: 使用 'view'
@@ -130,7 +131,7 @@ public class ConceptImpl implements ConceptService {
 
     @Override
     @Transactional
-    public void markConceptAsMastered(Long conceptId, Long userId) {
+    public void markConceptAsMastered(int conceptId, int userId) {
         Optional<Concept> conceptOptional = conceptMapper.findById(conceptId);
         if (conceptOptional.isEmpty()) {
             throw new IllegalArgumentException("Concept not found: " + conceptId);
@@ -141,7 +142,7 @@ public class ConceptImpl implements ConceptService {
         // **修正：发布概念标记掌握事件，使用 'click' 并用 detail 区分**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "concept",
                 conceptId,
                 "click",    // actionType: 使用 'click' (因为是UI上的一个点击操作)
@@ -155,7 +156,7 @@ public class ConceptImpl implements ConceptService {
      */
     @Override
     @Transactional
-    public void startConceptReview(Long conceptId, Long userId) {
+    public void startConceptReview(int conceptId, int userId) {
         Optional<Concept> conceptOptional = conceptMapper.findById(conceptId);
         if (conceptOptional.isEmpty()) {
             throw new IllegalArgumentException("Concept not found: " + conceptId);
@@ -166,7 +167,7 @@ public class ConceptImpl implements ConceptService {
         // **修正：发布开始复习事件，使用 'click' 并用 detail 区分**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "concept",
                 conceptId,
                 "click",       // actionType: 使用 'click' (点击开始复习)

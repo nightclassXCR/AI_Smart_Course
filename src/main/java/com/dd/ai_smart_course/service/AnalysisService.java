@@ -53,7 +53,7 @@ public class AnalysisService {
      * @return 学习日志分页结果
      */
     @Transactional(readOnly = true) // 只读事务，提高性能
-    public PaginationResult<LearningLogDTO> getLearningLogs(Long userId, String targetType, String actionType,
+    public PaginationResult<LearningLogDTO> getLearningLogs(int userId, String targetType, String actionType,
                                                             LocalDateTime startDate, LocalDateTime endDate,
                                                             int page, int size) {
         int offset = page * size;
@@ -85,20 +85,20 @@ public class AnalysisService {
      * @return 概念掌握度列表
      */
     @Transactional(readOnly = true)
-    public List<ConceptMasteryDTO> getConceptMastery(Long userId, Long conceptId, Long courseId) {
+    public List<ConceptMasteryDTO> getConceptMastery(int userId, int conceptId, int courseId) {
         List<Concept_mastery> masteries;
-        if (userId != null && conceptId != null) {
+        if (userId != 0 && conceptId != 0) {
             masteries = conceptMasteryMapper.findByUserIdAndConceptId(userId, conceptId).map(List::of).orElse(List.of());
-        } else if (userId != null) {
+        } else if (userId != 0) {
             masteries = conceptMasteryMapper.findMasteriesByUserId(userId);
-        } else if (conceptId != null) {
+        } else if (conceptId != 0) {
             masteries = conceptMasteryMapper.findAllMasteries().stream()
-                    .filter(cm -> cm.getConcept_id().equals(conceptId))
+                    .filter(cm -> cm.getConceptId()==conceptId)
                     .collect(Collectors.toList());
-        } else if (courseId != null) {
-            List<Long> conceptIdsInCourse = conceptMapper.findConceptIdsByCourseId(courseId); // 假设 ConceptMapper 有此方法
+        } else if (courseId != 0) {
+            List<Integer> conceptIdsInCourse = conceptMapper.findConceptIdsByCourseId(courseId); // 假设 ConceptMapper 有此方法
             masteries = conceptMasteryMapper.findAllMasteries().stream()
-                    .filter(cm -> conceptIdsInCourse.contains(cm.getConcept_id()))
+                    .filter(cm -> conceptIdsInCourse.contains(cm.getConceptId()))
                     .collect(Collectors.toList());
         } else {
             masteries = conceptMasteryMapper.findAllMasteries();
@@ -109,11 +109,11 @@ public class AnalysisService {
             BeanUtils.copyProperties(mastery, dto);
 
             // 补充用户名和概念名
-            User user = userMapper.getUserById(mastery.getUser_id().intValue());
+            User user = userMapper.getUserById(mastery.getUserId());
             if (user != null) {
                 dto.setUsername(user.getUsername());
             }
-            conceptMapper.findById(mastery.getConcept_id()).ifPresent(concept -> dto.setConceptName(concept.getName()));
+            conceptMapper.findById(mastery.getConceptId()).ifPresent(concept -> dto.setConceptName(concept.getName()));
 
             return dto;
         }).collect(Collectors.toList());
@@ -166,11 +166,11 @@ public class AnalysisService {
      * @return LearningStatsDto
      */
     @Transactional(readOnly = true)
-    public LearningStatsDTO getLearningStats(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+    public LearningStatsDTO getLearningStats(int userId, LocalDateTime startDate, LocalDateTime endDate) {
         LearningStatsDTO stats = new LearningStatsDTO();
         stats.setUserId(userId);
         // 用户名
-        User user = userMapper.getUserById(userId.intValue());
+        User user = userMapper.getUserById(userId);
         if (user != null) {
             stats.setUsername(user.getUsername());
         }
@@ -188,7 +188,7 @@ public class AnalysisService {
         List<com.dd.ai_smart_course.entity.Concept_mastery> masteries = conceptMasteryMapper.findMasteriesByUserId(userId);
         long completedConcepts = masteries.stream()
             .filter(m -> {
-                Double level = m.getMastery_level();
+                Double level = m.getMasteryLevel();
                 return level != null && level >= 60.0;
             })
             .count();
@@ -196,7 +196,7 @@ public class AnalysisService {
         // 平均分数（取 scores 表中 finalScore 平均值）
         double averageScore = 0.0;
         try {
-            List<com.dd.ai_smart_course.entity.Score> scores = scoreMapper.getScoreByUserId(userId.intValue());
+            List<com.dd.ai_smart_course.entity.Score> scores = scoreMapper.getScoreByUserId(userId);
             if (scores != null && !scores.isEmpty()) {
                 averageScore = scores.stream().filter(s -> s.getFinalScore() != null).mapToDouble(s -> s.getFinalScore().doubleValue()).average().orElse(0.0);
             }

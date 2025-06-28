@@ -11,6 +11,7 @@ public class TaskDTO {
 
     private String title;
     private int courseId;
+    private String courseName;
     private LocalDateTime deadline;
     private List<Question> questions;
 }

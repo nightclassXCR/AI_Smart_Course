@@ -4,6 +4,7 @@ package com.dd.ai_smart_course.service.base;
 import com.dd.ai_smart_course.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
+import com.dd.ai_smart_course.entity.Course;
 
 import java.util.List;
 
@@ -24,10 +25,10 @@ public interface ChapterService {
     int deleteChapter(int id);
 
     // 重新排序章节
-    void reorderChapters(Long courseId, List<Long> orderedChapterIds);
+    void reorderChapters(int courseId, List<Integer> orderedChapterIds);
 
     // 获取某课程下的所有知识点
-    List<Concept> getConceptsByChapterId(Long chapterId);
+    List<Concept> getConceptsByChapterId(int chapterId);
 
 
 

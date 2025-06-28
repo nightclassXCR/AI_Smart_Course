@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.service.base;
 
 import com.dd.ai_smart_course.entity.User;
+import com.dd.ai_smart_course.service.exception.BusinessException;
 
 import java.util.List;
 
@@ -19,4 +20,13 @@ public interface UserService {
 
     //根据用户角色获取用户
     List<User> getUsersByRole(String role, boolean isDESC, String order, Integer limit, Integer offset);
+
+    //检验关键数据是否非法
+    //若姓名、邮箱和电话非法，则抛出对应异常
+    //针对add，update
+    void checkFactor(User user) throws BusinessException;
+
+    //根据userId检查用户是否存在
+    //针对update
+    void checkUserExists(int userId) throws BusinessException;
 }

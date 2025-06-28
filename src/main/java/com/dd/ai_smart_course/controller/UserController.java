@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
 
+import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.dto.request.SearchRequest;
 import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.service.exception.BusinessException;
@@ -25,57 +26,73 @@ public class UserController {
     }
 
     @GetMapping("/get/{id}")
-    User getUserById(@PathVariable int id){
+    public Result<User> getUserById(@PathVariable int id){
         log.info("get a request: get user by userID: {}", id);
-        return userService.getUserById(id);
+        return Result.success(userService.getUserById(id));
     }
 
     @PostMapping("/add")
-    int addUser(@RequestBody User user) throws BusinessException {
+    public Result<Integer> addUser(@RequestBody User user) throws BusinessException {
         log.info("get a request: add a user");
-        return userService.addUser(user);
+        try {
+            Integer data = userService.addUser(user);
+            return Result.success(data);
+        }catch (BusinessException e){
+            return Result.error(e.getMessage());
+        }
     }
 
     @PostMapping("/update")
-    int updateUser(@RequestBody User user) throws BusinessException{
+    public Result<Integer> updateUser(@RequestBody User user) {
         log.info("get a request: update a user");
-        return userService.updateUser(user);
+        try {
+            Integer data = userService.updateUser(user);
+            return Result.success(data);
+        }catch (BusinessException e){
+            return Result.error(e.getMessage());
+        }
     }
 
     @GetMapping("/delete/{id}")
-    int deleteUser(@PathVariable int id){
+    public Result<Integer> deleteUser(@PathVariable int id){
         log.info("get a request: delete a user");
-        return userService.deleteUser(id);
+        Integer data = userService.deleteUser(id);
+        return Result.success(data);
     }
 
     //根据状态获取用户
-    @GetMapping
-    List<User> getUsersByStatus(@RequestBody SearchRequest request){
+    @PostMapping("/getByStatus")
+    public Result<List<User>> getUsersByStatus(@RequestBody SearchRequest request){
         String status = request.getCompareParam();
         boolean isDESC = request.isDESC();
         String order = request.getOrder();
         Integer limit = request.getLimit();
         Integer offset = request.getOffset();
-        return userService.getUsersByStatus(status, isDESC, order, limit, offset);
+        List<User> data = userService.getUsersByStatus(status, isDESC, order, limit, offset);
+        return Result.success(data);
     }
 
     //根据用户名获取用户
-    List<User> getUsersByUsername(@RequestBody SearchRequest request){
+    @PostMapping("/getByUsername")
+    public Result<List<User>> getUsersByUsername(@RequestBody SearchRequest request){
         String username = request.getCompareParam();
         boolean isDESC = request.isDESC();
         String order = request.getOrder();
         Integer limit = request.getLimit();
         Integer offset = request.getOffset();
-        return userService.getUsersByStatus(username, isDESC, order, limit, offset);
+        List<User> data = userService.getUsersByUsername(username, isDESC, order, limit, offset);
+        return Result.success(data);
     }
 
     //根据用户角色获取用户
-    List<User> getUsersByRole(@RequestBody SearchRequest request){
+    @PostMapping("/getByRole")
+    public Result<List<User>>  getUsersByRole(@RequestBody SearchRequest request){
         String role = request.getCompareParam();
         boolean isDESC = request.isDESC();
         String order = request.getOrder();
         Integer limit = request.getLimit();
         Integer offset = request.getOffset();
-        return userService.getUsersByStatus(role, isDESC, order, limit, offset);
+        List<User> data = userService.getUsersByRole(role, isDESC, order, limit, offset);
+        return Result.success(data);
     }
 }

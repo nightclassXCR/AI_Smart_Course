@@ -1,17 +1,12 @@
 package com.dd.ai_smart_course.service.impl;
 
 import com.dd.ai_smart_course.dto.TaskDTO;
-import com.dd.ai_smart_course.entity.Question;
-import com.dd.ai_smart_course.entity.Score;
-import com.dd.ai_smart_course.entity.Task;
-import com.dd.ai_smart_course.entity.Task_question;
+import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.event.LearningActionEvent;
-import com.dd.ai_smart_course.mapper.QuestionMapper;
-import com.dd.ai_smart_course.mapper.ScoreMapper;
-import com.dd.ai_smart_course.mapper.TaskMapper;
-import com.dd.ai_smart_course.mapper.TaskQuestionMapper;
+import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.base.ConceptMasteryService;
 import com.dd.ai_smart_course.service.base.TaskService;
+import com.dd.ai_smart_course.service.exception.SQLDataNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 @Slf4j
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -34,7 +30,7 @@ public class TaskServiceImpl implements TaskService {
     private ScoreMapper scoreMapper;
     @Autowired
 
-    private TaskQuestionMapper  tqMapper;
+    private TaskQuestionMapper tqMapper;
     @Autowired
     private ApplicationEventPublisher eventPublisher;
 
@@ -44,21 +40,30 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private QuestionMapper questionMapper;
 
-
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private CourseMapper courseMapper;
 
 
     @Override
     @Transactional
-    public void insertBatch(TaskDTO taskDTO) {
+    public void insert(TaskDTO taskDTO) {
         Task task = new Task();
         BeanUtils.copyProperties(taskDTO, task);
+        Integer courseId = courseMapper.getCourseIdByCourseName(taskDTO.getCourseName());
+        if (courseId==null){
+            log.info("Course not found: " + taskDTO.getCourseName());
+            throw new SQLDataNotFoundException("课程不存在");
+        }
         task.setCreatedAt(LocalDateTime.now());
         task.setType(Task.Type.homework);
+        task.setCourseId(courseId);
         log.info("insertBatch: {}", task);
         taskMapper.insertBatch(task);
         int taskId = task.getId();
         List<Question> questions = taskDTO.getQuestions();
-        for (Question question : questions){
+        for (Question question : questions) {
             Task_question tq = new Task_question();
             tq.setTask_id(taskId);
             questionMapper.insert(question);
@@ -85,7 +90,7 @@ public class TaskServiceImpl implements TaskService {
             scoreMapper.deleteById(score.getId());
         List<Question> questions = questionMapper.findByTaskId(taskId);
 
-        if (questions!=null && !questions.isEmpty()) {
+        if (questions != null && !questions.isEmpty()) {
             questionMapper.deleteBatch(questions.stream().map(Question::getId).toList());
             tqMapper.deleteBatch(taskId);
         }
@@ -99,6 +104,20 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.update(task);
     }
 
+    @Override
+    public List<Task> listByUserId(int userId) {
+
+        List<Integer> courseIds = userMapper.getCourseIdsByUserId(userId);
+        log.info("listByUserId:{}", courseIds);
+        if (courseIds.isEmpty()){
+            throw new SQLDataNotFoundException("课程id为空");
+        }
+        List<Task> tasks = taskMapper.listByCourseIds(courseIds);
+        return tasks;
+
+
+    }
+
 
     /**
      * 用户开始任务
@@ -107,8 +126,8 @@ public class TaskServiceImpl implements TaskService {
      * @param userId
      */
     @Transactional
-    public void startTask(Long taskId, Long userId) {
-        Optional<Task> taskOptional = taskMapper.findById(Integer.parseInt(String.valueOf(taskId)));
+    public void startTask(int taskId, int userId) {
+        Optional<Task> taskOptional = taskMapper.findById(taskId);
         if (taskOptional.isEmpty()) {
             throw new IllegalArgumentException("Task not found: " + taskId);
         }
@@ -118,7 +137,7 @@ public class TaskServiceImpl implements TaskService {
         // **修正：发布用户开始任务事件，使用 'click'**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "task",
                 taskId,
                 "click",       // actionType: 使用 'click'
@@ -155,16 +174,15 @@ public class TaskServiceImpl implements TaskService {
         // **添加：发布用户提交任务事件，使用 'submit'**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
+                userId,
                 "task",
-                Long.parseLong(String.valueOf(taskId)),
+                taskId,
                 "submit",    // actionType: 使用 'submit'
                 null,
                 "{\"score\":" + rawScore + ", \"content\":\"" + submissionContent + "\"}" // detail
         ));
 
-        conceptMasteryService.updateMasteryForTaskSubmission(Long.parseLong(String.valueOf(userId)), Long.parseLong(String.valueOf(taskId)));
-
+        conceptMasteryService.updateMasteryForTaskSubmission(userId, taskId);
         return score;
     }
 
@@ -177,9 +195,9 @@ public class TaskServiceImpl implements TaskService {
      * @param isCorrect  是否正确
      */
     @Transactional
-    public void answerQuestion(Long questionId, Long userId, String userAnswer, boolean isCorrect) {
+    public void answerQuestion(int questionId, int userId, String userAnswer, boolean isCorrect) {
 
-        Optional<Question> questionOptional = Optional.ofNullable(questionMapper.findById(Integer.parseInt(String.valueOf(questionId))));
+        Optional<Question> questionOptional = Optional.ofNullable(questionMapper.findById(questionId));
         if (questionOptional.isEmpty()) {
             throw new IllegalArgumentException("Question not found: " + questionId);
         }

@@ -39,19 +39,19 @@ public class ConceptMasteryImpl implements ConceptMasteryService {
     public void recalculateAllMasteryLevels() {
         System.out.println("Starting recalculation of concept mastery levels at " + LocalDateTime.now());
 
-        List<Long> allUserIds = userMapper.findAllUserIds(); // 假设 UserMapper 有 findAllUserIds 方法
-        List<Long> allConceptIds = conceptMapper.findAllConceptIds(); // 假设 ConceptMapper 有 findAllConceptIds 方法
+        List<Integer> allUserIds = userMapper.findAllUserIds(); // 假设 UserMapper 有 findAllUserIds 方法
+        List<Integer> allConceptIds = conceptMapper.findAllConceptIds(); // 假设 ConceptMapper 有 findAllConceptIds 方法
 
-        for (Long userId : allUserIds) {
-            for (Long conceptId : allConceptIds) {
+        for (int userId : allUserIds) {
+            for (int conceptId : allConceptIds) {
                 try {
                     int newMasteryLevel = calculateMasteryForUserConcept(userId, conceptId);
 
                     Optional<Concept_mastery> existingMastery = conceptMasteryMapper.findByUserIdAndConceptId(userId, conceptId);
                     if (existingMastery.isPresent()) {
                         Concept_mastery mastery = existingMastery.get();
-                        mastery.setMastery_level(newMasteryLevel);
-                        mastery.setLast_practiced(LocalDateTime.now());
+                        mastery.setMasteryLevel(newMasteryLevel);
+                        mastery.setLastPracticed(LocalDateTime.now());
                         conceptMasteryMapper.updateConceptMastery(mastery);
                     } else {
                         Concept_mastery mastery = new Concept_mastery(userId, conceptId, newMasteryLevel, LocalDateTime.now());
@@ -75,7 +75,7 @@ public class ConceptMasteryImpl implements ConceptMasteryService {
      * @return 计算出的掌握度分数 (0-100)
      */
     @Override
-    public int calculateMasteryForUserConcept(Long userId, Long conceptId) {
+    public int calculateMasteryForUserConcept(int userId, int conceptId) {
         // **这里是复杂的计算逻辑，需要大量的查询和业务规则**
 
         // 1. 获取与概念相关的问题的正确率
@@ -122,17 +122,17 @@ public class ConceptMasteryImpl implements ConceptMasteryService {
     // 可以添加一个方法在用户提交任务后，只计算与该任务相关的概念掌握度
     @Override
     @Transactional
-    public void updateMasteryForTaskSubmission(Long userId, Long taskId) {
+    public void updateMasteryForTaskSubmission(int userId, int taskId) {
         // 1. 获取任务关联的所有概念ID
-        List<Long> conceptIds = conceptQuestionMapper.findConceptIdsByTaskId(taskId); // 假设有此方法
+        List<Integer> conceptIds = conceptQuestionMapper.findConceptIdsByTaskId(taskId); // 假设有此方法
         // 2. 遍历这些概念，为每个概念重新计算掌握度
-        for (Long conceptId : conceptIds) {
+        for (int conceptId : conceptIds) {
             int newMasteryLevel = calculateMasteryForUserConcept(userId, conceptId);
             Optional<Concept_mastery> existingMastery = conceptMasteryMapper.findByUserIdAndConceptId(userId, conceptId);
             if (existingMastery.isPresent()) {
                 Concept_mastery mastery = existingMastery.get();
-                mastery.setMastery_level(newMasteryLevel);
-                mastery.setLast_practiced(LocalDateTime.now());
+                mastery.setMasteryLevel(newMasteryLevel);
+                mastery.setLastPracticed(LocalDateTime.now());
                 conceptMasteryMapper.updateConceptMastery(mastery);
             } else {
                 Concept_mastery mastery = new Concept_mastery(userId, conceptId, newMasteryLevel, LocalDateTime.now());

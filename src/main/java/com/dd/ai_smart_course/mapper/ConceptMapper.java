@@ -42,7 +42,7 @@ public interface ConceptMapper {
      */
     @Insert("INSERT INTO concept_question(concept_id, question_id) VALUES(#{conceptId}, #{questionId}) " +
             "ON DUPLICATE KEY UPDATE concept_id = #{conceptId}") // 防止重复插入
-    void linkConceptToQuestion(@Param("conceptId") Long conceptId, @Param("questionId") Long questionId);
+    void linkConceptToQuestion(@Param("conceptId") int conceptId, @Param("questionId") int questionId);
 
     /**
      * 获取一个知识点下所有题目 (现在包含 difficulty 字段)
@@ -50,15 +50,15 @@ public interface ConceptMapper {
     @Select("SELECT q.id, q.content, q.type, q.difficulty FROM questions q " + // <-- 添加了 q.difficulty
             "JOIN concept_question cq ON q.id = cq.question_id " +
             "WHERE cq.concept_id = #{conceptId}")
-    List<Question> getQuestionsByConcept(@Param("conceptId") Long conceptId);
+    List<Question> getQuestionsByConcept(@Param("conceptId") int conceptId);
 
     @Insert("INSERT INTO concept_mastery(user_id, concept_id, mastery_level) " + // ER图中concept_mastery没有last_update_time
             "VALUES(#{userId}, #{conceptId}, #{masteryLevel}) " +
             "ON DUPLICATE KEY UPDATE mastery_level = #{masteryLevel}") // ER图中concept_mastery没有last_update_time
-    void updateMasteryLevel(@Param("userId") Long userId, @Param("conceptId") Long conceptId, @Param("masteryLevel") int masteryLevel);
+    void updateMasteryLevel(@Param("userId") int userId, @Param("conceptId") int conceptId, @Param("masteryLevel") int masteryLevel);
 
     @Select("SELECT mastery_level FROM concept_mastery WHERE user_id = #{userId} AND concept_id = #{conceptId}")
-    Integer getMasteryLevel(@Param("userId") Long userId, @Param("conceptId") Long conceptId);
+    Integer getMasteryLevel(@Param("userId") int userId, @Param("conceptId") int conceptId);
 
     /**
      * 获取某用户在课程中的知识点掌握情况 (根据 ER 图，通过 chapters 表关联 course_id)
@@ -68,43 +68,43 @@ public interface ConceptMapper {
             "LEFT JOIN concept_mastery ucm ON c.id = ucm.concept_id AND ucm.user_id = #{userId} " +
             "JOIN chapters chap ON c.chapter_id = chap.id " + // 根据ER图，通过chapters表的course_id筛选
             "WHERE chap.course_id = #{courseId}")
-    List<Map<String, Object>> getUserConceptMasteryByCourse(@Param("userId") Long userId, @Param("courseId") Long courseId);
+    List<Map<String, Object>> getUserConceptMasteryByCourse(@Param("userId") int userId, @Param("courseId") int courseId);
 
     /**
      * 获取用户所有知识点的掌握度（用于推荐算法的基础数据）
      */
     @Select("SELECT concept_id, mastery_level FROM concept_mastery WHERE user_id = #{userId}")
-    List<Map<String, Object>> getUserAllConceptMastery(@Param("userId") Long userId);
+    List<Map<String, Object>> getUserAllConceptMastery(@Param("userId")int userId);
 
     /**
      * 获取某个概念的详细信息 (用于推荐算法后获取完整 Concept 对象)
      */
     @Select("SELECT id, name, description, chapter_id FROM concepts WHERE id = #{conceptId}")
-    Concept getConceptById(@Param("conceptId") Long conceptId);
+    Concept getConceptById(@Param("conceptId")int conceptId);
 
 
     @Delete("DELETE FROM concepts WHERE course_id = #{id}")
     int deleteByCourseId(int id);
 
     @Select("SELECT id FROM concepts")
-    List<Long> findAllConceptIds();
+    List<Integer> findAllConceptIds();
 
     // 获取某个概念
     @Select("SELECT * FROM concepts WHERE id = #{id}")
-    Optional<Concept> findById(Long conceptId);
+    Optional<Concept> findById(int conceptId);
 
     // 获取某个课程的所有概念ID
     @Select("SELECT concept_id FROM concept_question WHERE question_id IN (" +
-            "SELECT id FROM question WHERE course_id = #{courseId})")
-    List<Long> findConceptIdsByCourseId(Long courseId);
+            "SELECT id FROM questions WHERE course_id = #{courseId})")
+    List<Integer> findConceptIdsByCourseId(int courseId);
 
     // 获取某个章节的 concepts
     @Select("SELECT AVG(cm.mastery_level) AS avg_mastery " +
             "FROM concept_mastery cm " +
             "JOIN concepts c ON cm.concept_id = c.id " +
             "WHERE cm.user_id = #{userId} AND c.chapter_id = #{chapterId}")
-    Double getAverageMasteryByChapter(@Param("userId") Long userId,
-                                      @Param("chapterId") Long chapterId);
+    Double getAverageMasteryByChapter(@Param("userId") int userId,
+                                      @Param("chapterId") int chapterId);
 
     // 获取某个课程的 concepts
     @Select("SELECT AVG(cm.mastery_level) AS avg_mastery " +
@@ -112,8 +112,8 @@ public interface ConceptMapper {
             "JOIN concepts c ON cm.concept_id = c.id " +
             "JOIN chapters ch ON c.chapter_id = ch.id " +
             "WHERE cm.user_id = #{userId} AND ch.course_id = #{courseId}")
-    Double getAverageMasteryByCourse(@Param("userId") Long userId,
-                                     @Param("courseId") Long courseId);
+    Double getAverageMasteryByCourse(@Param("userId") int userId,
+                                     @Param("courseId") int courseId);
 
     /**
      * 获取用户在某个课程中的掌握低的 concepts
@@ -121,7 +121,7 @@ public interface ConceptMapper {
     @Select("SELECT c.* FROM concepts c " +
             "LEFT JOIN concept_mastery cm ON c.id = cm.concept_id AND cm.user_id = #{userId} " +
             "WHERE cm.mastery_level < #{threshold}")
-    List<Concept> getLowMasteryConcepts(@Param("userId") Long userId,
+    List<Concept> getLowMasteryConcepts(@Param("userId") int userId,
                                         @Param("threshold") int threshold);
 
     /**
@@ -131,7 +131,7 @@ public interface ConceptMapper {
             "WHERE NOT EXISTS (" +
             "SELECT 1 FROM concept_mastery cm " +
             "WHERE cm.user_id = #{userId} AND cm.concept_id = c.id)")
-    List<Concept> getUnmasteredConcepts(@Param("userId") Long userId);
+    List<Concept> getUnmasteredConcepts(@Param("userId") int userId);
 
     /**
      * 获取某个概念的难度统计*/
@@ -140,11 +140,11 @@ public interface ConceptMapper {
             "JOIN concept_question cq ON q.id = cq.question_id " +
             "WHERE cq.concept_id = #{conceptId} " +
             "GROUP BY q.difficulty")
-    List<Map<String, Object>> getDifficultyStatsByConcept(@Param("conceptId") Long conceptId);
+    List<Map<String, Object>> getDifficultyStatsByConcept(@Param("conceptId") int conceptId);
 
     //删除某概念与所有题目的绑定
     @Delete("DELETE FROM concept_question WHERE concept_id = #{conceptId}")
-    void unlinkAllQuestionsFromConcept(@Param("conceptId") Long conceptId);
+    void unlinkAllQuestionsFromConcept(@Param("conceptId") int conceptId);
 
     //查询未绑定概念的题目
     @Select("SELECT * FROM questions q " +
@@ -156,7 +156,7 @@ public interface ConceptMapper {
      * 获取某个概念的题目数量
      */
     @Select("SELECT COUNT(*) FROM concept_question WHERE concept_id = #{conceptId}")
-    int countQuestionsByConcept(@Param("conceptId") Long conceptId);
+    int countQuestionsByConcept(@Param("conceptId") int conceptId);
 
 
     /**
@@ -168,8 +168,8 @@ public interface ConceptMapper {
             "JOIN chapters ch ON c.chapter_id = ch.id " +
             "WHERE cm.user_id = #{userId} AND ch.course_id = #{courseId} " +
             "ORDER BY cm.mastery_level DESC")
-    List<Map<String, Object>> getSortedMasteryByCourse(@Param("userId") Long userId,
-                                                       @Param("courseId") Long courseId);
+    List<Map<String, Object>> getSortedMasteryByCourse(@Param("userId") int userId,
+                                                       @Param("courseId") int courseId);
 
 
 

@@ -1,18 +1,21 @@
 package com.dd.ai_smart_course.entity;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Builder
 @Data
 public class Course {
     private int id;
     private String name;
     private int teacherId;
     private String description;
-    private String status;// published,draft,archived
+    private String statusSelf;// published,draft,archived
     private Timestamp createdAt;
+    private String statusStudent;
 
     @Override
     public String toString() {
@@ -21,7 +24,7 @@ public class Course {
                 ", name='" + name + '\'' +
                 ", teacherId=" + teacherId +
                 ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
+                ", status='" + statusSelf + '\'' +
                 '}';
     }
 

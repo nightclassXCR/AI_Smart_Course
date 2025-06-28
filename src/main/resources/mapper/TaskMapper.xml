@@ -10,6 +10,15 @@
     <select id="listByCourseId" resultType="com.dd.ai_smart_course.entity.Task">
         select * from tasks where course_id = #{courseId}
     </select>
+    <select id="listByCourseIds" resultType="com.dd.ai_smart_course.entity.Task">
+        select * from tasks
+        <where>
+                and course_id in
+                <foreach item="courseId" collection="courseIds" separator="," open="(" close=")">
+                    #{courseId}
+                </foreach>
+        </where>
+    </select>
 
     <update id="update" parameterType="Task">
         update tasks

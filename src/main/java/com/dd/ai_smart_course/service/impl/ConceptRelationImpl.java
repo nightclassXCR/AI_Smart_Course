@@ -10,6 +10,7 @@ import java.util.List;
 
 @Service
 public class ConceptRelationImpl implements ConceptRelationService {
+
     @Autowired
     private ConceptRelationMapper mapper;
 
