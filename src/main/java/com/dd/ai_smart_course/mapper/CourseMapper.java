@@ -29,7 +29,7 @@ public interface CourseMapper {
     int addCourse(Course course);
 
     // 更新课程信息
-    @Update("UPDATE courses SET name = #{name}, teacher_id = #{teacherId}, description = #{description}, created_at = #{createdAt} WHERE id = #{id}")
+    @Update("UPDATE courses SET name = #{name}, teacher_id = #{teacherId}, description = #{description},credit = #{credit},hours = #{hours},status_self = #{statusSelf}, created_at = #{createdAt} WHERE id = #{id}")
     @Results({
             @Result(property = "description", column = "description")
     })

@@ -79,7 +79,11 @@ public class CourseController {
      * @return 更新结果
      */
     @PutMapping
-    public Result<String> updateCourse(@RequestBody Course course) {
+    public Result<String> updateCourse(HttpServletRequest request,@RequestBody Course course) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        course.setTeacherId(userId);
         if(courseService.updateCourse(course) > 0){
             return Result.success("更新成功");
         }else {
