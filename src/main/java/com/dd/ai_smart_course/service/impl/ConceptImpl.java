@@ -97,16 +97,6 @@ public class ConceptImpl implements ConceptService {
         return masteryLevel == null ? 0 : masteryLevel;
     }
 
-//    @Override
-//    public Map<Concept, Integer> getUserConceptMasteryByCourse(Long userId, Long courseId) {
-//        return Map.of();
-//    }
-//
-//    @Override
-//    public List<Concept> recommendConceptsForUser(Long userId, Long courseId) {
-//        return List.of();
-//    }
-
     @Override
     @Transactional
     public void viewConcept(int conceptId, int userId, Integer durationSeconds) {

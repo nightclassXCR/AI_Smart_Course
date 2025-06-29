@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface TaskService {
 
-    void insertBatch(List<Task> tasks);
 
     void insert(TaskDTO taskDTO);
 
@@ -18,7 +17,7 @@ public interface TaskService {
 
     void update(Task task);
 
-    List<Integer> findQuestionIdsByTaskId(int taskId);
+//    List<Integer> findQuestionIdsByTaskId(int taskId);
 
     List<Task> listByUserId(int userId);
 }

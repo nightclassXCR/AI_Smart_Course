@@ -10,9 +10,12 @@ import com.dd.ai_smart_course.utils.BaseContext;
 import com.dd.ai_smart_course.vo.TaskVO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,15 +58,15 @@ public class TaskController {
     @GetMapping("/list")
     //@ApiOperation("通过user id获取任务列表")
     public Result<List<TaskVO>> listByUserId(){
-        int userId= BaseContext.getCurrentId();//TODO 获取当前用户id
+        int userId= BaseContext.getCurrentId();
         log.info("listByUserId:{}", userId);
         List<Task> tasks = taskService.listByUserId(userId);
         List<TaskVO> tasksVO = new ArrayList<>();
         for (Task task : tasks) {
             TaskVO taskVO = new TaskVO();
-            taskVO.setTitle(task.getTitle());
+            BeanUtils.copyProperties(task, taskVO);
             taskVO.setCourseName(courseMapper.getCourseById(task.getCourseId()).getName());
-            taskVO.setDeadline(task.getDeadline());
+            log.info("taskVO:{}", taskVO);
             tasksVO.add(taskVO);
         }
         log.info("listByCourseId:{}", tasks);
@@ -77,10 +80,9 @@ public class TaskController {
         return Result.success();
     }
 
-    @PutMapping("/{id}")
-    public Result update(@RequestBody Task task, @PathVariable int id){
-        log.info("update: {}{}",id,task);
-        task.setId(id);
+    @PostMapping("/update")
+    public Result update(@RequestBody Task task){
+        log.info("update: {}",task);
         taskService.update(task);
         return Result.success();
     }

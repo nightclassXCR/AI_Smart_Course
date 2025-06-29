@@ -11,6 +11,7 @@ public class LearningLogDTO {
     private String username; // 添加用户名，方便前端展示
     private String targetType;
     private int targetId;
+    private String targetName; // 添加目标名称，方便前端展示
     private String actionType;
     private LocalDateTime actionTime;
     private Integer duration;

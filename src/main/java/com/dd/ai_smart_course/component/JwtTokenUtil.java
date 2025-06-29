@@ -29,7 +29,6 @@ public class JwtTokenUtil {
                 //signature
                 .signWith(SignatureAlgorithm.HS256, KEY)  //加密算法及其密钥
                 .compact();     //将三部分拼装
-
         log.info("生成token: "+ token);
 //        //生成日志
 //        System.out.println("生成令牌: " + token);

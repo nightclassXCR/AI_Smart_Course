@@ -6,15 +6,18 @@ import lombok.Data;
 import java.sql.Timestamp;
 import java.util.Objects;
 
-@Builder
+
 @Data
 public class Course {
     private int id;
     private String name;
     private int teacherId;
     private String description;
+    private int credit;
+    private int hours;
     private String statusSelf;// published,draft,archived
     private Timestamp createdAt;
+    private Timestamp updatedAt;
     private String statusStudent;
 
     @Override

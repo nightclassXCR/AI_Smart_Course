@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.mapper;
 
+import com.dd.ai_smart_course.dto.LearningLogDTO;
 import com.dd.ai_smart_course.entity.LearningLog;
 import org.apache.ibatis.annotations.*;
 
@@ -175,5 +176,8 @@ public interface LogMapper {
     @Delete("DELETE FROM learning_logs WHERE id = #{id}")
     int deleteLog(int id);
 
+    @Select("SELECT SUM(duration) FROM learning_logs WHERE user_id = #{userId}")
+    Double getTotalStudyTime(int userId);
 
+    LearningLogDTO findLatestLearningLogInCourseDTO(@Param("userId") int userId, @Param("courseId") int courseId);
 }

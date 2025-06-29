@@ -17,35 +17,4 @@
         </foreach>
     </delete>
 
-
-    <update id="update" parameterType="Task">
-        update tasks
-        <set>
-            <if test="courseId != null">
-                course_id = #{courseId},
-            </if>
-            <if test="title != null">
-                title = #{title},
-            </if>
-            <if test="type != null">
-                type = #{type},
-            </if>
-            <if test="description != null">
-                description = #{description},
-            </if>
-            <if test="status != null">
-                status = #{status},
-            </if>
-            <if test="deadline != null">
-                deadline = #{deadline},
-            </if>
-            <if test="updateAt != null">
-                updateAt=#{updatedAt},
-            </if>
-
-        </set>
-        where id=#{id}
-
-    </update>
-
 </mapper>
