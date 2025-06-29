@@ -38,7 +38,7 @@ public class ChapterImpl implements ChapterService {
     @Override
     @Transactional
     public int addChapter(ChapterDTO chapterdto) {
-        Integer courseId = chapterMapper.getCourseIdByCourseName(chapterdto.getCourseName());
+        Integer courseId = chapterdto.getCourseId();
         if (courseId == null) {
             throw new RuntimeException("课程不存在");
         }

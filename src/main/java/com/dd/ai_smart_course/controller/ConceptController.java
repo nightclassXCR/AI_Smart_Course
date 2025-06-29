@@ -53,6 +53,7 @@ public class ConceptController {
      */
     @PostMapping
     public Result<String> addConcept(@RequestBody ConceptDTO conceptDto) {
+        log.info("添加 concept: {}", conceptDto);
         conceptService.addConcept(conceptDto);
         return Result.success("添加成功");
     }
