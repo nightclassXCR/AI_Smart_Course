@@ -22,7 +22,7 @@ public interface CourseMapper {
     Course getCourseById(int id);
 
     // 添加课程
-    @Insert("INSERT INTO courses (name, teacher_id, description, created_at) VALUES (#{name}, #{teacherId}, #{description}, #{createdAt})")
+    @Insert("INSERT INTO courses (name, teacher_id, description,credit,hours,status_self, created_at) VALUES (#{name}, #{teacherId}, #{description},#{credit},#{hours},#{statusSelf}, #{createdAt})")
     @Results({
             @Result(property = "description", column = "description")
     })

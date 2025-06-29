@@ -59,8 +59,13 @@ public class CourseController {
      * @return 添加结果
      */
     @PostMapping
-    public Result<String> addCourse(@RequestBody Course course) {
-        log.info("Adding course: {}", course);
+    public Result<String> addCourse(HttpServletRequest request,@RequestBody Course course) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7); // 去掉 "Bearer " 前缀
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        course.setTeacherId(userId);
+        course.setStatusSelf("published");
+        course.setStatusStudent("underway");
         if(courseService.addCourse(course) > 0){
             return Result.success("添加成功");
         }else {
