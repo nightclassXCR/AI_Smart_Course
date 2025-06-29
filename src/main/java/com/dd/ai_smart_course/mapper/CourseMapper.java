@@ -43,11 +43,58 @@ public interface CourseMapper {
     int deleteCourse(int id);
 
 
-    @Select("SELECT id, name, teacher_id, description,credit, hours, status_self FROM courses WHERE teacher_id = #{teacherId}")
-    @Results({
-            @Result(property = "description", column = "description")
+
+    /**
+     * 获取课程详细信息
+     * @return 课程列表
+     */
+    @Select({
+            "SELECT",
+            "    c.id,",
+            "    c.name,",
+            "    c.teacher_id,",
+            "    c.description,",
+            "    c.credit,",
+            "    c.hours,",
+            "    c.status_self,",
+            "    u.name AS teacherRealName,", // 教师真实姓名
+            "    c.created_at,",
+            "    c.updated_at,",
+            "    c.status_student,",
+            "    COUNT(DISTINCT cu.user_id) AS studentCount,", // 学生数量
+            "    COALESCE(AVG(s.final_score), 0) AS averageScore", // 平均分
+            "FROM",
+            "    courses c",
+            "LEFT JOIN",
+            "    users u ON c.teacher_id = u.id",
+            "LEFT JOIN",
+            "    course_user cu ON c.id = cu.course_id AND cu.role = 'ROLE_STUDENT'",
+            "LEFT JOIN",
+            "    tasks t ON c.id = t.course_id",
+            "LEFT JOIN",
+            "    scores s ON cu.user_id = s.user_id AND t.id = s.task_id",
+            "WHERE",
+            "    c.teacher_id = #{teacherId}",
+            "GROUP BY",
+            "    c.id, c.name, c.teacher_id, c.description, c.credit, c.hours, c.status_self,",
+            "    u.name, c.created_at, c.updated_at, c.status_student"
     })
-    List<Course> getCoursesByTeacherId(@Param("teacherId") int teacherId);
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "teacherId", column = "teacher_id"),
+            @Result(property = "description", column = "description"),
+            @Result(property = "credit", column = "credit"),
+            @Result(property = "hours", column = "hours"),
+            @Result(property = "statusSelf", column = "status_self"),
+            @Result(property = "teacherRealName", column = "teacherRealName"), // 映射教师真实姓名
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at"),
+            @Result(property = "statusStudent", column = "status_student"),
+            @Result(property = "StudentCount", column = "studentCount"), // 映射学生数量
+            @Result(property = "averageScore", column = "averageScore") // 映射平均分
+    })
+    List<CoursesDTO> getCoursesByTeacherId(@Param("teacherId") int teacherId);
 
     /**
      * 根据课程ID列表获取课程
@@ -110,7 +157,7 @@ public interface CourseMapper {
     // 获取所有章节的详细信息，用于分组。
     // 这个方法可以复用 getChaptersByCourse，或者专门定义一个。
     // 为了 getConceptsGroupedByChapter 的方便，这里直接获取所有相关章节
-    @Select("SELECT id, course_id, title, sequence FROM chapters WHERE course_id = #{courseId} ORDER BY sequence ASC")
+    @Select("SELECT id, course_id, title, sequence  FROM chapters WHERE course_id = #{courseId} ORDER BY sequence ASC")
     List<Chapter> findChaptersForGrouping(@Param("courseId") int courseId);
 
     @Delete("DELETE FROM concepts WHERE course_id = #{courseId}")
@@ -195,6 +242,11 @@ public interface CourseMapper {
             "WHERE," +
             "cur.user_id = #{userId}")
     List<CoursesDTO> getCoursesByUserId(@Param("userId") int userId);
+
+
+    // 教师根据自己id来查询自己创建的课程的数量
+    @Select("SELECT  course_id FROM course_user WHERE user_id =#{userId}" )
+    List<Integer> getCoursesCountByTeacherId(@Param("userId") int userId);
 
 
 }

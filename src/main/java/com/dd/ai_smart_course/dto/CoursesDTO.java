@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +21,8 @@ public class CoursesDTO {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String statusStudent;
+    private int StudentCount; // <-- 新增字段，用于存储学生数量
+    private int averageScore; // <-- 新增字段，用于存储平均分
 
 
 }

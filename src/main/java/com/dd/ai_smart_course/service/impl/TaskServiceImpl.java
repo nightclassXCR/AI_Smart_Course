@@ -213,8 +213,8 @@ public class TaskServiceImpl implements TaskService {
         // **添加：发布用户回答问题事件，使用 'answer'**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
-                "QUESTION", // target_type 可以是 QUESTION
+                userId,
+                "question", // target_type 可以是 QUESTION
                 questionId,
                 "answer",   // actionType: 使用 'answer'
                 null,

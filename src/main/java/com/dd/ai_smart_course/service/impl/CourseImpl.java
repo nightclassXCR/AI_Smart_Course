@@ -149,7 +149,7 @@ public class CourseImpl implements CourseService {
      * @return
      */
     @Override
-    public List<Course> getCoursesByTeacherId(int teacherId) {
+    public List<CoursesDTO> getCoursesByTeacherId(int teacherId) {
 
         return courseMapper.getCoursesByTeacherId(teacherId);
     }
@@ -459,5 +459,15 @@ public class CourseImpl implements CourseService {
             }
         }
         return 0;
+    }
+
+    @Override
+    public int getCouresCountByTeacherId(int teacherId) {
+        List<Integer> courseIds = courseMapper.getCoursesCountByTeacherId(teacherId);
+        if (courseIds.isEmpty()) {
+            return 0;
+        }
+        return courseIds.size();
+
     }
 }

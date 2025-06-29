@@ -21,7 +21,7 @@ public interface CourseService {
     // 删除课程
     int deleteCourse(int id);
     // 获取指定教师授课的课程
-    List<Course> getCoursesByTeacherId(int teacherId);
+    List<CoursesDTO> getCoursesByTeacherId(int teacherId);
 
     // 获取课程下所有章节
     List<Chapter> getChaptersByCourse(int courseId);
@@ -61,4 +61,7 @@ public interface CourseService {
 
     // 获取已结课课程数
     int getCompletedCourseCount(int userId);
+
+    // 获取指定教师课程数
+    int getCouresCountByTeacherId(int teacherId);
 }

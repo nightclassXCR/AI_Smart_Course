@@ -102,8 +102,8 @@ public class CourseController {
      * @return 教师授课的课程列表
      */
     @GetMapping("/byTeacher/{teacherId}")
-    public Result<List<Course>> getCoursesByTeacherId(@PathVariable("teacherId") int teacherId) {
-        List<Course> courses = courseService.getCoursesByTeacherId(teacherId);
+    public Result<List<CoursesDTO>> getCoursesByTeacherId(@PathVariable("teacherId") int teacherId) {
+        List<CoursesDTO> courses = courseService.getCoursesByTeacherId(teacherId);
         return Result.success("获取成功", courses);
     }
 
@@ -243,7 +243,7 @@ public class CourseController {
      * @return
      */
     @GetMapping("/getCourseNameByUserId")
-    public Result<List<Course>> getCourseNameByUserId(HttpServletRequest request) {
+    public Result<List<CoursesDTO>> getCourseNameByUserId(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
         Integer userId = jwtTokenUtil.getUserIDFromToken(token);
@@ -266,6 +266,16 @@ public class CourseController {
     }
 
 
-
+    /**
+     * 获取课程数
+     * @return
+     */
+    @GetMapping("/getCourseCountByTeacherId")
+    public Result<Integer> getCourseCountByTeacherId(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        return Result.success("获取成功", courseService.getCouresCountByTeacherId(userId));
+    }
 
 }
