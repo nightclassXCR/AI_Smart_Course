@@ -212,4 +212,14 @@ public class AnalysisService {
         stats.setActiveDays((int) activeDays);
         return stats;
     }
+
+
+    /**
+     * 统计该用户的总学习时间
+     */
+    public Double getTotalStudyTime(int userId) {
+        Double sum = learningLogMapper.getTotalStudyTime(userId);
+        sum = sum / 3600;
+        return sum;
+    }
 }

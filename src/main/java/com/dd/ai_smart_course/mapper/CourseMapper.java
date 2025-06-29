@@ -43,7 +43,7 @@ public interface CourseMapper {
     int deleteCourse(int id);
 
 
-    @Select("SELECT id, name, teacher_id, description FROM courses WHERE teacher_id = #{teacherId}")
+    @Select("SELECT id, name, teacher_id, description,credit, hours, status_self FROM courses WHERE teacher_id = #{teacherId}")
     @Results({
             @Result(property = "description", column = "description")
     })
@@ -175,5 +175,26 @@ public interface CourseMapper {
 
     @Select("SELECT id FROM courses WHERE name like concat('%',#{courseName},'%')")
     Integer getCourseIdByCourseName(String courseName);
+
+
+//    // 教师根据自己的ID来查询自己的课程
+//    @Select("SELECT  course_id FROM course_user WHERE user_id =#{userId}")
+//    List<CoursesDTO>getCoursesByTeacherId(@Param("userId") int userId);
+
+
+
+    // 根据用户ID查询用户已完成的课程
+    @Select("SELECT," +
+            "cur.user_id, " +
+            "cur.course_id," +
+            "c.status_student AS StatusStudent," +
+            "FROM," +
+            "course_user cur," +
+            "JOIN, " +
+            "courses c ON cur.course_id = c.id," +
+            "WHERE," +
+            "cur.user_id = #{userId}")
+    List<CoursesDTO> getCoursesByUserId(@Param("userId") int userId);
+
 
 }

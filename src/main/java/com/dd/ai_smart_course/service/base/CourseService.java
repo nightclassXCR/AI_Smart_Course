@@ -22,12 +22,14 @@ public interface CourseService {
     int deleteCourse(int id);
     // 获取指定教师授课的课程
     List<Course> getCoursesByTeacherId(int teacherId);
+
     // 获取课程下所有章节
     List<Chapter> getChaptersByCourse(int courseId);
     // 获取课程下所有知识点
     List<Concept> getConceptsByCourse(int courseId);
     // 按章节分组的知识点
     Map<Chapter, List<Concept>> getConceptsGroupedByChapter(int courseId);
+
 
     // 用户选课
     void enrollUserInCourse(int userId, int courseId);
@@ -56,4 +58,7 @@ public interface CourseService {
 
     // 结课
     void comleteCourse(int courseId);
+
+    // 获取已结课课程数
+    int getCompletedCourseCount(int userId);
 }

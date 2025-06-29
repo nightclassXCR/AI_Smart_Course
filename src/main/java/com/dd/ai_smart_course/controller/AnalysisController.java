@@ -6,6 +6,7 @@ import com.dd.ai_smart_course.dto.LearningStatsDTO;
 import com.dd.ai_smart_course.R.PaginationResult;
 import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.service.AnalysisService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/analysis")
+@RequestMapping("/analysis")
 public class AnalysisController {
 
     @Autowired
@@ -22,10 +23,6 @@ public class AnalysisController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    // 暂时硬编码用户ID，实际应该从JWT或Session中获取
-    private int getCurrentUserId() {
-        return 1; // TODO: 从认证信息中获取
-    }
 
     /**
      * 获取当前用户的学习日志
@@ -37,9 +34,12 @@ public class AnalysisController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request
     ) {
-        int userId = getCurrentUserId();
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
         // 调用Service
         var result = analysisService.getLearningLogs(userId, targetType, actionType, startTime, endTime, page, size);
         return Result.success("获取成功", result);
@@ -84,9 +84,12 @@ public class AnalysisController {
     @GetMapping("/my-stats")
     public Result<LearningStatsDTO> getMyLearningStats(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime,
+            HttpServletRequest request
     ) {
-        int userId = getCurrentUserId();
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
         LearningStatsDTO stats = analysisService.getLearningStats(userId, startTime, endTime);
         return Result.success("获取成功", stats);
     }
@@ -102,5 +105,17 @@ public class AnalysisController {
     ) {
         LearningStatsDTO stats = analysisService.getLearningStats(userId, startTime, endTime);
         return Result.success("获取成功", stats);
+    }
+
+    /**
+     * 获取当前用户总的学习时间
+     */
+    @GetMapping("/my-total-study-time")
+    public Result<Double> getMyTotalStudyTime(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        Double totalStudyTime = analysisService.getTotalStudyTime(userId);
+        return Result.success("获取成功", totalStudyTime);
     }
 }
