@@ -55,6 +55,7 @@ public class CourseImpl implements CourseService {
 
     @Override
     public Course getCourseById(int id) {
+
         return courseMapper.getCourseById(id);
     }
 
@@ -148,7 +149,8 @@ public class CourseImpl implements CourseService {
      * @return
      */
     @Override
-    public List<Course> getCoursesByTeacherId(int teacherId) {
+    public List<CoursesDTO> getCoursesByTeacherId(int teacherId) {
+
         return courseMapper.getCoursesByTeacherId(teacherId);
     }
 
@@ -222,7 +224,7 @@ public class CourseImpl implements CourseService {
         if (courseUserMapper.findByCourseIdAndUserId(courseId, userId).isPresent()) {
             throw new IllegalStateException("User already enrolled in this course.");
         }
-        Course_user courseUser = new Course_user(courseId, userId, "STUDENT");
+        Course_user courseUser = new Course_user(courseId, userId, "ROLE_STUDENT");
         courseUserMapper.insertCourseUser(courseUser);
         System.out.println("User " + userId + " enrolled in course " + courseId);
 
@@ -242,7 +244,7 @@ public class CourseImpl implements CourseService {
     @Transactional
     public void unenrollUserFromCourse(int userId, int courseId) {
         Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
-        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+        if (cu.isEmpty() || !cu.get().getRole().equals("ROLE_STUDENT")) {
             throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
         }
         courseUserMapper.deleteCourseUser(courseId, userId);
@@ -265,7 +267,7 @@ public class CourseImpl implements CourseService {
     @Transactional
     public void completeCourse(int courseId, int userId) {
         Optional<Course_user> cu = courseUserMapper.findByCourseIdAndUserId(courseId, userId);
-        if (cu.isEmpty() || !cu.get().getRole().equals("STUDENT")) {
+        if (cu.isEmpty() || !cu.get().getRole().equals("ROLE_STUDENT")) {
             throw new IllegalArgumentException("User is not a student of this course or not enrolled.");
         }
         boolean actuallyCompleted = checkAndMarkCourseCompletion(courseId, userId);
@@ -394,9 +396,9 @@ public class CourseImpl implements CourseService {
                 dto.setStatusStudent(course.getStatusStudent());
                 if (course.getTeacherId() != 0) {
                     String teacherName = courseMapper.getUserNameById(course.getTeacherId());
-                    dto.setTeacherName(teacherName);
+                    dto.setTeacherRealName(teacherName);
                 } else {
-                    dto.setTeacherName("未知教师"); // 默认值
+                    dto.setTeacherRealName("未知教师"); // 默认值
                 }
                 coursesdto.add(dto);
             }
@@ -413,46 +415,59 @@ public class CourseImpl implements CourseService {
     // 搜索课程在用户已有课程中
     @Override
     public List<CoursesDTO> searchCourses(String keyword, int userId) {
-        // 1. 获取用户的所有课程
-        List<Course> courses = courseMapper.getMyCourses(userId);
-
-        List<CoursesDTO> matchingCourseDTOs = new ArrayList<>();
+        List<CoursesDTO> courses = courseMapper.getMyCourses(userId);
 
         log.info("Searching for courses with keyword: {}", keyword);
-        log.info("User's courses: {}", courses);
+        log.info("User's courses count: {}", courses.size());
 
         // 提前检查：如果用户的课程列表为空，立即返回空列表。
-        // 这是最常导致“课程为空”的原因。
-        if (courses == null || courses.isEmpty()) {
+        if (courses.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // 3. 遍历原始 Course 列表，进行数据转换
-        for (Course course : courses) {
-            // 再次进行 null 检查，以防 mapper 返回的列表中有 null 元素
-            if (course != null) {
-                // 确保课程名称不为空，并包含关键字
-                if (course.getName() != null && course.getName().contains(keyword)) {
-                    // 创建 CourseDTO 对象
-                    CoursesDTO dto = new CoursesDTO();
-                    dto.setId(course.getId());
-                    dto.setName(course.getName());
-                    dto.setDescription(course.getDescription());
-                    dto.setTeacherId(course.getTeacherId());
-                    dto.setStatusSelf(course.getStatusSelf());
-                    dto.setStatusStudent(course.getStatusStudent());
-                    // ！！！ 关键：根据 teacherId 查询教师名字 ！！！
-                    // 这里需要再次调用 mapper 获取教师名字
-                    if (course.getTeacherId() != 0) {
-                        String teacherName = courseMapper.getUserNameById( course.getTeacherId());
-                        dto.setTeacherName(teacherName);
-                    } else {
-                        dto.setTeacherName("未知教师"); // 或者其他默认值
-                    }
-                    matchingCourseDTOs.add(dto);
-                }
+        // 关键词过滤：筛选课程名称或描述中包含关键词的课程
+        return courses.stream()
+                .filter(course -> course.getName().contains(keyword) || course.getDescription().contains(keyword))
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<CoursesDTO> getCoursesNotMyCourses(int useId) {
+        return courseMapper.getNotMyCourses(useId);
+    }
+
+    @Override
+    public String getUserNameById(int userId) {
+        return courseMapper.getUserNameById(userId);
+    }
+
+    // 结课
+    @Override
+    public void comleteCourse(int courseId) {
+        courseMapper.completeCourse(courseId);
+    }
+
+
+    // 获得已经完结的课程数量
+    @Override
+    public int getCompletedCourseCount(int userId){
+        List<CoursesDTO> courses = courseMapper.getMyCourses(userId);
+        for(CoursesDTO course : courses){
+            if(course.getStatusStudent().equals("completed")){
+                return courses.size();
             }
         }
-        return matchingCourseDTOs;
+        return 0;
+    }
+
+    @Override
+    public int getCouresCountByTeacherId(int teacherId) {
+        List<Integer> courseIds = courseMapper.getCoursesCountByTeacherId(teacherId);
+        if (courseIds.isEmpty()) {
+            return 0;
+        }
+        return courseIds.size();
+
     }
 }

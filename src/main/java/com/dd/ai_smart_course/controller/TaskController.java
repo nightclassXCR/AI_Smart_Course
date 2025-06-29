@@ -14,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +83,6 @@ public class TaskController {
     @PostMapping("/update")
     public Result update(@RequestBody Task task){
         log.info("update: {}",task);
-
         taskService.update(task);
         return Result.success();
     }
