@@ -1,10 +1,10 @@
 package com.dd.ai_smart_course.entity;
 
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-
 
 @Data
 public class Task {
