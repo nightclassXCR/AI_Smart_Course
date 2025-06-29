@@ -181,4 +181,20 @@ public interface CourseMapper {
 //    @Select("SELECT  course_id FROM course_user WHERE user_id =#{userId}")
 //    List<CoursesDTO>getCoursesByTeacherId(@Param("userId") int userId);
 
+
+
+    // 根据用户ID查询用户已完成的课程
+    @Select("SELECT," +
+            "cur.user_id, " +
+            "cur.course_id," +
+            "c.status_student AS StatusStudent," +
+            "FROM," +
+            "course_user cur," +
+            "JOIN, " +
+            "courses c ON cur.course_id = c.id," +
+            "WHERE," +
+            "cur.user_id = #{userId}")
+    List<CoursesDTO> getCoursesByUserId(@Param("userId") int userId);
+
+
 }

@@ -447,4 +447,17 @@ public class CourseImpl implements CourseService {
     public void comleteCourse(int courseId) {
         courseMapper.completeCourse(courseId);
     }
+
+
+    // 获得已经完结的课程数量
+    @Override
+    public int getCompletedCourseCount(int userId){
+        List<CoursesDTO> courses = courseMapper.getMyCourses(userId);
+        for(CoursesDTO course : courses){
+            if(course.getStatusStudent().equals("completed")){
+                return courses.size();
+            }
+        }
+        return 0;
+    }
 }

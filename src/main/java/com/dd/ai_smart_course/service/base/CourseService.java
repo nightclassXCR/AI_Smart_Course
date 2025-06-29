@@ -58,4 +58,7 @@ public interface CourseService {
 
     // 结课
     void comleteCourse(int courseId);
+
+    // 获取已结课课程数
+    int getCompletedCourseCount(int userId);
 }

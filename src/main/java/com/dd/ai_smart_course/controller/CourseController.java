@@ -252,6 +252,19 @@ public class CourseController {
         return Result.success(courseService.getCoursesByTeacherId(userId));
     }
 
+    /**
+     * 获取用户已选课程的课程名
+     * @return
+     */
+    @GetMapping("/getMyCompletedCourse")
+    public Result<Integer> getMyCompletedCourse(HttpServletRequest request) {
+
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        return Result.success("获取成功", courseService.getCompletedCourseCount(userId));
+    }
+
 
 
 
