@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -134,6 +135,22 @@ public class UserImpl implements UserService {
         }else {
             return userMapper.getUsersByAllParam(SQL_USER_ROLE, role, order, SQL_ASCENDING, limit, offset);
         }
+    }
+
+    //根据用户ID列表批量获取用户
+    @Override
+    public List<User> getUsersByIds(List<Integer> ids){
+        List<User> users = new ArrayList<>();
+        for(Integer id : ids){
+            try {
+                checkUserExists(id);
+                users.add(userMapper.getUserById(id));
+            } catch (BusinessException be){
+                log.error("can't find user with id = " + id);
+                throw new BusinessException(ErrorCode.FAILURE);
+            }
+        }
+        return users;
     }
 
     //添加用户

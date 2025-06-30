@@ -6,6 +6,7 @@ import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.base.CourseService;
+import com.dd.ai_smart_course.service.base.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -47,6 +48,8 @@ public class CourseImpl implements CourseService {
 
     @Autowired
     private LogMapper logMapper;
+    @Autowired
+    private UserService userService;
 
     @Override
     public List<Course> getAllCourse() {
@@ -469,5 +472,28 @@ public class CourseImpl implements CourseService {
         }
         return courseIds.size();
 
+    }
+
+    // 获取某门课下的所有学生ID
+    @Override
+    public List<Integer> getStudentsIDByCourseId(int courseId) {
+        return courseUserMapper.findStudentIdsByCourseId(courseId);
+    }
+
+    // 获取某门课下的所有学生
+    @Override
+    public List<User> getStudentsByCourseId(int courseId) {
+        List<Integer> studentIds = courseUserMapper.findStudentIdsByCourseId(courseId);
+        if (studentIds.isEmpty()) {
+            //Collections.emptyList()返回的是一个单例对象（全局唯一），多次调用返回的是同一个实例
+            //在日常开发中，建议优先使用Collections.emptyList()或List.of()返回空列表，而不是手动创建new ArrayList<>()
+            return Collections.emptyList();
+        }
+        List<User> students = userService.getUsersByIds(studentIds);
+        for(User student : students){
+            // 清除敏感数据
+            student.setPassword(null);
+        }
+        return students;
     }
 }

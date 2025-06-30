@@ -33,6 +33,9 @@ public interface UserService {
     //根据用户角色获取用户
     List<User> getUsersByRole(String role, boolean isDESC, String order, Integer limit, Integer offset);
 
+    //根据用户ID列表批量获取用户
+    List<User> getUsersByIds(List<Integer> userIds);
+
     //检验关键数据是否非法
     //若姓名、邮箱和电话非法，则抛出对应异常
     //针对add，update

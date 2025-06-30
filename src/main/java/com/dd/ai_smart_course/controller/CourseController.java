@@ -7,6 +7,7 @@ import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.service.base.CourseService;
 import com.dd.ai_smart_course.component.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -288,4 +289,10 @@ public class CourseController {
         return Result.success("获取成功", courseService.getCouresCountByTeacherId(userId));
     }
 
+    // 获取课程的学员
+    @GetMapping("/getStudentsByCourseId")
+    public Result<List<User>> getStudentsByCourseId(@RequestParam("courseId") int courseId) {
+        List<User> students = courseService.getStudentsByCourseId(courseId);
+        return Result.success("获取成功", students);
+    }
 }

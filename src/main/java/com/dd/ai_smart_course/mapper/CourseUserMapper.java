@@ -44,12 +44,12 @@ public interface CourseUserMapper {
      * 查找某个课程的所有学生用户ID。
      */
     @Select("SELECT user_id FROM course_user WHERE course_id = #{courseId} AND role = 'ROLE_STUDENT'")
-    List<Long> findStudentIdsByCourseId(@Param("courseId") int courseId);
+    List<Integer> findStudentIdsByCourseId(@Param("courseId") int courseId);
 
     /**
      * 查找某个用户作为教师所教授的所有课程ID。
      */
     @Select("SELECT course_id FROM course_user WHERE user_id = #{userId} AND role = 'ROLE_TEACHER'")
-    List<Long> findTeachingCourseIdsByTeacherId(@Param("userId") int userId);
+    List<Integer> findTeachingCourseIdsByTeacherId(@Param("userId") int userId);
 }
 
