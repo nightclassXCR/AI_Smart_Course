@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.mapper;
 
 import com.dd.ai_smart_course.entity.User;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -14,7 +15,11 @@ public interface UserMapper {
 
     // 使用id获取用户详情
     @Select("SELECT * FROM users WHERE id = #{id}")
-    User getUserById(long id);
+    @Results({
+            @Result(property = "phoneNumber", column = "phone_number"),
+
+    })
+    User getUserById(int id);
 
     //使用邮箱获得用户ID
     @Select("SELECT id FROM users where email = #{email};")
@@ -40,7 +45,7 @@ public interface UserMapper {
 
 
     // 添加用户
-    @Insert("INSERT INTO users (username, email, phoneNumber, password, name, role, createdAt, lastActivityAt, status) VALUES (#{username}, #{email}, #{phoneNumber}, #{password}, #{name}, #{role}, #{createdAt}, #{lastActivityAt}, #{status})")
+    @Insert("INSERT INTO users (username, email, phone_number, password, name, role, createdAt, lastActivityAt, status) VALUES (#{username}, #{email}, #{phoneNumber}, #{password}, #{name}, #{role}, #{createdAt}, #{lastActivityAt}, #{status})")
     int addUser(User user);
 
     // 更新用户信息
@@ -49,16 +54,22 @@ public interface UserMapper {
 
     //更新用户状态
     @Update("UPDATE users SET status = #{status} where userID = #{userID}")
-    void updateUserStatus(long userID, String status);
+    void updateUserStatus(int userID, String status);
 
     //更新用户角色
     @Update("UPDATE users SET role = #{role} where userID = #{userID}")
-    void updateUserRole(long userID, String role);
+    void updateUserRole(int userID, String role);
 
     // 删除用户
     @Delete("DELETE FROM users WHERE id = #{id}")
-    int deleteUser(long id);
+    int deleteUser(int id);
 
     @Select("SELECT id FROM users")
-    List<Long> findAllUserIds();
+    List<Integer> findAllUserIds();
+
+    @Select("SELECT course_id FROM course_user WHERE user_id = #{userId}")
+    List<Integer> getCourseIdsByUserId(int userId);
+
+    @Select("SELECT user_id FROM course_user WHERE course_id = #{courseId} and role='ROLE_STUDENT'")
+    List<Integer> getStudentIdsByCourseId(int courseId);
 }

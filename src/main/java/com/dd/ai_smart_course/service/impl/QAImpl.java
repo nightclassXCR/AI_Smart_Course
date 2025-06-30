@@ -27,7 +27,7 @@ public class QAImpl implements QAService {
     }
 
     @Override
-    public QA getQAById(long id) {
+    public QA getQAById(int id) {
         return qaMapper.getQAById(id);
     }
 
@@ -61,7 +61,7 @@ public class QAImpl implements QAService {
     }
 
     @Override
-    public int deleteQA(long id) {
+    public int deleteQA(int id) {
         return qaMapper.deleteQA(id);
     }
 
@@ -84,13 +84,12 @@ public class QAImpl implements QAService {
     //根据QAId检查qa是否存在
     //针对 update
     @Override
-    public void checkQAExists(Long qaId) throws BusinessException{
-        if(qaId == null){
+    public void checkQAExists(int qaId) throws BusinessException{
+        if(qaId == 0){
             throw new BusinessException(ErrorCode.QA_ID_NULL);
         }
         if(qaMapper.getQAById(qaId) == null){
             throw new BusinessException(ErrorCode.QA_NOT_EXISTS);
         }
     }
-
 }

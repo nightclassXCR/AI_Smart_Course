@@ -12,14 +12,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequestMapping("/auth")
-@Controller
+@RestController
 public class AuthController {
     @Autowired
     AuthServiceImpl authService;
-
     //用邮箱登录
     @PostMapping({"/email"})
     public Result<LocalToken> loginByEmail(@RequestBody AuthRequest request){
@@ -29,6 +29,7 @@ public class AuthController {
         System.out.println("get a LoginByPhoneNumber request: " + "email = " + email + "; password = " + password); // 添加日志
         try {
             LocalToken response = authService.loginByEmail(email, password);
+            log.info("LoginByPhoneNumber request status: success:{}",response);
             return Result.success(response);
         }catch (BusinessException be){
             log.warn("LoginByPhoneNumber request status: " + be.getMessage());
@@ -46,7 +47,7 @@ public class AuthController {
         log.info("get a LoginByPhoneNumber request: " + "phoneNumber = " + phoneNumber + "; password = " + password);
         try {
             LocalToken response = authService.loginByPhoneNumber(phoneNumber, password);
-            log.info("LoginByPhoneNumber request status: success");
+            log.info("LoginByPhoneNumber request status: success111");
             return Result.success(response);
         }catch (BusinessException be){
             log.warn("LoginByPhoneNumber request status: " + be.getMessage());

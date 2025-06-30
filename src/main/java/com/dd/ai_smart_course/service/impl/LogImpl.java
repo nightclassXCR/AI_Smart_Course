@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.service.impl;
 
+import com.dd.ai_smart_course.dto.LearningLogDTO;
 import com.dd.ai_smart_course.entity.LearningLog;
 import com.dd.ai_smart_course.mapper.LogMapper;
 import com.dd.ai_smart_course.service.base.LogService;
@@ -33,51 +34,51 @@ public class LogImpl implements LogService {
     }
 
     @Override
-    public LearningLog getLogById(long id) {
+    public LearningLog getLogById(int id) {
         return logMapper.getLogById(id);
     }
 
     @Override
-    public int addLog(LearningLog learnlog) throws BusinessException{
+    public int addLog(LearningLog learnlog) throws BusinessException {
         try {
             checkFactor(learnlog);
             return logMapper.addLog(learnlog);
-        }catch (BusinessException be){
+        } catch (BusinessException be) {
             log.error("can't add in \"learning_logs\" table: " + be.getMessage());
             throw be;
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("can't add in \"learning_logs\" table: " + e.getMessage());
             throw new BusinessException(ErrorCode.FAILURE);
         }
     }
 
     @Override
-    public int updateLog(LearningLog learnlog) throws BusinessException{
+    public int updateLog(LearningLog learnlog) throws BusinessException {
         try {
             checkFactor(learnlog);
             checkLogExists(learnlog.getId());
             return logMapper.updateLog(learnlog);
-        }catch (BusinessException be){
+        } catch (BusinessException be) {
             log.error("can't update in \"learning_logs\" table: " + be.getMessage());
             throw be;
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("can't update in \"learning_logs\" table: " + e.getMessage());
             throw new BusinessException(ErrorCode.FAILURE);
         }
     }
 
     @Override
-    public int deleteLog(long id) {
+    public int deleteLog(int id) {
         return logMapper.deleteLog(id);
     }
 
     @Override
-    public List<LearningLog> findLearningLogs(Long userId, String targetType, String actionType, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate, Integer offset, Integer limit) {
+    public List<LearningLog> findLearningLogs(int userId, String targetType, String actionType, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate, Integer offset, Integer limit) {
         return logMapper.findLearningLogs(userId, targetType, actionType, startDate, endDate, offset, limit);
     }
 
     @Override
-    public int countLearningLogs(Long userId, String targetType, String actionType, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate) {
+    public int countLearningLogs(int userId, String targetType, String actionType, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate) {
         return logMapper.countLearningLogs(userId, targetType, actionType, startDate, endDate);
     }
 
@@ -107,10 +108,17 @@ public class LogImpl implements LogService {
 
     // 检查日志是否存在
     @Override
-    public void checkLogExists(long logId) throws BusinessException {
-        LearningLog existing = logMapper.getLogById((int) logId);
+    public void checkLogExists(int logId) throws BusinessException {
+        LearningLog existing = logMapper.getLogById(logId);
         if (existing == null) {
             throw new BusinessException(ErrorCode.LOG_NOT_EXISTS);
         }
+    }
+
+
+    // 获取最新的学习记录
+    @Override
+    public LearningLogDTO findLatestLearningLogInCourseDTO(int userId, int courseId) {
+        return logMapper.findLatestLearningLogInCourseDTO(userId, courseId);
     }
 }

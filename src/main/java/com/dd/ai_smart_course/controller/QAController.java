@@ -35,7 +35,7 @@ public class QAController {
      * 根据 ID 查询问答记录
      */
     @GetMapping("/get/{id}")
-    public Result<QA> getQAById(@PathVariable long id) {
+    public Result<QA> getQAById(@PathVariable int id) {
         log.info("Received request: get QA by ID: {}", id);
         QA data = qaService.getQAById(id);
         return Result.success(data);

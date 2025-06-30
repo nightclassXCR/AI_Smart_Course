@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dd.ai_smart_course.mapper.LogMapper">
+
+    <select id="findLearningLogs" resultType="com.dd.ai_smart_course.entity.LearningLog">
+        SELECT * FROM learning_logs
+        <where>
+        <if test="userId != null"> AND user_id = #{userId} </if>
+        <if test="targetType != null"> AND target_type = #{targetType} </if>
+        <if test="actionType != null"> AND action_type = #{actionType} </if>
+        <if test="startDate != null"> AND action_time >= #{startDate} </if>
+        <if test="endDate != null"> AND action_time &gt;= #{endDate} </if>
+        <if test="offset != null and limit != null"> LIMIT #{offset}, #{limit} </if>
+        <if test="offset == null and limit != null"> LIMIT #{limit} </if>
+        <if test="offset != null and limit == null"> LIMIT #{offset} </if>
+        <if test="offset == null and limit == null"> LIMIT 0, 10 </if>
+
+        </where>
+    </select>
+    <select id="countLearningLogs" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM learning_logs
+        <where>
+        <if test="userId != null"> AND user_id = #{userId} </if>
+        <if test="targetType != null"> AND target_type = #{targetType} </if>
+        <if test="actionType != null"> AND action_type = #{actionType} </if>
+        <if test="startDate != null"> AND action_time >= #{startDate} </if>
+        <if test="endDate != null"> AND action_time &gt;= #{endDate} </if>
+        </where>
+    </select>
+    <resultMap id="LearningLogDTOMap" type="com.dd.ai_smart_course.dto.LearningLogDTO">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="targetType" column="target_type"/>
+        <result property="targetId" column="target_id"/>
+        <result property="actionType" column="action_type"/>
+        <result property="actionTime" column="action_time"/>
+        <result property="duration" column="duration"/>
+        <result property="detail" column="detail"/>
+        <result property="username" column="username"/> </resultMap>
+
+    <select id="findLatestLearningLogInCourseDTO" resultType="com.dd.ai_smart_course.dto.LearningLogDTO">
+        SELECT
+            ll.id,
+            ll.user_id,
+            u.username,
+            ll.target_type,
+            ll.target_id,
+            CASE ll.target_type
+                WHEN 'course' THEN course.name
+                WHEN 'chapter' THEN c.title
+                WHEN 'concept' THEN cn.name
+                WHEN 'task' THEN t.title         -- 新增：获取任务名称
+                WHEN 'question' THEN q.content    -- 新增：获取问题标题作为名称
+                WHEN 'resource' THEN r.name     -- 新增：获取资源名称
+                ELSE NULL
+            END AS target_name,
+            ll.action_type,
+            ll.action_time,
+            ll.duration,
+            ll.detail
+        FROM learning_logs ll
+                 JOIN users u ON ll.user_id = u.id
+                 LEFT JOIN courses course ON (ll.target_type = 'course' AND ll.target_id = course.id)
+                 LEFT JOIN chapters c ON (ll.target_type = 'chapter' AND ll.target_id = c.id)
+                 LEFT JOIN concepts cn ON (ll.target_type = 'concept' AND ll.target_id = cn.id)
+                 LEFT JOIN chapters cn_ch ON (ll.target_type = 'concept' AND cn.chapter_id = cn_ch.id)
+            -- 新增：连接 tasks 表
+                 LEFT JOIN tasks t ON (ll.target_type = 'task' AND ll.target_id = t.id)
+            -- 新增：连接 questions 表
+                 LEFT JOIN questions q ON (ll.target_type = 'question' AND ll.target_id = q.id)
+            -- 新增：连接 resources 表
+                 LEFT JOIN resources r ON (ll.target_type = 'resource' AND ll.target_id = r.id)
+        WHERE ll.user_id = #{userId}
+          AND (
+            (ll.target_type = 'chapter' AND c.course_id = #{courseId})
+                OR
+            (ll.target_type = 'concept' AND (cn.chapter_id IS NULL OR cn_ch.course_id = #{courseId}))
+                OR
+            (ll.target_type = 'course' AND ll.target_id = #{courseId})
+            )
+        ORDER BY ll.action_time DESC
+        LIMIT 1
+    </select>
+</mapper>

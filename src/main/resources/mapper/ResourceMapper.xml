@@ -1,34 +1,33 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dd.ai_smart_course.mapper.ResourceMapper">
-
-
     <insert id="insert" parameterType="Resource">
         insert into resources (name, file_url, file_type, owner_id, owner_type, updated_at)
         values (#{name}, #{fileUrl}, #{fileType}, #{ownerId}, #{ownerType}, #{updatedAt})
     </insert>
     <select id="selectByFilter" resultType="com.dd.ai_smart_course.entity.Resource">
         select * from resources where 1=1
-        <if test="id != null">
-            and id = #{id}
-        </if>
-        <if test="name != null">
-            and name = #{name}
-        </if>
-        <if test="fileUrl != null">
-            and file_url = #{fileUrl}
-        </if>
-        <if test="fileType != null">
-            and file_type = #{fileType}
-        </if>
-        <if test="ownerId != null">
-            and owner_id = #{ownerId}
-        </if>
-        <if test="ownerType != null">
-            and owner_type = #{ownerType}
-        </if>
+        <if test="id != null"> and id = #{id}</if>
+        <if test="name != null"> and name = #{name}</if>
+        <if test="fileUrl != null"> and file_url = #{fileUrl}</if>
+        <if test="fileType != null"> and file_type = #{fileType}</if>
+        <if test="ownerId != null"> and owner_id = #{ownerId}</if>
+        <if test="ownerType != null"> and owner_type = #{ownerType}</if>
+    </select>
+    <select id="findIdByNameAndType" resultType="java.lang.Integer">
+        select id from
+            <choose>
+                <when test="ownerType == 'task'">
+                    tasks where title like concat('%', #{ownerName}, '%')
+                </when>
+                <when test="ownerType == 'concept'">
+                    concepts where name like concat('%', #{ownerName}, '%')
+                </when>
 
+                <otherwise>
+                    concepts where 1 = 0
+                </otherwise>
+            </choose>
 
     </select>
 </mapper>

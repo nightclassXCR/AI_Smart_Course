@@ -30,7 +30,7 @@ public interface ConceptService {
      * @param conceptId
      * @param questionId
      */
-    void linkConceptToQuestion(Long conceptId, Long questionId);
+    void linkConceptToQuestion(int conceptId, int questionId);
 
     /**
      * 根据概念ID获取题目
@@ -38,7 +38,7 @@ public interface ConceptService {
      * @param conceptId
      * @return
      */
-    List<Question> getQuestionsByConcept(Long conceptId);
+    List<Question> getQuestionsByConcept(int conceptId);
 
     /**
      * 更新用户掌握度
@@ -48,7 +48,7 @@ public interface ConceptService {
      * @param conceptId
      * @param masteryLevel
      */
-    void updateMasteryLevel(Long userId, Long conceptId, int masteryLevel);
+    void updateMasteryLevel(int userId, int conceptId, int masteryLevel);
 
     /**
      * 获取用户掌握度
@@ -57,7 +57,7 @@ public interface ConceptService {
      * @param conceptId
      * @return
      */
-    int getMasteryLevel(Long userId, Long conceptId);
+    int getMasteryLevel(int userId, int conceptId);
 
 //    /**
 //     * 获取用户对课程掌握的知识点
@@ -77,10 +77,10 @@ public interface ConceptService {
 //     */
 //    List<Concept> recommendConceptsForUser(Long userId, Long courseId);
     // 用户对知识点的浏览、掌握、复习等操作
-    void viewConcept(Long conceptId, Long userId, Integer durationSeconds);
+    void viewConcept(int conceptId, int userId, Integer durationSeconds);
     // 用户对知识点的掌握
-    void markConceptAsMastered(Long conceptId, Long userId);
+    void markConceptAsMastered(int conceptId, int userId);
     // 用户对知识点的复习
-    void startConceptReview(Long conceptId, Long userId);
+    void startConceptReview(int conceptId, int userId);
 }
 
