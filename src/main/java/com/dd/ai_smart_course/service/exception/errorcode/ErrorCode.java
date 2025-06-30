@@ -24,6 +24,7 @@ public enum ErrorCode {
     USER_ID_NULL(5005, "用户ID为空"),
 
     ROLE_ERROR(5051,"用户角色参数错误"),
+    STATUS_ERROR(5051,"用户状态参数错误"),
 
     USER_NOT_EXISTS(5091, "用户不存在"),
     PASSWORD_WRONG(5092, "密码错误"),

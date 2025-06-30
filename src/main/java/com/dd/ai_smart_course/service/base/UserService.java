@@ -12,6 +12,18 @@ public interface UserService {
     int updateUser(User user);
     int deleteUser(int id);
 
+    //更新用户状态
+    boolean updateUserStatus(int userId, String status);
+
+    //更新用户角色
+    boolean updateUserRole(int userId, String role);
+
+    //更新用户密码
+    boolean updateUserPassword(int userId, String password);
+
+    //更新用户名称
+    boolean updateUsername(int userId, String username);
+
     //根据状态获取用户
     List<User> getUsersByStatus(String status, boolean isDESC, String order, Integer limit, Integer offset);
 
@@ -29,4 +41,5 @@ public interface UserService {
     //根据userId检查用户是否存在
     //针对update
     void checkUserExists(int userId) throws BusinessException;
+
 }

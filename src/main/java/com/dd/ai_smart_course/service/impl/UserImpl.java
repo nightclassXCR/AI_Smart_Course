@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.service.impl;
 
+import com.dd.ai_smart_course.dto.UserDTO;
 import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.service.exception.BusinessException;
 import com.dd.ai_smart_course.service.exception.errorcode.ErrorCode;
@@ -135,6 +136,7 @@ public class UserImpl implements UserService {
         }
     }
 
+    //添加用户
     @Override
     public int addUser(User user) throws BusinessException {
         try {
@@ -149,6 +151,7 @@ public class UserImpl implements UserService {
         }
     }
 
+    //修改用户
     @Override
     public int updateUser(User user) throws BusinessException {
         try{
@@ -164,6 +167,7 @@ public class UserImpl implements UserService {
         }
     }
 
+    //删除用户
     @Override
     public int deleteUser(int id) {
         int result = userMapper.deleteUser(id);
@@ -171,6 +175,44 @@ public class UserImpl implements UserService {
             log.warn("can't delete in \"users\" table");
         }
         return result;
+    }
+
+    //更新用户角色
+    @Override
+    public boolean updateUserRole(int userId, String role) throws BusinessException{
+        checkUserExists(userId);
+        if(!ALLOWED_USER_ROLE.contains(role)){
+            throw new BusinessException(ErrorCode.ROLE_ERROR);
+        }
+        userMapper.updateUserRole(userId, role);
+        return true;
+    }
+
+    //更新用户状态
+    @Override
+    public boolean updateUserStatus(int userId, String status) throws BusinessException{
+        checkUserExists(userId);
+        if(!ALLOWED_USER_STATUS.contains(status)){
+            throw new BusinessException(ErrorCode.STATUS_ERROR);
+        }
+        userMapper.updateUserStatus(userId, status);
+        return true;
+    }
+
+    //更新用户密码
+    @Override
+    public boolean updateUserPassword(int userId, String password) throws BusinessException{
+        checkUserExists(userId);
+        userMapper.updateUserPassword(userId, password);
+        return true;
+    }
+
+    //更新用户名称
+    @Override
+    public boolean updateUsername(int userId, String username) throws BusinessException{
+        checkUserExists(userId);
+        userMapper.updateUsername(userId, username);
+        return true;
     }
 
 

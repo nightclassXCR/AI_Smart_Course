@@ -60,6 +60,14 @@ public interface UserMapper {
     @Update("UPDATE users SET role = #{role} where userID = #{userID}")
     void updateUserRole(int userID, String role);
 
+    //更新用户密码
+    @Update("UPDATE users SET password = #{password} where userID = #{userID}")
+    void updateUserPassword(int userID, String password);
+
+    // 更新用户名称
+    @Update("UPDATE users SET username = #{username} where userID = #{userID}")
+    void updateUsername(int userID, String username);
+
     // 删除用户
     @Delete("DELETE FROM users WHERE id = #{id}")
     int deleteUser(int id);
