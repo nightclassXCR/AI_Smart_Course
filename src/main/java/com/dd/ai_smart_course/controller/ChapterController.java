@@ -39,6 +39,16 @@ public class ChapterController {
             return Result.success("获取成功", chapterList);
     }
 
+//    /**
+//     * 根据章节Id获取章节简介
+//     * @param id
+//     */
+//    @GetMapping("/{id}")
+//    public Result<Chapter> getChapterById(@PathVariable int id) {
+//            Chapter chapter = chapterService.getChapterById(id);
+//            return Result.success("获取成功", chapter);
+//    }
+
     /**
      * 添加章节
      * @param chapterdto
@@ -107,6 +117,14 @@ public class ChapterController {
     public Result<List<Concept>> getConceptsByChapterId(@PathVariable("chapterId") int chapterId) {
         List<Concept> concepts = chapterService.getConceptsByChapterId(chapterId);
         return Result.success("获取成功", concepts);
+    }
+
+
+
+    @GetMapping("/{chapterId}/content")
+    public Result<Chapter> getChapterContentById(@PathVariable("chapterId") int chapterId) {
+        Chapter chapter = chapterService.getChapterContentById(chapterId);
+        return Result.success("获取成功", chapter);
     }
 
 
