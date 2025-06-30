@@ -69,4 +69,7 @@ public interface ChapterMapper {
 
     @Select("SELECT COUNT(*) FROM chapters WHERE course_id = #{courseId}")
     int countChaptersInCourse(int courseId);
+
+    @Select("SELECT content FROM chapters WHERE id =#{id}")
+    Chapter getChapterContentById(@Param("id") int chapterId);
 }

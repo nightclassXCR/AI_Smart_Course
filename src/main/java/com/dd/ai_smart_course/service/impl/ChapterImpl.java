@@ -115,5 +115,10 @@ public class ChapterImpl implements ChapterService {
         return chapterMapper.getConceptsByChapterId(chapterId);
     }
 
+    @Override
+    public Chapter getChapterContentById(int id) {
+        return chapterMapper.getChapterContentById(id);
+    }
+
 
 }

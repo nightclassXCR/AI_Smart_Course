@@ -171,4 +171,12 @@ public class ConceptImpl implements ConceptService {
                 "{\"action\":\"START_REVIEW\", \"description\":\"用户开始复习概念: " + conceptId + "\"}" // detail
         ));
     }
+
+    /**
+     * 获取概念详情
+     */
+    @Override
+    public Concept getConceptById(int id) {
+        return conceptMapper.getConceptById(id);
+    }
 }
