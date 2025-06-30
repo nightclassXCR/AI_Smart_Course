@@ -8,6 +8,7 @@ import com.dd.ai_smart_course.mapper.ChapterMapper;
 import com.dd.ai_smart_course.mapper.ConceptMapper;
 import com.dd.ai_smart_course.service.base.ConceptService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 
 @Service
+@Slf4j
 public class ConceptImpl implements ConceptService {
 
     @Autowired
@@ -41,10 +43,14 @@ public class ConceptImpl implements ConceptService {
 
     @Override
     public int addConcept(ConceptDTO conceptDto) {
-        Integer chapterId = chapterMapper.getCourseIdByCourseName(conceptDto.getChapterName());
+//        log.info("添加 concept: {}", conceptDto);
+//        Integer chapterId = chapterMapper.getChapterIdByChapterName(conceptDto.getChapterName());
+        Integer chapterId = conceptDto.getChapterId();
+        log.info("chapterId: {}", chapterId);
         if (chapterId == null) {
             throw new RuntimeException("课程不存在");
         }
+        log.info("课程ID：" + chapterId);
         Concept concept = new Concept();
         concept.setChapterId(chapterId);
         concept.setName(conceptDto.getName());
@@ -54,7 +60,7 @@ public class ConceptImpl implements ConceptService {
 
     @Override
     public int updateConcept(ConceptDTO conceptDto) {
-        Integer chapterId = chapterMapper.getCourseIdByCourseName(conceptDto.getChapterName());
+        Integer chapterId = chapterMapper.getChapterIdByChapterName(conceptDto.getChapterName());
 
         if (chapterId == null) {
             throw new RuntimeException("课程不存在：" + conceptDto.getChapterName());
@@ -164,5 +170,13 @@ public class ConceptImpl implements ConceptService {
                 null,
                 "{\"action\":\"START_REVIEW\", \"description\":\"用户开始复习概念: " + conceptId + "\"}" // detail
         ));
+    }
+
+    /**
+     * 获取概念详情
+     */
+    @Override
+    public Concept getConceptById(int id) {
+        return conceptMapper.getConceptById(id);
     }
 }
