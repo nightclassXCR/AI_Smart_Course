@@ -48,52 +48,7 @@ public interface CourseMapper {
      * 获取课程详细信息
      * @return 课程列表
      */
-    @Select({
-            "SELECT",
-            "    c.id,",
-            "    c.name,",
-            "    c.teacher_id,",
-            "    c.description,",
-            "    c.credit,",
-            "    c.hours,",
-            "    c.status_self,",
-            "    u.name AS teacherRealName,", // 教师真实姓名
-            "    c.created_at,",
-            "    c.updated_at,",
-            "    c.status_student,",
-            "    COUNT(DISTINCT cu.user_id) AS studentCount,", // 学生数量
-            "    COALESCE(AVG(s.final_score), 0) AS averageScore", // 平均分
-            "FROM",
-            "    courses c",
-            "LEFT JOIN",
-            "    users u ON c.teacher_id = u.id",
-            "LEFT JOIN",
-            "    course_user cu ON c.id = cu.course_id AND cu.role = 'ROLE_STUDENT'",
-            "LEFT JOIN",
-            "    tasks t ON c.id = t.course_id",
-            "LEFT JOIN",
-            "    scores s ON cu.user_id = s.user_id AND t.id = s.task_id",
-            "WHERE",
-            "    c.teacher_id = #{teacherId}",
-            "GROUP BY",
-            "    c.id, c.name, c.teacher_id, c.description, c.credit, c.hours, c.status_self,",
-            "    u.name, c.created_at, c.updated_at, c.status_student"
-    })
-    @Results({
-            @Result(property = "id", column = "id"),
-            @Result(property = "name", column = "name"),
-            @Result(property = "teacherId", column = "teacher_id"),
-            @Result(property = "description", column = "description"),
-            @Result(property = "credit", column = "credit"),
-            @Result(property = "hours", column = "hours"),
-            @Result(property = "statusSelf", column = "status_self"),
-            @Result(property = "teacherRealName", column = "teacherRealName"), // 映射教师真实姓名
-            @Result(property = "createdAt", column = "created_at"),
-            @Result(property = "updatedAt", column = "updated_at"),
-            @Result(property = "statusStudent", column = "status_student"),
-            @Result(property = "StudentCount", column = "studentCount"), // 映射学生数量
-            @Result(property = "averageScore", column = "averageScore") // 映射平均分
-    })
+
     List<CoursesDTO> getCoursesByTeacherId(@Param("teacherId") int teacherId);
 
     /**
@@ -104,20 +59,7 @@ public interface CourseMapper {
     // 修改 getCoursesByIds 方法：
     // - 联查 user 表以获取教师名字
     // - 使用 AS 别名将教师名字命名为 `teacher_real_name`
-    @Select("<script>" +
-            "SELECT " +
-            "c.id, c.name, c.description, c.teacher_id, c.status_self, c.status_student, " + // Course 实体中有的字段
-            "u.name AS teacher_real_name " + // <-- ！！！ 关键：额外查询教师的名字并起别名 ！！！
-            "FROM courses c " +
-            "JOIN users u ON c.teacher_id = u.id " + // 联接用户表获取教师信息
-            "WHERE c.id IN " +
-            "<foreach item='id' collection='courseIds' open='(' separator=',' close=')'>" +
-            "#{id}" +
-            "</foreach>" +
-            "</script>")
-    @Results({
-            @Result(property = "description", column = "description")
-    })
+
     List<Course> getCoursesByIds(@Param("courseIds") List<Integer> courseIds);
 
     /**
@@ -160,8 +102,8 @@ public interface CourseMapper {
     @Select("SELECT id, course_id, title, sequence  FROM chapters WHERE course_id = #{courseId} ORDER BY sequence ASC")
     List<Chapter> findChaptersForGrouping(@Param("courseId") int courseId);
 
-    @Delete("DELETE FROM concepts WHERE course_id = #{courseId}")
-    int deleteByCourseId(int courseId);
+//    @Delete("DELETE FROM concepts WHERE course_id = #{courseId}")
+//    int deleteByCourseId(int courseId);
 
     @Select("SELECT * FROM courses ORDER BY created_at DESC")
     PaginationResult<Course> getCourses(int pageNum, int pageSize);
@@ -231,16 +173,6 @@ public interface CourseMapper {
 
 
     // 根据用户ID查询用户已完成的课程
-    @Select("SELECT," +
-            "cur.user_id, " +
-            "cur.course_id," +
-            "c.status_student AS StatusStudent," +
-            "FROM," +
-            "course_user cur," +
-            "JOIN, " +
-            "courses c ON cur.course_id = c.id," +
-            "WHERE," +
-            "cur.user_id = #{userId}")
     List<CoursesDTO> getCoursesByUserId(@Param("userId") int userId);
 
 
