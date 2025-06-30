@@ -203,6 +203,9 @@ public class UserImpl implements UserService {
     @Override
     public boolean updateUserPassword(int userId, String password) throws BusinessException{
         checkUserExists(userId);
+        if(password == null){
+            throw new BusinessException(ErrorCode.PASSWORD_NULL);
+        }
         userMapper.updateUserPassword(userId, password);
         return true;
     }
@@ -211,6 +214,9 @@ public class UserImpl implements UserService {
     @Override
     public boolean updateUsername(int userId, String username) throws BusinessException{
         checkUserExists(userId);
+        if(username == null){
+            throw new BusinessException(ErrorCode.USERNAME_NULL);
+        }
         userMapper.updateUsername(userId, username);
         return true;
     }
