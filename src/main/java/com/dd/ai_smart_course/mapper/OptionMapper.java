@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface OptionMapper {
 
-    @Insert("INSERT INTO options (question_id, opt_key, opt_value) VALUES (#{questionId}, #{optKey}, #{optValue})")
+    @Insert("INSERT INTO options (question_id, opt_key, opt_value) VALUES (#{question_d}, #{opt_Key}, #{opt_Value})")
     int insert(Option option);
 
     @Select("SELECT * FROM options WHERE question_id = #{questionId}")
