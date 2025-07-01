@@ -55,13 +55,21 @@ public class TaskServiceImpl implements TaskService {
         if (courseId==null){
             log.info("Course not found: " + taskDTO.getCourseName());
             throw new SQLDataNotFoundException("课程不存在");
+
         }
         task.setCreatedAt(LocalDateTime.now());
         task.setType(Task.Type.homework);
         task.setCourseId(courseId);
+        UserTask userTask = new UserTask();
+        List<Integer> userIds = userMapper.getStudentIdsByCourseId(courseId);
         log.info("insertBatch: {}", task);
-        taskMapper.insertBatch(task);
+        taskMapper.insert(task);
         int taskId = task.getId();
+        if(userIds.isEmpty()){
+            log.info("No students found in course: " + courseId);
+            throw new SQLDataNotFoundException("没有学生");
+        }
+        taskMapper.insertUserTask(userIds, taskId);
         List<Question> questions = taskDTO.getQuestions();
         for (Question question : questions) {
             Task_question tq = new Task_question();
@@ -94,6 +102,7 @@ public class TaskServiceImpl implements TaskService {
             questionMapper.deleteBatch(questions.stream().map(Question::getId).toList());
             tqMapper.deleteBatch(taskId);
         }
+        taskMapper.deleteUserTaskByTaskId(taskId);
 
         taskMapper.deleteByTaskId(taskId);
     }
@@ -209,8 +218,8 @@ public class TaskServiceImpl implements TaskService {
         // **添加：发布用户回答问题事件，使用 'answer'**
         eventPublisher.publishEvent(new LearningActionEvent(
                 this,
-                Math.toIntExact(userId),
-                "QUESTION", // target_type 可以是 QUESTION
+                userId,
+                "question", // target_type 可以是 QUESTION
                 questionId,
                 "answer",   // actionType: 使用 'answer'
                 null,

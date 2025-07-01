@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dd.ai_smart_course.mapper.CourseMapper">
+    <!-- 获取教师名下的课程 -->
+    <select id="getCoursesByTeacherId" resultType="com.dd.ai_smart_course.dto.CoursesDTO">
+        SELECT
+            c.id,
+            c.name,
+            c.teacher_id,
+            c.description,
+            c.credit,
+            c.hours,
+            c.status_self,
+            u.name AS teacherRealName, <!-- 教师真实姓名 -->
+            c.created_at,
+            c.updated_at,
+            c.status_student,
+            COUNT(DISTINCT cu.user_id) AS studentCount, <!-- 学生数量 -->
+            COALESCE(AVG(s.final_score), 0) AS averageScore <!-- 平均分 -->
+        FROM
+            courses c
+        LEFT JOIN
+            users u ON c.teacher_id = u.id
+        LEFT JOIN
+            course_user cu ON c.id = cu.course_id AND cu.role = 'ROLE_STUDENT'
+        LEFT JOIN
+            tasks t ON c.id = t.course_id
+        LEFT JOIN
+            scores s ON cu.user_id = s.user_id AND t.id = s.task_id
+        WHERE
+            c.teacher_id = #{teacherId}
+        GROUP BY
+            c.id, c.name, c.teacher_id, c.description, c.credit, c.hours, c.status_self,
+            u.name, c.created_at, c.updated_at, c.status_student
+    </select>
+
+    <!-- 根据课程ID列表获取课程 -->
+    <select id="getCoursesByIds" resultType="com.dd.ai_smart_course.entity.Course">
+        SELECT
+            c.id, c.name, c.description, c.teacher_id, c.status_self, c.status_student,
+            u.name AS teacher_real_name <!-- 教师名字并起别名 -->
+        FROM courses c
+        JOIN users u ON c.teacher_id = u.id <!-- 联接用户表获取教师信息 -->
+        WHERE c.id IN
+        <foreach item="id" collection="courseIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <!-- 根据用户ID获取课程 -->
+    <select id="getCoursesByUserId" resultType="com.dd.ai_smart_course.dto.CoursesDTO">
+        SELECT
+            cur.user_id,  
+            cur.course_id, 
+            c.status_student AS StatusStudent FROM
+            course_user cur JOIN
+            courses c ON cur.course_id = c.id
+            WHERE cur.user_id = #{userId}
+    </select>
+
+</mapper>

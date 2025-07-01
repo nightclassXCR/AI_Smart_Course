@@ -1,11 +1,13 @@
 package com.dd.ai_smart_course.controller;
 
 
+import com.dd.ai_smart_course.component.JwtTokenUtil;
 import com.dd.ai_smart_course.dto.ConceptDTO;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Question;
 import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.service.base.ConceptService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,9 @@ public class ConceptController {
 
     @Autowired
     private ConceptService conceptService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
 
     /**
@@ -48,8 +53,18 @@ public class ConceptController {
      */
     @PostMapping
     public Result<String> addConcept(@RequestBody ConceptDTO conceptDto) {
+        log.info("添加 concept: {}", conceptDto);
         conceptService.addConcept(conceptDto);
         return Result.success("添加成功");
+    }
+
+    /**
+     * 根据概念ID 获取概念详情
+     * @param id
+     */
+    @GetMapping("/{id}")
+    public Result<Concept> getConceptById(@PathVariable int id) {
+        return Result.success(conceptService.getConceptById(id));
     }
     /**
      * 更新 concept
@@ -122,12 +137,14 @@ public class ConceptController {
     /**
      * 用户查看某个 concept
      * @param conceptId
-     * @param userId
      * @param durationSeconds
      * @return
      */
-    @PostMapping("/{conceptId}/users/{userId}/view")
-    public Result<String> viewConcept(@PathVariable int conceptId, @PathVariable int userId, @RequestParam Integer durationSeconds) {
+    @PostMapping("/{conceptId}/users/view")
+    public Result<String> viewConcept(HttpServletRequest request,@PathVariable int conceptId, @RequestParam Integer durationSeconds) {
+        String Header = request.getHeader("Authorization");
+        String token = Header != null ? Header.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
         conceptService.viewConcept(conceptId, userId, durationSeconds);
         return Result.success("操作成功");
     }

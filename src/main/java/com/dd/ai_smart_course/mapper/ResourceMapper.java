@@ -27,4 +27,6 @@ public interface ResourceMapper {
 
     @Select("SELECT * FROM resources")
     List<Resource> list();
+
+    Integer findIdByNameAndType(String ownerName, String ownerType);
 }

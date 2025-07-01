@@ -26,13 +26,13 @@ public class AuthController {
         String email = request.getEmail();
         String password = request.getPassword();
 
-        System.out.println("get a LoginByPhoneNumber request: " + "email = " + email + "; password = " + password); // 添加日志
+        System.out.println("get a LoginByEmail request: " + "email = " + email + "; password = " + password); // 添加日志
         try {
             LocalToken response = authService.loginByEmail(email, password);
-            log.info("LoginByPhoneNumber request status: success:{}",response);
+            log.info("LoginByEmail request status: success:{}",response);
             return Result.success(response);
         }catch (BusinessException be){
-            log.warn("LoginByPhoneNumber request status: " + be.getMessage());
+            log.warn("LoginByEmail request status: " + be.getMessage());
             return Result.error(be.getCode(), be.getMessage());
         }
 

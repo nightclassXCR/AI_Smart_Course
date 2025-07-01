@@ -21,10 +21,10 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public void save(Resource resource) {
         resource.setCreatedAt(LocalDateTime.now());
-        int ownerId = BaseContext.getCurrentId();
-        log.info("当前用户ID：{}", ownerId);
+        int userId = BaseContext.getCurrentId();
+        log.info("当前用户ID：{}", userId);
         //TODO 获取当前用户ID
-        resource.setOwnerId(ownerId);
+        resource.setUserId(userId);
         resource.setOwnerType(Resource.OwnerType.task);
         resource.setCreatedAt(LocalDateTime.now());
         resource.setUpdatedAt(LocalDateTime.now());

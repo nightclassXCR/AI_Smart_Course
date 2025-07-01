@@ -27,7 +27,7 @@ public class LearnActionListener {
             log.setTargetId(event.getTargetId());
             log.setActionType(event.getActionType());
             log.setActionTime(Timestamp.valueOf(LocalDateTime.now())); // 使用 actionTime 字段
-            log.setDuration(event.getDuration());    // 设置 duration
+            log.setDuration(event.getDuration() != null ? event.getDuration() : 0); // 避免 null 值
             log.setDetail(event.getDetail());        // 设置 detail
 
             learningLogMapper.insertLearningLog(log);

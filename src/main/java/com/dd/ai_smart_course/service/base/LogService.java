@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.service.base;
 
+import com.dd.ai_smart_course.dto.LearningLogDTO;
 import com.dd.ai_smart_course.entity.LearningLog;
 import com.dd.ai_smart_course.service.exception.BusinessException;
 
@@ -46,4 +47,7 @@ public interface LogService {
 
     // 检查日志是否存在
     void checkLogExists(int logId) throws BusinessException;
+
+    // 获取上次用户学到的位置
+    LearningLogDTO findLatestLearningLogInCourseDTO(int userId, int courseId);
 }

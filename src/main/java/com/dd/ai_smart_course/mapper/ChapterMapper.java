@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.mapper;
 
 
+import com.dd.ai_smart_course.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import org.apache.ibatis.annotations.*;
@@ -22,11 +23,15 @@ public interface ChapterMapper {
     // 添加章节
     @Insert("INSERT INTO chapters (course_id, title, content, sequence) VALUES (#{courseId}, #{title}, #{content}, #{sequence})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    int addChapter(Chapter chapter);
+    int addChapter(ChapterDTO chapterDTO);
 
     // 根据课程名称获取课程ID
     @Select("SELECT id FROM courses WHERE name = #{courseName}")
     Integer getCourseIdByCourseName(String courseName);
+
+    // 根据章节名获取章节ID
+    @Select("SELECT id FROM chapters WHERE title = #{chapterName}")
+    Integer getChapterIdByChapterName(String chapterName);
 
     // 根据章节ID更新章节信息
     @Update("UPDATE chapters SET course_id = #{courseId}, title = #{title}, content = #{content}, sequence = #{sequence} WHERE id = #{id}")
@@ -64,4 +69,7 @@ public interface ChapterMapper {
 
     @Select("SELECT COUNT(*) FROM chapters WHERE course_id = #{courseId}")
     int countChaptersInCourse(int courseId);
+
+    @Select("SELECT content FROM chapters WHERE id =#{id}")
+    Chapter getChapterContentById(@Param("id") int chapterId);
 }

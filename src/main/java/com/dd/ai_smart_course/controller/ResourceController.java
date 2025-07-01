@@ -1,13 +1,16 @@
 package com.dd.ai_smart_course.controller;
 
+import com.dd.ai_smart_course.dto.ResourceDTO;
 import com.dd.ai_smart_course.entity.Resource;
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.mapper.ResourceMapper;
 import com.dd.ai_smart_course.service.base.ResourceService;
 import com.dd.ai_smart_course.utils.AliOssUtil;
 import io.swagger.annotations.ApiOperation;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +33,17 @@ public class ResourceController {
     private AliOssUtil aliOssUtil;
     @Autowired
     private ResourceService resourceService;
+    @Autowired
+    private ResourceMapper resourceMapper;
 
     @PostMapping(value="/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation("文件上传")
     public Result<String> upload(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("name") String name,
-            @RequestParam("type") String type) {
+            @RequestParam String ownerName,
+            @RequestParam String ownerType,
+            @RequestParam String name,
+            @RequestParam String type) {
 
         try {
             Resource resource = new Resource();
@@ -44,11 +51,11 @@ public class ResourceController {
             String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
             String objectName = UUID.randomUUID().toString() + extension;
             String filePath = aliOssUtil.upload(file.getBytes(), objectName);
-
             resource.setFileUrl(filePath);
             resource.setName(name);  // 使用前端传来的name
             resource.setFileType(Resource.FileType.valueOf(type));  // 使用前端传来的type
-
+            log.info("上传成功，ownerId：{}", resource.getUserId());
+            resource.setOwnerId(resourceMapper.findIdByNameAndType(ownerName, ownerType));
             resourceService.save(resource);
             return Result.success(filePath);
         } catch (IOException e) {
@@ -114,4 +121,6 @@ public class ResourceController {
         List<Resource> resources=resourceService.list();
         return Result.success(resources);
     }
+
+
 }
