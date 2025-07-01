@@ -290,9 +290,24 @@ public class CourseController {
     }
 
     // 获取课程的学员
-    @GetMapping("/getStudentsByCourseId")
-    public Result<List<User>> getStudentsByCourseId(@RequestParam("courseId") int courseId) {
+    @GetMapping("/getStudentsByCourseId/{courseId}")
+    public Result<List<User>> getStudentsByCourseId(@PathVariable("courseId") int courseId) {
+        log.info("get a request: 获取课程ID = {} 下的学生名单", courseId);
         List<User> students = courseService.getStudentsByCourseId(courseId);
         return Result.success("获取成功", students);
+    }
+
+    // 删除课程的学员
+    @DeleteMapping("/deleteStudentByCourseId/{courseId}")
+    public Result<Boolean> deleteStudentByCourseId(@PathVariable("courseId") int courseId, @RequestParam("userId") int userId) {
+        log.info("get a request: 删除课程ID = {} 下的学生ID = {}", courseId, userId);
+        try {
+            courseService.unenrollUserFromCourse(userId, courseId);
+            return Result.success("删除成功", true);
+        }catch (Exception e){
+            log.error("删除课程ID = {} 下的学生ID = {} 的请求失败", e.getMessage());
+            return Result.success("删除失败",false);
+        }
+
     }
 }
