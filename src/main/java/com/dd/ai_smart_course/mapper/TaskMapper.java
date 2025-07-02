@@ -35,4 +35,10 @@ public interface TaskMapper {
 
     @Delete("DELETE FROM user_task WHERE task_id = #{taskId}")
     void deleteUserTaskByTaskId(int taskId);
+
+    @Select("SELECT COUNT(*) FROM tasks WHERE course_id = #{courseId}")
+    Integer getTaskCountByCourseId(int teacherId);
+
+    @Select("SELECT id from courses where teacher_id=#{teacherId}")
+    List<Integer> getCourseIdsCountByTeacherId(int teacherId);
 }

@@ -12,4 +12,6 @@ public interface ResourceService {
     List<Resource> filter(Resource resource);
 
     List<Resource> list();
+
+    List<Resource> listByChapterId(int chapterId);
 }

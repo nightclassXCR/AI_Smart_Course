@@ -56,6 +56,7 @@ public class ResourceController {
             resource.setFileType(Resource.FileType.valueOf(type));  // 使用前端传来的type
             log.info("上传成功，ownerId：{}", resource.getUserId());
             resource.setOwnerId(resourceMapper.findIdByNameAndType(ownerName, ownerType));
+            resource.setOwnerType(Resource.OwnerType.valueOf(ownerType));
             resourceService.save(resource);
             return Result.success(filePath);
         } catch (IOException e) {
@@ -90,6 +91,13 @@ public class ResourceController {
 
         return Result.success();
     }
+
+    @GetMapping("/chapter/{chapterId}")
+    public Result<List<Resource>> getResourcesByChapterId(@PathVariable int chapterId) {
+       List<Resource> resources = resourceService.listByChapterId(chapterId);
+        return Result.success(resources);
+    }
+
 
     /**
      * 下载资源
