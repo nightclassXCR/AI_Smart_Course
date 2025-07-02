@@ -2,8 +2,10 @@ package com.dd.ai_smart_course.service.impl;
 
 import com.dd.ai_smart_course.dto.OptionDTO;
 import com.dd.ai_smart_course.dto.QuestionDTO;
+import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Question;
 import com.dd.ai_smart_course.entity.Option;
+import com.dd.ai_smart_course.mapper.ConceptMapper;
 import com.dd.ai_smart_course.mapper.QuestionMapper;
 import com.dd.ai_smart_course.mapper.OptionMapper;
 import com.dd.ai_smart_course.service.base.QuestionService;
@@ -12,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,39 +28,64 @@ public class QuestionImpl implements QuestionService {
     private QuestionMapper questionMapper;
     @Autowired
     private OptionMapper optionMapper;
+    @Autowired
+    private ConceptMapper conceptMapper;
 
     @Override
     public void createQuestion(QuestionDTO questionDTO) {
         validateQuestionDTO(questionDTO);
 
-        Question question = new Question();
-        BeanUtils.copyProperties(questionDTO, question);
+        // 1. 解析知识点名称，获取概念信息
+        List<String> conceptNames = parseConceptNames(questionDTO.getConceptNames());
+        List<Concept> concepts = getConceptsByNames(conceptNames);
 
-        // DTO的difficulty是String，需要转换为枚举保存到实体
-        if (questionDTO.getDifficulty() != null) {
-            question.setDifficulty(parseDifficultyFromString(questionDTO.getDifficulty()));
+        if (concepts.isEmpty()) {
+            throw new IllegalArgumentException("未找到匹配的知识点概念");
         }
 
-        questionMapper.insert(question);
+        // 2. 从第一个概念获取章节ID和课程ID（假设同一题目的知识点都属于同一章节）
+        Concept primaryConcept = concepts.get(0);
+        int chapterId = primaryConcept.getChapterId();
+        int courseId = getCourseIdByChapterId(chapterId);
 
-        // 批量插入选项
+        // 3. 创建Question实体
+        Question question = new Question();
+        question.setContent(questionDTO.getContent());
+        question.setDifficulty(parseDifficultyFromString(questionDTO.getDifficulty()));
+        question.setAnswer(questionDTO.getAnswer());
+        question.setPoint(questionDTO.getPoint());
+        question.setChapterId(chapterId);
+        question.setCourseId(courseId);
+        // 设置时间戳
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        question.setCreatedAt(now);
+        question.setUpdatedAt(now);
+        System.out.println("question: " + question);
+        // 4. 插入题目
+        questionMapper.insert(question);
+        int questionId = question.getId();
+        System.out.println("questionId: " + questionId);
+
+        // 5. 批量插入选项
         if (!CollectionUtils.isEmpty(questionDTO.getOptions())) {
             List<Option> options = questionDTO.getOptions().stream().map(optDTO -> {
                 Option opt = new Option();
-                opt.setQuestion_id(question.getId());
-                opt.setOpt_Key(optDTO.getOptKey());
-                opt.setOpt_Value(optDTO.getOptValue());
+                opt.setQuestion_id(questionId);
+                opt.setOptKey(optDTO.getOptKey());
+                opt.setOptValue(optDTO.getOptValue());
                 return opt;
             }).collect(Collectors.toList());
-
+            System.out.println("options: " + options);
             optionMapper.insertBatch(options);
         }
 
-        // 关联概念知识点
-        if (!CollectionUtils.isEmpty(questionDTO.getConceptIds())) {
-            questionMapper.linkQuestionToConcepts(question.getId(), questionDTO.getConceptIds());
-        }
+        // 6. 关联题目与知识点概念
+        List<Integer> conceptIds = concepts.stream()
+                .map(Concept::getId)
+                .collect(Collectors.toList());
+        questionMapper.linkQuestionToConcepts(questionId, conceptIds);
     }
+
 
     @Override
     public void updateQuestion(QuestionDTO questionDTO) {
@@ -85,8 +114,8 @@ public class QuestionImpl implements QuestionService {
             List<Option> options = questionDTO.getOptions().stream().map(optDTO -> {
                 Option opt = new Option();
                 opt.setQuestion_id(question.getId());
-                opt.setOpt_Key(optDTO.getOptKey());
-                opt.setOpt_Value(optDTO.getOptValue());
+                opt.setOptKey(optDTO.getOptKey());
+                opt.setOptValue(optDTO.getOptValue());
                 return opt;
             }).collect(Collectors.toList());
 
@@ -192,17 +221,16 @@ public class QuestionImpl implements QuestionService {
         if (questionDTO == null) {
             throw new IllegalArgumentException("QuestionDTO cannot be null");
         }
-        if (questionDTO.getContent() == null || questionDTO.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("Question content cannot be empty");
+        if (!StringUtils.hasText(questionDTO.getContent())) {
+            throw new IllegalArgumentException("题目内容不能为空");
         }
-        if (questionDTO.getCourseId() <= 0) {
-            throw new IllegalArgumentException("Course ID must be positive");
+        if (!StringUtils.hasText(questionDTO.getAnswer())) {
+            throw new IllegalArgumentException("题目答案不能为空");
         }
-        if (questionDTO.getChapterId() <= 0) {
-            throw new IllegalArgumentException("Chapter ID must be positive");
+        if (CollectionUtils.isEmpty(questionDTO.getConceptNames())) {
+            throw new IllegalArgumentException("必须选择至少一个知识点");
         }
     }
-
     /**
      * 将字符串转换为难度枚举
      */
@@ -228,7 +256,7 @@ public class QuestionImpl implements QuestionService {
 
         // 转换选项
         List<OptionDTO> optionDTOs = options.stream()
-                .map(opt -> new OptionDTO(opt.getOpt_Key(), opt.getOpt_Value()))
+                .map(opt -> new OptionDTO(opt.getOptKey(), opt.getOptValue()))
                 .collect(Collectors.toList());
         dto.setOptions(optionDTOs);
 
@@ -312,4 +340,74 @@ public class QuestionImpl implements QuestionService {
 
         return conceptsMap;
     }
+    /**
+     * 解析知识点名称字符串（支持逗号分隔的多个知识点）
+     */
+    private List<String> parseConceptNames(List<String> conceptNames) {
+        if (CollectionUtils.isEmpty(conceptNames)) {
+            return Collections.emptyList();
+        }
+
+        // 如果前端传入的是单个字符串包含多个知识点（逗号分隔）
+        List<String> result = new ArrayList<>();
+        for (String nameStr : conceptNames) {
+            if (StringUtils.hasText(nameStr)) {
+                String[] names = nameStr.split("[,，]"); // 支持中英文逗号
+                for (String name : names) {
+                    String trimmedName = name.trim();
+                    if (StringUtils.hasText(trimmedName)) {
+                        result.add(trimmedName);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 根据知识点名称获取概念实体列表
+     */
+    /**
+     * 根据知识点名称获取概念实体列表（优化为批量查询）
+     */
+    private List<Concept> getConceptsByNames(List<String> conceptNames) {
+        if (CollectionUtils.isEmpty(conceptNames)) {
+            return Collections.emptyList();
+        }
+
+        // 使用批量查询提高性能
+        List<Concept> concepts = conceptMapper.getConceptsByNames(conceptNames);
+
+        // 检查是否有未找到的知识点
+        if (concepts.size() != conceptNames.size()) {
+            Set<String> foundNames = concepts.stream()
+                    .map(Concept::getName)
+                    .collect(Collectors.toSet());
+
+            List<String> notFoundNames = conceptNames.stream()
+                    .filter(name -> !foundNames.contains(name))
+                    .collect(Collectors.toList());
+
+            if (!notFoundNames.isEmpty()) {
+                System.err.println("未找到以下知识点: " + String.join(", ", notFoundNames));
+                // 可以选择抛出异常或者仅使用找到的概念
+                // throw new IllegalArgumentException("未找到知识点: " + String.join(", ", notFoundNames));
+            }
+        }
+
+        return concepts;
+    }
+
+
+    /**
+     * 根据章节ID获取课程ID
+     */
+    private int getCourseIdByChapterId(int chapterId) {
+        Integer courseId = conceptMapper.getCourseIdByChapterId(chapterId);
+        if (courseId == null) {
+            throw new IllegalArgumentException("未找到章节ID为 " + chapterId + " 的课程信息");
+        }
+        return courseId;
+    }
+
 }

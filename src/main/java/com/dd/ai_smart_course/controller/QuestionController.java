@@ -5,6 +5,8 @@ import ch.qos.logback.core.util.StringUtil;
 import com.dd.ai_smart_course.R.Result;
 import com.dd.ai_smart_course.dto.QuestionDTO;
 import com.dd.ai_smart_course.entity.Concept;
+import com.dd.ai_smart_course.mapper.OptionMapper;
+import com.dd.ai_smart_course.mapper.QuestionMapper;
 import com.dd.ai_smart_course.service.base.ConceptService;
 import com.dd.ai_smart_course.service.base.QuestionService;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +67,7 @@ public class QuestionController {
                 // ✅ 使用新的 getAllQuestions 方法获取所有题目
                 allQuestions = questionService.getAllQuestions();
             }
-
+            log.info("获取题目列表成功: {}", allQuestions);
             // 手动实现分页逻辑
             int total = allQuestions.size();
             int startIndex = (page - 1) * pageSize;
@@ -138,6 +140,7 @@ public class QuestionController {
      */
     @PostMapping("/create")
     public Result<Map<String, Object>> createQuestion(@RequestBody QuestionDTO questionDTO){
+        log.info("接收创建参数: {}", questionDTO);
         try {
             questionService.createQuestion(questionDTO);
 

@@ -10,8 +10,10 @@ import java.util.Map;
 @Mapper
 public interface QuestionMapper {
 
-    @Insert("INSERT INTO questions (context, difficulty,updated_at,created_at, point,course_id,answer,chapter_id)" +
-            " VALUES (#{context}, #{difficulty},#{updatedAt},#{createdAt},#{point}, #{courseId},#{answer},#{chapterId})")
+    @Insert("INSERT INTO questions (content, difficulty,updated_at,created_at, point,course_id,answer,chapter_id)" +
+            " VALUES (#{content}, #{difficulty},#{updatedAt},#{createdAt},#{point}, #{courseId},#{answer},#{chapterId})")
+    // useGeneratedKeys 设为 true 表示使用自增主键；keyProperty 指定实体类中对应主键的属性名（这里假设 Question 类里有 id 属性）
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Question question);
 
     @Select("SELECT * FROM questions WHERE id = #{id}")
