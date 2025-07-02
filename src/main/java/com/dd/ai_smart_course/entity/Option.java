@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class Option {
     private int id;
-    private int questionId;//问题id
+    private int question_id;//问题id
     private String optKey; //A, B, C, D
     private String optValue;//选项内容
 }

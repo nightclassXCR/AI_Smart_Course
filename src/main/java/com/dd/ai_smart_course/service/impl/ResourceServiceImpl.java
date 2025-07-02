@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.service.impl;
 
+import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Resource;
 import com.dd.ai_smart_course.mapper.ResourceMapper;
 import com.dd.ai_smart_course.service.base.ResourceService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -21,11 +23,10 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public void save(Resource resource) {
         resource.setCreatedAt(LocalDateTime.now());
-        int ownerId = BaseContext.getCurrentId();
-        log.info("当前用户ID：{}", ownerId);
+        int userId = BaseContext.getCurrentId();
+        log.info("当前用户ID：{}", userId);
         //TODO 获取当前用户ID
-        resource.setOwnerId(ownerId);
-        resource.setOwnerType(Resource.OwnerType.task);
+        resource.setUserId(userId);
         resource.setCreatedAt(LocalDateTime.now());
         resource.setUpdatedAt(LocalDateTime.now());
 
@@ -50,6 +51,21 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public List<Resource> list() {
         return resourceMapper.list();
+    }
+
+    @Override
+    public List<Resource> listByChapterId(int chapterId) {
+        List<Concept> concepts = resourceMapper.listByChapterId(chapterId);
+        if (concepts.isEmpty()) {
+            return null;
+        }
+        List<Resource> resources=new ArrayList<>();
+        for(Concept concept:concepts) {
+            int resourceId =resourceMapper.findIdByNameAndType(concept.getName(), "concept");
+            Resource resource = resourceMapper.selectById(resourceId);
+            resources.add(resource);
+        }
+        return resources;
     }
 
 

@@ -2,6 +2,7 @@ package com.dd.ai_smart_course.controller;
 
 
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.dto.UserDTO;
 import com.dd.ai_smart_course.dto.request.SearchRequest;
 import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.service.exception.BusinessException;
@@ -94,5 +95,53 @@ public class UserController {
         Integer offset = request.getOffset();
         List<User> data = userService.getUsersByRole(role, isDESC, order, limit, offset);
         return Result.success(data);
+    }
+
+    //修改用户角色
+    @PostMapping("/modify/Role")
+    public Result<Boolean> modifyUserRole(@RequestBody UserDTO user) throws BusinessException {
+        log.info("get a request: modify user role");
+        try {
+            boolean data = userService.updateUserRole(user.getId(), user.getRole());
+            return Result.success(data);
+        }catch (BusinessException e){
+            return Result.error(e.getMessage());
+        }
+    }
+
+    //修改用户状态
+    @PostMapping("/modify/Status")
+    public Result<Boolean> modifyUserStatus(@RequestBody UserDTO user) throws BusinessException {
+        log.info("get a request: modify user status");
+        try {
+            boolean data = userService.updateUserStatus(user.getId(), user.getStatus());
+            return Result.success(data);
+        }catch (BusinessException e){
+            return Result.error(e.getMessage());
+        }
+    }
+
+    //修改用户密码
+    @PostMapping("/modify/Password")
+    public Result<Boolean> modifyUserPassword(@RequestBody UserDTO user) throws BusinessException {
+        log.info("get a request: modify user password");
+        try {
+            boolean data = userService.updateUserPassword(user.getId(), user.getPassword());
+            return Result.success(data);
+        }catch (BusinessException e){
+            return Result.error(e.getMessage());
+        }
+    }
+
+    //修改用户名
+    @PostMapping("/modify/Username")
+    public Result<Boolean> modifyUsername(@RequestBody UserDTO user) throws BusinessException {
+        log.info("get a request: modify user username");
+        try {
+            boolean data = userService.updateUsername(user.getId(), user.getUsername());
+            return Result.success(data);
+        }catch (BusinessException e){
+            return Result.error(e.getMessage());
+        }
     }
 }

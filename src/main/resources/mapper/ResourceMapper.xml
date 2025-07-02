@@ -14,4 +14,20 @@
         <if test="ownerId != null"> and owner_id = #{ownerId}</if>
         <if test="ownerType != null"> and owner_type = #{ownerType}</if>
     </select>
+    <select id="findIdByNameAndType" resultType="java.lang.Integer">
+        select id from
+            <choose>
+                <when test="ownerType == 'task'">
+                    tasks where title like concat('%', #{ownerName}, '%')
+                </when>
+                <when test="ownerType == 'concept'">
+                    concepts where name like concat('%', #{ownerName}, '%')
+                </when>
+
+                <otherwise>
+                    concepts where 1 = 0
+                </otherwise>
+            </choose>
+
+    </select>
 </mapper>

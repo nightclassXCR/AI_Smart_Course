@@ -171,8 +171,22 @@ public interface ConceptMapper {
     List<Map<String, Object>> getSortedMasteryByCourse(@Param("userId") int userId,
                                                        @Param("courseId") int courseId);
 
+    /**
+     * 根据章节ID获取课程ID
+     */
+    @Select("SELECT course_id FROM chapters WHERE id = #{chapterId}")
+    Integer getCourseIdByChapterId(@Param("chapterId") int chapterId);
 
-
+    /**
+     * 批量根据知识点名称获取概念（优化查询性能）
+     */
+    @Select("<script>" +
+            "SELECT * FROM concepts WHERE name IN " +
+            "<foreach collection='names' item='name' open='(' separator=',' close=')'>" +
+            "#{name}" +
+            "</foreach>" +
+            "</script>")
+    List<Concept> getConceptsByNames(@Param("names") List<String> names);
 
 
 //    /**

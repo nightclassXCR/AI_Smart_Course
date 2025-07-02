@@ -12,7 +12,7 @@ public interface ConceptQuestionMapper {
 
     // 获取概念ID
     @Select("SELECT concept_id FROM concept_question WHERE question_id = #{questionId}")
-    List<Integer> findConceptIdsByTaskId(int taskId);
+    List<Integer> findConceptIdsByTaskId(int questionId);
 
     // 添加概念和任务关联
     @Insert("INSERT INTO concept_question (concept_id, question_id) VALUES (#{conceptId}, #{questionId})")

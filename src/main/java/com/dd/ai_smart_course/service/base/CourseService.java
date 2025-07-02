@@ -5,6 +5,7 @@ import com.dd.ai_smart_course.dto.CoursesDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
+import com.dd.ai_smart_course.entity.User;
 
 import java.util.List;
 import java.util.Map;
@@ -64,4 +65,10 @@ public interface CourseService {
 
     // 获取指定教师课程数
     int getCouresCountByTeacherId(int teacherId);
+
+    // 获取某门课程下的所有学生ID
+    List<Integer> getStudentsIDByCourseId(int courseId);
+
+    // 获取某门课程下的所有学生User实体
+    List<User> getStudentsByCourseId(int courseId);
 }
