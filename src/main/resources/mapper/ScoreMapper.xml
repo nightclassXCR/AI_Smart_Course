@@ -58,4 +58,12 @@
         WHERE t.course_id = #{courseId}
         GROUP BY s.user_id, t.course_id
     </select>
+
+    <!-- 获取某门课程平均分   -->
+    <select id="getAvgScoreByCourseId" resultType="java.math.BigDecimal">
+        SELECT AVG(s.total_score)
+        FROM scores s
+        LEFT JOIN tasks t ON s.task_id = t.id
+        WHERE t.course_id = #{courseId}
+    </select>
 </mapper>

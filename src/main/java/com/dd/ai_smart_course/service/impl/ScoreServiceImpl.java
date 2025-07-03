@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,11 +66,28 @@ public class ScoreServiceImpl implements ScoreService {
     @Override
     public List<Integer> getPureScoreDistribution(List<ScoreDTO>  scores) {
         List<Integer> scoreDistribution = new ArrayList<>();
-        int excellentNum = (int) scores.stream().filter(score -> score.getFinalScore() >= 90).count();
-        int goodNum = (int) scores.stream().filter(score -> score.getFinalScore() >= 80 && score.getFinalScore() < 90).count();
-        int averageNum = (int) scores.stream().filter(score -> score.getFinalScore() >= 70 && score.getFinalScore() < 80).count();
-        int poorNum = (int) scores.stream().filter(score -> score.getFinalScore() >= 60 && score.getFinalScore() < 70).count();
-        int failNum = (int) scores.stream().filter(score -> score.getFinalScore() < 60).count();
+        int excellentNum = (int) scores.stream()
+                .filter(score -> score.getFinalScore().compareTo(BigDecimal.valueOf(90)) >= 0)
+                .count();
+
+        int goodNum = (int) scores.stream()
+                .filter(score -> score.getFinalScore().compareTo(BigDecimal.valueOf(80)) >= 0
+                        && score.getFinalScore().compareTo(BigDecimal.valueOf(90)) < 0)
+                .count();
+
+        int averageNum = (int) scores.stream()
+                .filter(score -> score.getFinalScore().compareTo(BigDecimal.valueOf(70)) >= 0
+                        && score.getFinalScore().compareTo(BigDecimal.valueOf(80)) < 0)
+                .count();
+
+        int poorNum = (int) scores.stream()
+                .filter(score -> score.getFinalScore().compareTo(BigDecimal.valueOf(60)) >= 0
+                        && score.getFinalScore().compareTo(BigDecimal.valueOf(70)) < 0)
+                .count();
+
+        int failNum = (int) scores.stream()
+                .filter(score -> score.getFinalScore().compareTo(BigDecimal.valueOf(60)) < 0)
+                .count();
 
         scoreDistribution.add(excellentNum);
         scoreDistribution.add(goodNum);
