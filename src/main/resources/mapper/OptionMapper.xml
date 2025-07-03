@@ -8,7 +8,7 @@
         INSERT INTO options (question_id, opt_key, opt_value)
         VALUES
         <foreach collection="options" item="o" separator=",">
-            (#{o.question_id}, #{o.opt_Key}, #{o.opt_Value})
+            (#{o.question_id}, #{o.optKey}, #{o.optValue})
         </foreach>
     </insert>
 

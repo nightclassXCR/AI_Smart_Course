@@ -22,7 +22,7 @@ public class Resource {
     }
 
     public enum OwnerType {
-        course, task, question
+        concept, task, question
     }
 
     public Resource() {}

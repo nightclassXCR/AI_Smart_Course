@@ -32,4 +32,8 @@ public interface ChapterService {
 
     // 获取根据ID章节简介
     Chapter getChapterContentById(int id);
+
+//    boolean updateChapterSequence(int id, int sequence);
+
+
 }

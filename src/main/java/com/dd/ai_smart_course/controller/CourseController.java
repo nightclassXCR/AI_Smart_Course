@@ -153,7 +153,7 @@ public class CourseController {
         for (Map.Entry<Chapter, List<Concept>> entry : map.entrySet()) {
             idKeyMap.put(entry.getKey().getId(), entry.getValue());
         }
-        log.info("map: " + idKeyMap);
+//        log.info("map: " + idKeyMap);
         return Result.success("获取成功", idKeyMap);
     }
 

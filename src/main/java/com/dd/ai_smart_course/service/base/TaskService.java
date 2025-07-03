@@ -20,4 +20,6 @@ public interface TaskService {
 //    List<Integer> findQuestionIdsByTaskId(int taskId);
 
     List<Task> listByUserId(int userId);
+
+    Integer getTaskCountByTeacherId(int teacherId);
 }

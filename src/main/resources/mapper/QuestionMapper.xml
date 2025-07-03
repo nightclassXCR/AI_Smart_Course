@@ -32,4 +32,45 @@
         where tq.task_id = #{taskId}
     </select>
 
+    <!-- 在QuestionMapper.xml中添加以下SQL映射 -->
+
+    <!-- 根据问题ID获取关联的概念信息 -->
+    <select id="getConceptsByQuestionId" parameterType="int" resultType="map">
+        SELECT c.id as conceptId, c.name as conceptName
+        FROM concepts c
+                 INNER JOIN concept_question cq ON c.id = cq.concept_id
+        WHERE cq.question_id = #{questionId}
+    </select>
+
+    <!-- 批量获取问题关联的概念信息 -->
+    <select id="getConceptsByQuestionIds" resultType="map">
+        SELECT cq.question_id as questionId, c.id as conceptId, c.name as conceptName
+        FROM concepts c
+        INNER JOIN concept_question cq ON c.id = cq.concept_id
+        WHERE cq.question_id IN
+        <foreach collection="questionIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 为问题关联概念知识点 -->
+    <insert id="linkQuestionToConcepts">
+        INSERT INTO concept_question (question_id, concept_id) VALUES
+        <foreach collection="conceptIds" item="conceptId" separator=",">
+            (#{questionId}, #{conceptId})
+        </foreach>
+    </insert>
+
+    <!-- 删除问题的所有概念关联 -->
+    <delete id="deleteQuestionConceptLinks" parameterType="int">
+        DELETE FROM concept_question WHERE question_id = #{questionId}
+    </delete>
+
+    <!-- 根据 conceptId 查询关联的 Question -->
+    <select id="findByConceptId" resultType="com.dd.ai_smart_course.entity.Question">
+        SELECT q.*
+        FROM questions q
+                 JOIN concept_question cq ON q.id = cq.question_id
+        WHERE cq.concept_id = #{conceptId}
+    </select>
 </mapper>

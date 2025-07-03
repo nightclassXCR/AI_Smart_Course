@@ -7,12 +7,14 @@ import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.base.CourseService;
 import com.dd.ai_smart_course.service.base.UserService;
+import com.dd.ai_smart_course.utils.BaseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,6 +52,10 @@ public class CourseImpl implements CourseService {
     private LogMapper logMapper;
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TaskMapper taskMapper;
+
 
     @Override
     public List<Course> getAllCourse() {
@@ -404,6 +410,14 @@ public class CourseImpl implements CourseService {
                 dto.setTeacherId(course.getTeacherId());
                 dto.setStatusSelf(course.getStatusSelf());
                 dto.setStatusStudent(course.getStatusStudent());
+                List<Integer> taskIdsByCourseId = taskMapper.getTaskIdsByCourseId(course.getId());
+                log.info("任务课程id:{}{}",taskIdsByCourseId,course.getId());
+                if(taskIdsByCourseId.isEmpty()){
+                    dto.setAverageScore(BigDecimal.ZERO);
+                }else{
+                    dto.setAverageScore(scoreMapper.getAvgScoreByTaskIdAndUserId(BaseContext.getCurrentId(),taskIdsByCourseId));
+                }
+                log.info("课程平均分:{}{}",dto.getName(),dto.getAverageScore());
                 if (course.getTeacherId() != 0) {
                     String teacherName = courseMapper.getUserNameById(course.getTeacherId());
                     dto.setTeacherRealName(teacherName);

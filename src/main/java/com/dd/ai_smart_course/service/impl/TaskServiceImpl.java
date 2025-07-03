@@ -124,9 +124,24 @@ public class TaskServiceImpl implements TaskService {
             return tasks;
         }
         List<Task> tasks = taskMapper.listByCourseIds(courseIds);
+
         return tasks;
 
 
+    }
+
+    @Override
+    public Integer getTaskCountByTeacherId(int teacherId) {
+
+        List<Integer> courseIds =taskMapper.getCourseIdsCountByTeacherId(teacherId);
+        if (courseIds.isEmpty()) {
+            return 0;
+        }
+        Integer taskCount = 0;
+        for (Integer courseId : courseIds){
+            taskCount += taskMapper.getTaskCountByCourseId(courseId);
+        }
+        return taskCount;
     }
 
 
