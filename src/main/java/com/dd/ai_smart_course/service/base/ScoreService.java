@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.service.base;
 
+import com.dd.ai_smart_course.dto.ScoreDTO;
 import com.dd.ai_smart_course.entity.Score;
 
 import java.util.List;
@@ -16,4 +17,7 @@ public interface ScoreService {
     Score getTaskScore(int taskId);
 
     List<Score> getUserScores(int userId);
+
+    //获取某门课程的所有学生的平均分（假设每份task权重相等）
+    List<ScoreDTO> getFinalScoreByCourseId(int courseId);
 }

@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.service.impl;
 
+import com.dd.ai_smart_course.dto.ScoreDTO;
 import com.dd.ai_smart_course.entity.Score;
 import com.dd.ai_smart_course.mapper.ScoreMapper;
 import com.dd.ai_smart_course.service.base.ScoreService;
@@ -46,6 +47,13 @@ public class ScoreServiceImpl implements ScoreService {
     @Override
     public List<Score> getUserScores(int userId) {
         List<Score> scores = scoreMapper.getScoreByUserId(userId);
+        return scores;
+    }
+
+    //获取某门课程的所有学生的平均分（假设每份task权重相等）
+    @Override
+    public List<ScoreDTO> getFinalScoreByCourseId(int courseId) {
+        List<ScoreDTO> scores = scoreMapper.getFinalScoreByCourseId(courseId);
         return scores;
     }
 }
