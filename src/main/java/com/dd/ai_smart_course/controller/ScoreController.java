@@ -74,4 +74,23 @@ public class ScoreController {
         return Result.success(scores);
     }
 
+    //获取某门课程的成绩分布情况（无改动）
+    @GetMapping("/courses/{courseId}/pureScoreDistribution")
+    public Result<List<Integer>> getPureScoreDistribution(@PathVariable int courseId) {
+        log.info("get a request: get pure score distribution by courseId: {}", courseId);
+        List<ScoreDTO> scores = scoreService.getFinalScoreByCourseId(courseId);
+        List<Integer> distribution = scoreService.getPureScoreDistribution(scores);
+        return Result.success(distribution);
+    }
+
+    //获取某门课程的成绩分布情况（比例）
+    @GetMapping("/courses/{courseId}/scoreDistribution")
+    public Result<List<Integer>> getScoreDistribution(@PathVariable int courseId) {
+        log.info("get a request: get score distribution by courseId: {}", courseId);
+        List<ScoreDTO> scores = scoreService.getFinalScoreByCourseId(courseId);
+        log.info("get score list size: {}", scores.size());
+        List<Integer> scoreDistribution = scoreService.getScoreDistribution(scores);
+        return Result.success(scoreDistribution);
+    }
+
 }

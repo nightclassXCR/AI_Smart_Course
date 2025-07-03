@@ -52,7 +52,7 @@
 
     <!-- 获取某门课程的所有学生的平均分（假设每份task权重相等）   -->
     <select id="getFinalScoreByCourseId" resultType="com.dd.ai_smart_course.dto.ScoreDTO">
-        SELECT s.user_id, t.course_id, AVG(s.total_score)
+        SELECT s.user_id AS studentId, course_id AS courseId, AVG(s.total_score) AS finalScore
         FROM scores s
         LEFT JOIN tasks t ON s.task_id = t.id
         WHERE t.course_id = #{courseId}
