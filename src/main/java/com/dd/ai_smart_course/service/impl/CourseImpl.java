@@ -65,8 +65,6 @@ public class CourseImpl implements CourseService {
     @Override
     @Transactional
     public int addCourse(Course course) {
-
-
         return courseMapper.addCourse(course);
     }
 
@@ -153,8 +151,17 @@ public class CourseImpl implements CourseService {
      */
     @Override
     public List<CoursesDTO> getCoursesByTeacherId(int teacherId) {
-
         return courseMapper.getCoursesByTeacherId(teacherId);
+    }
+
+    //在数据库获取的课程列表中补充上学生数目
+    @Override
+    public List<CoursesDTO> getCoursesWithStudentCount(List<CoursesDTO> courses) {
+        for (CoursesDTO course : courses) {
+            int studentCount = getStudentsIDByCourseId(course.getId()).size();
+            course.setStudentCount(studentCount);
+        }
+        return courses;
     }
 
     /**

@@ -63,7 +63,7 @@ public class ConceptController {
      */
     @GetMapping("/{id}")
     public Result<Concept> getConceptById(@PathVariable int id) {
-        log.info("get a request: get concept by conceptID: {}", id);
+        log.info("get a request: get concept by conceptID = {}", id);
         return Result.success(conceptService.getConceptById(id));
     }
     /**

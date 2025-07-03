@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.component.JwtTokenUtil;
 import com.dd.ai_smart_course.dto.TaskDTO;
 import com.dd.ai_smart_course.entity.Task;
 import com.dd.ai_smart_course.mapper.CourseMapper;
@@ -8,6 +9,7 @@ import com.dd.ai_smart_course.service.base.TaskService;
 //import io.swagger.annotations.ApiOperation;
 import com.dd.ai_smart_course.utils.BaseContext;
 import com.dd.ai_smart_course.vo.TaskVO;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +31,8 @@ public class TaskController {
     private TaskService taskService;
     @Autowired
     private CourseMapper courseMapper;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/create")
     public Result<TaskDTO> createTask(@RequestBody TaskDTO taskDTO){
@@ -87,15 +91,16 @@ public class TaskController {
         return Result.success();
     }
 
-
-
-
-
-
-
-
-
-
+    // 根据教师ID获取其名下作业数量
+    @GetMapping("/count")
+    public Result<Integer> getTaskCountByTeacherId(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
+        Integer teacherId = jwtTokenUtil.getUserIDFromToken(token);
+        log.info("get a request: get task count by teacherId: {}", teacherId);
+        int count = taskService.listByUserId(teacherId).size();
+        return Result.success(count);
+    }
 
 
 }

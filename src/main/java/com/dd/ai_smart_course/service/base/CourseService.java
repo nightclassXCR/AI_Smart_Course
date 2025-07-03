@@ -23,6 +23,8 @@ public interface CourseService {
     int deleteCourse(int id);
     // 获取指定教师授课的课程
     List<CoursesDTO> getCoursesByTeacherId(int teacherId);
+    //在数据库获取的课程列表中补充上学生数目
+    List<CoursesDTO> getCoursesWithStudentCount(List<CoursesDTO> courses);
 
     // 获取课程下所有章节
     List<Chapter> getChaptersByCourse(int courseId);
@@ -30,7 +32,6 @@ public interface CourseService {
     List<Concept> getConceptsByCourse(int courseId);
     // 按章节分组的知识点
     Map<Chapter, List<Concept>> getConceptsGroupedByChapter(int courseId);
-
 
     // 用户选课
     void enrollUserInCourse(int userId, int courseId);

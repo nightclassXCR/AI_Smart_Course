@@ -37,6 +37,7 @@ public class CourseController {
      */
     @GetMapping
     public Result<List<Course>>getAllCourse() {
+        log.info("get a request: get all courses");
         return Result.success(courseService.getAllCourse());
     }
 
@@ -258,8 +259,8 @@ public class CourseController {
         String authHeader = request.getHeader("Authorization");
         String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
         Integer userId = jwtTokenUtil.getUserIDFromToken(token);
-        log.info("userId: {}", userId);
-        log.info("课程名: {}", courseService.getCoursesByTeacherId(userId));
+        log.info("get a request: get course by userID = {}", userId);
+        List<CoursesDTO> courses = courseService.getCoursesByTeacherId(userId);
         return Result.success(courseService.getCoursesByTeacherId(userId));
     }
 
