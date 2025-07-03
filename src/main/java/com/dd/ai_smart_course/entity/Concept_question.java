@@ -2,7 +2,7 @@ package com.dd.ai_smart_course.entity;
 
 public class Concept_question {
     private int concept_id;
-    private int question_id;
+    private int questionId;
     private double weight;
 
     public int getConcept_id() {
@@ -13,12 +13,12 @@ public class Concept_question {
         this.concept_id = concept_id;
     }
 
-    public int getQuestion_id() {
-        return question_id;
+    public int getQuestionId() {
+        return questionId;
     }
 
-    public void setQuestion_id(int question_id) {
-        this.question_id = question_id;
+    public void setQuestionId(int questionId) {
+        this.questionId = questionId;
     }
 
     public double getWeight() {

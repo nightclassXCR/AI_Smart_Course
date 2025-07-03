@@ -43,7 +43,6 @@ public class ConceptController {
      */
     @GetMapping("/by-chapter/{chapterId}")
     public Result<List<Concept>> getConceptsByChapterId(@PathVariable int chapterId) {
-
         return Result.success(conceptService.getConceptsByChapterId(chapterId));
     }
     /**
@@ -53,8 +52,19 @@ public class ConceptController {
      */
     @PostMapping
     public Result<String> addConcept(@RequestBody ConceptDTO conceptDto) {
+        log.info("添加 concept: {}", conceptDto);
         conceptService.addConcept(conceptDto);
         return Result.success("添加成功");
+    }
+
+    /**
+     * 根据概念ID 获取概念详情
+     * @param id
+     */
+    @GetMapping("/{id}")
+    public Result<Concept> getConceptById(@PathVariable int id) {
+        log.info("get a request: get concept by conceptID = {}", id);
+        return Result.success(conceptService.getConceptById(id));
     }
     /**
      * 更新 concept

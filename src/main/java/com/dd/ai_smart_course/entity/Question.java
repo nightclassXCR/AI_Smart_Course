@@ -17,7 +17,7 @@ public class Question {
     private String answer;
     private int chapterId;//所属章节ID
     public enum QuestionDifficulty {
-        easy, intermediate, advanced
+        easy, medium, hard;
     }
 
 }

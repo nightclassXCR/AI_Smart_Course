@@ -28,15 +28,24 @@
 
 
     </update>
-
-
     <delete id="deleteByIds">
-        delete from scores where id in
-        <foreach collection="ids" open="(" close=")" separator="," item="id">
+        delete from score where id in
+        <foreach item="id" collection="list" separator="," close=")" open="(">
             #{id}
         </foreach>
-
+        />
     </delete>
+    <select id="getAvgScoreByTaskIdAndUserId" resultType="java.math.BigDecimal">
+        SELECT AVG(final_score) FROM scores
+        <where>
+            user_id = #{userId}
+            <if test="taskId != null and !taskId.isEmpty()">
+                AND task_id IN
+                <foreach item="id" collection="taskId" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
 
-
+        </where>
+    </select>
 </mapper>

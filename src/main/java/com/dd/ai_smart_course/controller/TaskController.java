@@ -8,6 +8,7 @@ import com.dd.ai_smart_course.service.base.TaskService;
 //import io.swagger.annotations.ApiOperation;
 import com.dd.ai_smart_course.utils.BaseContext;
 import com.dd.ai_smart_course.vo.TaskVO;
+import io.swagger.models.auth.In;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -85,6 +86,12 @@ public class TaskController {
         log.info("update: {}",task);
         taskService.update(task);
         return Result.success();
+    }
+
+    @GetMapping("/count")
+    public Result<Integer> getTaskCountByTeacherId(){
+        int teacherId = BaseContext.getCurrentId();
+        return Result.success(taskService.getTaskCountByTeacherId(teacherId));
     }
 
 

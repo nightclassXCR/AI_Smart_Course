@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.mapper;
 
 import com.dd.ai_smart_course.entity.Task;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -35,4 +36,13 @@ public interface TaskMapper {
 
     @Delete("DELETE FROM user_task WHERE task_id = #{taskId}")
     void deleteUserTaskByTaskId(int taskId);
+
+    @Select("SELECT COUNT(*) FROM tasks WHERE course_id = #{courseId}")
+    Integer getTaskCountByCourseId(int teacherId);
+
+    @Select("SELECT id from courses where teacher_id=#{teacherId}")
+    List<Integer> getCourseIdsCountByTeacherId(int teacherId);
+
+    @Select("SELECT id from tasks where course_id= #{courseId}")
+    List <Integer> getTaskIdsByCourseId(int courseId);
 }

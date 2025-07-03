@@ -6,12 +6,15 @@ import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.base.CourseService;
+import com.dd.ai_smart_course.service.base.UserService;
+import com.dd.ai_smart_course.utils.BaseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,12 @@ public class CourseImpl implements CourseService {
 
     @Autowired
     private LogMapper logMapper;
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private TaskMapper taskMapper;
+
 
     @Override
     public List<Course> getAllCourse() {
@@ -62,8 +71,6 @@ public class CourseImpl implements CourseService {
     @Override
     @Transactional
     public int addCourse(Course course) {
-
-
         return courseMapper.addCourse(course);
     }
 
@@ -150,8 +157,17 @@ public class CourseImpl implements CourseService {
      */
     @Override
     public List<CoursesDTO> getCoursesByTeacherId(int teacherId) {
-
         return courseMapper.getCoursesByTeacherId(teacherId);
+    }
+
+    //在数据库获取的课程列表中补充上学生数目
+    @Override
+    public List<CoursesDTO> getCoursesWithStudentCount(List<CoursesDTO> courses) {
+        for (CoursesDTO course : courses) {
+            int studentCount = getStudentsIDByCourseId(course.getId()).size();
+            course.setStudentCount(studentCount);
+        }
+        return courses;
     }
 
     /**
@@ -394,6 +410,14 @@ public class CourseImpl implements CourseService {
                 dto.setTeacherId(course.getTeacherId());
                 dto.setStatusSelf(course.getStatusSelf());
                 dto.setStatusStudent(course.getStatusStudent());
+                List<Integer> taskIdsByCourseId = taskMapper.getTaskIdsByCourseId(course.getId());
+                log.info("任务课程id:{}{}",taskIdsByCourseId,course.getId());
+                if(taskIdsByCourseId.isEmpty()){
+                    dto.setAverageScore(BigDecimal.ZERO);
+                }else{
+                    dto.setAverageScore(scoreMapper.getAvgScoreByTaskIdAndUserId(BaseContext.getCurrentId(),taskIdsByCourseId));
+                }
+                log.info("课程平均分:{}{}",dto.getName(),dto.getAverageScore());
                 if (course.getTeacherId() != 0) {
                     String teacherName = courseMapper.getUserNameById(course.getTeacherId());
                     dto.setTeacherRealName(teacherName);
@@ -469,5 +493,28 @@ public class CourseImpl implements CourseService {
         }
         return courseIds.size();
 
+    }
+
+    // 获取某门课下的所有学生ID
+    @Override
+    public List<Integer> getStudentsIDByCourseId(int courseId) {
+        return courseUserMapper.findStudentIdsByCourseId(courseId);
+    }
+
+    // 获取某门课下的所有学生
+    @Override
+    public List<User> getStudentsByCourseId(int courseId) {
+        List<Integer> studentIds = courseUserMapper.findStudentIdsByCourseId(courseId);
+        if (studentIds.isEmpty()) {
+            //Collections.emptyList()返回的是一个单例对象（全局唯一），多次调用返回的是同一个实例
+            //在日常开发中，建议优先使用Collections.emptyList()或List.of()返回空列表，而不是手动创建new ArrayList<>()
+            return Collections.emptyList();
+        }
+        List<User> students = userService.getUsersByIds(studentIds);
+        for(User student : students){
+            // 清除敏感数据
+            student.setPassword(null);
+        }
+        return students;
     }
 }

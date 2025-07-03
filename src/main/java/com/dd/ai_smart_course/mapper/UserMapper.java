@@ -33,7 +33,7 @@ public interface UserMapper {
     @Select("SELECT id FROM users where name = #{name};")
     Integer getIDByName(String name);
 
-   //获得指定用户(限定比较指标，比较参数，排序指标，排序方向，数目和偏移量)
+    //获得指定用户(限定比较指标，比较参数，排序指标，排序方向，数目和偏移量)
     //#{}: 参数可被自动转义，可防止SQL注入
     //用于替换SQL中的值（如 WHERE column = ?）
     //${}: 参数值会直接拼接到SQL中，有SQL注入风险
@@ -59,6 +59,14 @@ public interface UserMapper {
     //更新用户角色
     @Update("UPDATE users SET role = #{role} where userID = #{userID}")
     void updateUserRole(int userID, String role);
+
+    //更新用户密码
+    @Update("UPDATE users SET password = #{password} where userID = #{userID}")
+    void updateUserPassword(int userID, String password);
+
+    // 更新用户名称
+    @Update("UPDATE users SET username = #{username} where userID = #{userID}")
+    void updateUsername(int userID, String username);
 
     // 删除用户
     @Delete("DELETE FROM users WHERE id = #{id}")

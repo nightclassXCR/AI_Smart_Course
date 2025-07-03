@@ -30,6 +30,10 @@ public interface ChapterService {
     // 获取某课程下的所有知识点
     List<Concept> getConceptsByChapterId(int chapterId);
 
+    // 获取根据ID章节简介
+    Chapter getChapterContentById(int id);
+
+//    boolean updateChapterSequence(int id, int sequence);
 
 
 }

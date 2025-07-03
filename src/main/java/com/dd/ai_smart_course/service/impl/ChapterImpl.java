@@ -38,11 +38,18 @@ public class ChapterImpl implements ChapterService {
     @Override
     @Transactional
     public int addChapter(ChapterDTO chapterdto) {
-        Integer courseId = chapterMapper.getCourseIdByCourseName(chapterdto.getCourseName());
+        Integer courseId = chapterdto.getCourseId();
+        Integer maxSequence = chapterMapper.getMaxSequenceByCourseId(chapterdto.getCourseId());
+        if (maxSequence == null) {
+            maxSequence = 0;
+        }else {
+            maxSequence++;
+        }
         if (courseId == null) {
             throw new RuntimeException("课程不存在");
         }
         chapterdto.setCourseId(courseId);
+        chapterdto.setSequence(maxSequence);
         return chapterMapper.addChapter(chapterdto);
     }
 
@@ -99,7 +106,7 @@ public class ChapterImpl implements ChapterService {
             if (!existingChapterMap.containsKey(chapterId) || !Objects.equals(existingChapterMap.get(chapterId).getCourseId(), courseId)) {
                 throw new IllegalArgumentException("Chapter ID " + chapterId + " is invalid or does not belong to course " + courseId);
             }
-            int newSequence = i + 1; // 序列从1开始
+            int newSequence = i ; // 序列从0开始
 
             // 只有当sequence发生变化时才更新
             if (!Objects.equals(existingChapterMap.get(chapterId).getSequence(), newSequence)) {
@@ -113,6 +120,11 @@ public class ChapterImpl implements ChapterService {
     @Override
     public List<Concept> getConceptsByChapterId(int chapterId) {
         return chapterMapper.getConceptsByChapterId(chapterId);
+    }
+
+    @Override
+    public Chapter getChapterContentById(int id) {
+        return chapterMapper.getChapterContentById(id);
     }
 
 

@@ -55,6 +55,7 @@ public class TaskServiceImpl implements TaskService {
         if (courseId==null){
             log.info("Course not found: " + taskDTO.getCourseName());
             throw new SQLDataNotFoundException("课程不存在");
+
         }
         task.setCreatedAt(LocalDateTime.now());
         task.setType(Task.Type.homework);
@@ -64,6 +65,10 @@ public class TaskServiceImpl implements TaskService {
         log.info("insertBatch: {}", task);
         taskMapper.insert(task);
         int taskId = task.getId();
+        if(userIds.isEmpty()){
+            log.info("No students found in course: " + courseId);
+            throw new SQLDataNotFoundException("没有学生");
+        }
         taskMapper.insertUserTask(userIds, taskId);
         List<Question> questions = taskDTO.getQuestions();
         for (Question question : questions) {
@@ -119,9 +124,24 @@ public class TaskServiceImpl implements TaskService {
             return tasks;
         }
         List<Task> tasks = taskMapper.listByCourseIds(courseIds);
+
         return tasks;
 
 
+    }
+
+    @Override
+    public Integer getTaskCountByTeacherId(int teacherId) {
+
+        List<Integer> courseIds =taskMapper.getCourseIdsCountByTeacherId(teacherId);
+        if (courseIds.isEmpty()) {
+            return 0;
+        }
+        Integer taskCount = 0;
+        for (Integer courseId : courseIds){
+            taskCount += taskMapper.getTaskCountByCourseId(courseId);
+        }
+        return taskCount;
     }
 
 

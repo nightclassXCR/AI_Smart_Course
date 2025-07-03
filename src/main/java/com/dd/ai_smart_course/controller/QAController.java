@@ -78,4 +78,7 @@ public class QAController {
         Integer rowsAffected = qaService.deleteQA(id);
         return Result.success(rowsAffected);
     }
+
+
+
 }

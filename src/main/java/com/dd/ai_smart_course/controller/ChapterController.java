@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -38,6 +39,16 @@ public class ChapterController {
             List<Chapter> chapterList = chapterService.getChaptersByCourseId(courseId);
             return Result.success("获取成功", chapterList);
     }
+
+//    /**
+//     * 根据章节Id获取章节简介
+//     * @param id
+//     */
+//    @GetMapping("/{id}")
+//    public Result<Chapter> getChapterById(@PathVariable int id) {
+//            Chapter chapter = chapterService.getChapterById(id);
+//            return Result.success("获取成功", chapter);
+//    }
 
     /**
      * 添加章节
@@ -87,9 +98,13 @@ public class ChapterController {
      * @return 排序结果
      */
     @PutMapping("/reorder/{courseId}")
-    public Result reorderChapters(@PathVariable("courseId") int courseId, @RequestBody List<Integer> orderedChapterIds) {
+    public Result reorderChapters(@PathVariable("courseId") int courseId, @RequestBody Integer[] orderedChapterIds) {
+        System.out.println("收到的章节ID顺序：" + orderedChapterIds);
+        // 或者用lombok的@Slf4j
+        log.info("收到的章节ID顺序：{}", orderedChapterIds);
+        log.info("收到的章节ID顺序：{}", Arrays.toString(orderedChapterIds));
         try {
-            chapterService.reorderChapters(courseId, orderedChapterIds);
+            chapterService.reorderChapters(courseId, Arrays.asList(orderedChapterIds));
             return Result.success("排序成功");
         } catch (IllegalArgumentException e) {
              return  Result.error(e.getMessage());
@@ -107,6 +122,14 @@ public class ChapterController {
     public Result<List<Concept>> getConceptsByChapterId(@PathVariable("chapterId") int chapterId) {
         List<Concept> concepts = chapterService.getConceptsByChapterId(chapterId);
         return Result.success("获取成功", concepts);
+    }
+
+
+
+    @GetMapping("/{chapterId}/content")
+    public Result<Chapter> getChapterContentById(@PathVariable("chapterId") int chapterId) {
+        Chapter chapter = chapterService.getChapterContentById(chapterId);
+        return Result.success("获取成功", chapter);
     }
 
 

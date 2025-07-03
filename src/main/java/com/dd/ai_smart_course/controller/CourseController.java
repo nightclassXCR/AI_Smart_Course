@@ -7,6 +7,7 @@ import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.service.base.CourseService;
 import com.dd.ai_smart_course.component.JwtTokenUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ public class CourseController {
      */
     @GetMapping
     public Result<List<Course>>getAllCourse() {
+        log.info("get a request: get all courses");
         return Result.success(courseService.getAllCourse());
     }
 
@@ -151,6 +153,7 @@ public class CourseController {
         for (Map.Entry<Chapter, List<Concept>> entry : map.entrySet()) {
             idKeyMap.put(entry.getKey().getId(), entry.getValue());
         }
+//        log.info("map: " + idKeyMap);
         return Result.success("获取成功", idKeyMap);
     }
 
@@ -256,8 +259,8 @@ public class CourseController {
         String authHeader = request.getHeader("Authorization");
         String token = authHeader != null ? authHeader.replace("Bearer ", "").trim() : null;
         Integer userId = jwtTokenUtil.getUserIDFromToken(token);
-        log.info("userId: {}", userId);
-        log.info("课程名: {}", courseService.getCoursesByTeacherId(userId));
+        log.info("get a request: get course by userID = {}", userId);
+        List<CoursesDTO> courses = courseService.getCoursesByTeacherId(userId);
         return Result.success(courseService.getCoursesByTeacherId(userId));
     }
 
@@ -287,4 +290,25 @@ public class CourseController {
         return Result.success("获取成功", courseService.getCouresCountByTeacherId(userId));
     }
 
+    // 获取课程的学员
+    @GetMapping("/getStudentsByCourseId/{courseId}")
+    public Result<List<User>> getStudentsByCourseId(@PathVariable("courseId") int courseId) {
+        log.info("get a request: 获取课程ID = {} 下的学生名单", courseId);
+        List<User> students = courseService.getStudentsByCourseId(courseId);
+        return Result.success("获取成功", students);
+    }
+
+    // 删除课程的学员
+    @DeleteMapping("/deleteStudentByCourseId/{courseId}")
+    public Result<Boolean> deleteStudentByCourseId(@PathVariable("courseId") int courseId, @RequestParam("userId") int userId) {
+        log.info("get a request: 删除课程ID = {} 下的学生ID = {}", courseId, userId);
+        try {
+            courseService.unenrollUserFromCourse(userId, courseId);
+            return Result.success("删除成功", true);
+        }catch (Exception e){
+            log.error("删除课程ID = {} 下的学生ID = {} 的请求失败", e.getMessage());
+            return Result.success("删除失败",false);
+        }
+
+    }
 }

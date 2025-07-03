@@ -82,5 +82,12 @@ public interface ConceptService {
     void markConceptAsMastered(int conceptId, int userId);
     // 用户对知识点的复习
     void startConceptReview(int conceptId, int userId);
+
+    /**
+     * 获取概念详情
+     * @param id
+     * @return
+     */
+    Concept getConceptById(int id);
 }
 
