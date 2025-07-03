@@ -43,7 +43,6 @@ public class ConceptController {
      */
     @GetMapping("/by-chapter/{chapterId}")
     public Result<List<Concept>> getConceptsByChapterId(@PathVariable int chapterId) {
-
         return Result.success(conceptService.getConceptsByChapterId(chapterId));
     }
     /**
@@ -64,6 +63,7 @@ public class ConceptController {
      */
     @GetMapping("/{id}")
     public Result<Concept> getConceptById(@PathVariable int id) {
+        log.info("get a request: get concept by conceptID: {}", id);
         return Result.success(conceptService.getConceptById(id));
     }
     /**
