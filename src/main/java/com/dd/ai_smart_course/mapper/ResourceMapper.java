@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.mapper;
 
 import com.dd.ai_smart_course.entity.Concept;
+import com.dd.ai_smart_course.entity.File;
 import com.dd.ai_smart_course.entity.Resource;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
@@ -8,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper
 public interface ResourceMapper {
@@ -33,4 +35,7 @@ public interface ResourceMapper {
 
     @Select("SELECT * FROM concepts WHERE chapter_id = #{chapterId}")
     List<Concept> listByChapterId(int chapterId);
+
+    @Select("SELECT * FROM resources WHERE id = #{resourceId}")
+    Optional<File> findById(int resourceId);
 }

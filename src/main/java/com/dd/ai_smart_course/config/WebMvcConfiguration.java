@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.time.Duration;
 import java.util.List;
 
 @Slf4j
@@ -49,6 +51,16 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         converter.setObjectMapper(new JacksonObjectMapper());
         //将上面的消息转换器对象追加到mvc框架的转换器集合中
         converters.add(0,converter);
+    }
+
+    @Override
+    public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+        // 设置 Spring MVC 异步请求的默认超时时间。
+        // 这直接影响到您的控制器方法返回 Mono 或 DeferredResult 等异步类型时的超时。
+        // 根据 Dify 最长运行 2分53秒，我们设置为 4 分钟 (240000 毫秒)
+        configurer.setDefaultTimeout(Duration.ofMinutes(4).toMillis());
+
+        System.out.println("Spring MVC Async Timeout set to: " + Duration.ofMinutes(4).toMillis() + "ms");
     }
 
 

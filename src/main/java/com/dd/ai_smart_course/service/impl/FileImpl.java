@@ -55,30 +55,7 @@ public class FileImpl implements FileService {
 //     * @param currentProgress   用户在资源中的当前进度 (例如视频播放到哪里，JSON字符串)
 //     * @param resourceType      资源的具体类型（例如 "VIDEO", "AUDIO", "DOCUMENT"）
 //     */
-//    @Transactional
-//    public void viewOrPlayResource(int resourceId, int userId, Integer durationSeconds, String currentProgress, String resourceType) {
-//        Optional<File> resourceOptional = fileMapper.findById(resourceId);
-//        if (resourceOptional.isEmpty()) {
-//            throw new IllegalArgumentException("Resource not found: " + resourceId);
-//        }
-//
-//        System.out.println("User " + userId + " viewed resource " + resourceId + " for " + durationSeconds + " seconds.");
-//
-//        String actionType = "view"; // 默认是 'view'
-//        if (resourceType != null && (resourceType.equalsIgnoreCase("VIDEO") || resourceType.equalsIgnoreCase("AUDIO"))) {
-//            actionType = "play"; // 如果是视频/音频，使用 'play'
-//        }
-//
-//        eventPublisher.publishEvent(new LearningActionEvent(
-//                this,
-//                userId,
-//                "resourse",
-//                resourceId,
-//                actionType,   // actionType
-//                durationSeconds,
-//                "{\"progress\":\"" + (currentProgress != null ? currentProgress : "N/A") + "\", \"resourceType\":\"" + resourceType + "\"}" // detail
-//        ));
-//    }
+
 
 
 }

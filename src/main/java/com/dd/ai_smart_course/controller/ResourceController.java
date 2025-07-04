@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.controller;
 
+import com.dd.ai_smart_course.component.JwtTokenUtil;
 import com.dd.ai_smart_course.dto.ResourceDTO;
 import com.dd.ai_smart_course.entity.Resource;
 import com.dd.ai_smart_course.R.Result;
@@ -7,6 +8,7 @@ import com.dd.ai_smart_course.mapper.ResourceMapper;
 import com.dd.ai_smart_course.service.base.ResourceService;
 import com.dd.ai_smart_course.utils.AliOssUtil;
 import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -35,6 +37,8 @@ public class ResourceController {
     private ResourceService resourceService;
     @Autowired
     private ResourceMapper resourceMapper;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @PostMapping(value="/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiOperation("文件上传")
@@ -128,6 +132,24 @@ public class ResourceController {
     public Result <List<Resource>> list(){
         List<Resource> resources=resourceService.list();
         return Result.success(resources);
+    }
+
+    /**
+     * 用户查看或播放资源的行为上报接口
+     */
+    @PostMapping("/{resourceId}/users/view")
+    public Result viewOrPlayResource(
+            HttpServletRequest request,
+            @PathVariable("resourceId") int resourceId,
+            @RequestParam(value = "durationSeconds", required = false) Integer durationSeconds,
+            @RequestParam(value = "currentProgress", required = false) String currentProgress,
+            @RequestParam(value = "resourceType", required = false) String resourceType
+    ) {
+        String Header = request.getHeader("Authorization");
+        String token = Header != null ? Header.replace("Bearer ", "").trim() : null;
+        Integer userId = jwtTokenUtil.getUserIDFromToken(token);
+        resourceService.viewOrPlayResource(resourceId, userId, durationSeconds, currentProgress, resourceType);
+        return Result.success("资源行为上报成功");
     }
 
 
