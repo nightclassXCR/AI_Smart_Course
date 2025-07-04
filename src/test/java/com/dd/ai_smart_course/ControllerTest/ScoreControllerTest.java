@@ -2,7 +2,7 @@ package com.dd.ai_smart_course.ControllerTest;
 
 import com.dd.ai_smart_course.controller.ScoreController;
 import com.dd.ai_smart_course.entity.Score;
-import com.dd.ai_smart_course.service.ScoreService;
+import com.dd.ai_smart_course.service.base.ScoreService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ public class ScoreControllerTest {
 
     @Test
     public void testInsert() throws Exception {
-        List<Score> scores = List.of(new Score(1, 1, 100.0));
+        List<Score> scores = List.of(new Score());
 
         doNothing().when(scoreService).insertBatch(any());
 
@@ -76,7 +76,7 @@ public class ScoreControllerTest {
 
     @Test
     public void testUpdate() throws Exception {
-        Score score = new Score(1, 1, 88.5);
+        Score score = new Score();
         doNothing().when(scoreService).update(any());
 
         mockMvc.perform(put("/score/score")
@@ -88,7 +88,7 @@ public class ScoreControllerTest {
 
     @Test
     public void testGetTaskScores() throws Exception {
-        Score score = new Score(1, 1, 77.0);
+        Score score = new Score();
         when(scoreService.getTaskScore(1)).thenReturn(score);
 
         mockMvc.perform(get("/score/tasks/1/scores"))
@@ -98,7 +98,7 @@ public class ScoreControllerTest {
 
     @Test
     public void testGetUserScores() throws Exception {
-        List<Score> scores = List.of(new Score(1, 1, 90.0), new Score(2, 1, 85.0));
+        List<Score> scores = List.of(new Score(), new Score());
         when(scoreService.getUserScores(1)).thenReturn(scores);
 
         mockMvc.perform(get("/score/users/1/scores"))

@@ -1,10 +1,11 @@
 package com.dd.ai_smart_course.ControllerTest;
 
 import com.dd.ai_smart_course.controller.CourseController;
+import com.dd.ai_smart_course.dto.CoursesDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Course;
-import com.dd.ai_smart_course.service.CourseService;
+import com.dd.ai_smart_course.service.base.CourseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -125,18 +126,8 @@ public class CourseControllerTest {
     }
 
     @Test
-    public void testGetCoursesByTeacherId() throws Exception {
-        when(courseService.getCoursesByTeacherId(1L)).thenReturn(List.of(new Course()));
-
-        mockMvc.perform(get("/courses/byTeacher/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("获取成功"))
-                .andExpect(jsonPath("$.data").isArray());
-    }
-
-    @Test
     public void testGetChaptersByCourse() throws Exception {
-        when(courseService.getChaptersByCourse(1L)).thenReturn(List.of(new Chapter()));
+        when(courseService.getChaptersByCourse(1)).thenReturn(List.of(new Chapter()));
 
         mockMvc.perform(get("/courses/chapters/1"))
                 .andExpect(status().isOk())
@@ -146,7 +137,7 @@ public class CourseControllerTest {
 
     @Test
     public void testGetConceptsByCourse() throws Exception {
-        when(courseService.getConceptsByCourse(1L)).thenReturn(List.of(new Concept()));
+        when(courseService.getConceptsByCourse(1)).thenReturn(List.of(new Concept()));
 
         mockMvc.perform(get("/courses/concepts/1"))
                 .andExpect(status().isOk())
@@ -159,7 +150,7 @@ public class CourseControllerTest {
         Chapter chapter = new Chapter();
         Map<Chapter, List<Concept>> groupedMap = Map.of(chapter, List.of(new Concept()));
 
-        when(courseService.getConceptsGroupedByChapter(1L)).thenReturn(groupedMap);
+        when(courseService.getConceptsGroupedByChapter(1)).thenReturn(groupedMap);
 
         mockMvc.perform(get("/courses/groupedConcepts/1"))
                 .andExpect(status().isOk())

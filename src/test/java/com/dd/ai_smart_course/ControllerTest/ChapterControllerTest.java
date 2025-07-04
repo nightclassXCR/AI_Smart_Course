@@ -4,7 +4,7 @@ import com.dd.ai_smart_course.controller.ChapterController;
 import com.dd.ai_smart_course.dto.ChapterDTO;
 import com.dd.ai_smart_course.entity.Chapter;
 import com.dd.ai_smart_course.entity.Concept;
-import com.dd.ai_smart_course.service.ChapterService;
+import com.dd.ai_smart_course.service.base.ChapterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -104,7 +104,7 @@ public class ChapterControllerTest {
 
     @Test
     public void testReorderChapters() throws Exception {
-        doNothing().when(chapterService).reorderChapters(eq(1L), anyList());
+        doNothing().when(chapterService).reorderChapters((int) eq(1L), anyList());
 
         mockMvc.perform(put("/chapters/reorder/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -115,7 +115,7 @@ public class ChapterControllerTest {
 
     @Test
     public void testGetConceptsByChapterId() throws Exception {
-        when(chapterService.getConceptsByChapterId(1L)).thenReturn(List.of(new Concept()));
+        when(chapterService.getConceptsByChapterId(1)).thenReturn(List.of(new Concept()));
 
         mockMvc.perform(get("/chapters/1/concepts"))
                 .andExpect(status().isOk())

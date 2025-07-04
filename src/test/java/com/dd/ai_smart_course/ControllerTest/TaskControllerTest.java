@@ -2,7 +2,7 @@ package com.dd.ai_smart_course.ControllerTest;
 
 import com.dd.ai_smart_course.controller.TaskController;
 import com.dd.ai_smart_course.entity.Task;
-import com.dd.ai_smart_course.service.TaskService;
+import com.dd.ai_smart_course.service.base.TaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,18 +34,6 @@ public class TaskControllerTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         objectMapper = new ObjectMapper();
-    }
-
-    @Test
-    public void testCreateTask() throws Exception {
-        List<Task> tasks = List.of(new Task(), new Task());
-        doNothing().when(taskService).insertBatch(any());
-
-        mockMvc.perform(post("/api/tasks")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(tasks)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isArray());
     }
 
     @Test

@@ -4,7 +4,7 @@ import com.dd.ai_smart_course.controller.ConceptController;
 import com.dd.ai_smart_course.dto.ConceptDTO;
 import com.dd.ai_smart_course.entity.Concept;
 import com.dd.ai_smart_course.entity.Question;
-import com.dd.ai_smart_course.service.ConceptService;
+import com.dd.ai_smart_course.service.base.ConceptService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -108,7 +108,7 @@ public class ConceptControllerTest {
 
     @Test
     public void testGetQuestionsByConcept() throws Exception {
-        when(conceptService.getQuestionsByConcept(1L)).thenReturn(List.of(new Question()));
+        when(conceptService.getQuestionsByConcept(1)).thenReturn(List.of(new Question()));
         mockMvc.perform(get("/concepts/1/questions"))
                 .andExpect(status().isOk());
     }
@@ -122,7 +122,7 @@ public class ConceptControllerTest {
 
     @Test
     public void testGetMasteryLevel() throws Exception {
-        when(conceptService.getMasteryLevel(1L, 2L)).thenReturn(5);
+        when(conceptService.getMasteryLevel(1, 2)).thenReturn(5);
         mockMvc.perform(get("/concepts/users/1/concepts/2/mastery"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value(5));

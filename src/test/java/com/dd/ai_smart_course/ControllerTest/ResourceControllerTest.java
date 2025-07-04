@@ -2,7 +2,7 @@ package com.dd.ai_smart_course.ControllerTest;
 
 import com.dd.ai_smart_course.controller.ResourceController;
 import com.dd.ai_smart_course.entity.Resource;
-import com.dd.ai_smart_course.service.ResourceService;
+import com.dd.ai_smart_course.service.base.ResourceService;
 import com.dd.ai_smart_course.utils.AliOssUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 ;
@@ -88,9 +88,9 @@ public class ResourceControllerTest {
         Resource resource = new Resource();
         resource.setFileUrl("oss://path/test.pdf");
 
-        when(resourceService.findById(1L)).thenReturn(resource);
+        when(resourceService.findById(1)).thenReturn(resource);
         doNothing().when(aliOssUtil).delete(resource.getFileUrl());
-        doNothing().when(resourceService).delete(1L);
+        doNothing().when(resourceService).delete(1);
 
         mockMvc.perform(delete("/api/resources/1"))
                 .andExpect(status().isOk())
@@ -99,7 +99,7 @@ public class ResourceControllerTest {
 
     @Test
     public void testDeleteResourceNotFound() throws Exception {
-        when(resourceService.findById(999L)).thenReturn(null);
+        when(resourceService.findById(999)).thenReturn(null);
 
         mockMvc.perform(delete("/api/resources/999"))
                 .andExpect(status().isOk())
@@ -112,7 +112,7 @@ public class ResourceControllerTest {
         resource.setName("文件.pdf");
         resource.setFileUrl("oss://fake/file.pdf");
 
-        when(resourceService.findById(1L)).thenReturn(resource);
+        when(resourceService.findById(1)).thenReturn(resource);
         when(aliOssUtil.download(resource.getFileUrl()))
                 .thenReturn(new ByteArrayInputStream("测试内容".getBytes()));
 
@@ -124,7 +124,7 @@ public class ResourceControllerTest {
 
     @Test
     public void testDownloadNotFound() throws Exception {
-        when(resourceService.findById(999L)).thenReturn(null);
+        when(resourceService.findById(999)).thenReturn(null);
 
         mockMvc.perform(get("/api/resources/download/999"))
                 .andExpect(status().isNotFound());
