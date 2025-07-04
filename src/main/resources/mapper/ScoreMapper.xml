@@ -10,6 +10,7 @@
                 (#{sc.userId}, #{sc.grade}, #{sc.comment}, #{sc.submitTime})
             </foreach>
     </insert>
+
     <update id="update">
         update score
         <set>
@@ -25,18 +26,44 @@
             </if>
         </set>
         where user_id = #{userId}and task_id = #{taskId}
-
-
     </update>
 
-
     <delete id="deleteByIds">
-        delete from scores where id in
-        <foreach collection="ids" open="(" close=")" separator="," item="id">
+        delete from score where id in
+        <foreach item="id" collection="list" separator="," close=")" open="(">
             #{id}
         </foreach>
-
+        />
     </delete>
 
+    <select id="getAvgScoreByTaskIdAndUserId" resultType="java.math.BigDecimal">
+        SELECT AVG(final_score) FROM scores
+        <where>
+            user_id = #{userId}
+            <if test="taskId != null and !taskId.isEmpty()">
+                AND task_id IN
+                <foreach item="id" collection="taskId" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
 
+        </where>
+    </select>
+
+    <!-- 获取某门课程的所有学生的平均分（假设每份task权重相等）   -->
+    <select id="getFinalScoreByCourseId" resultType="com.dd.ai_smart_course.dto.ScoreDTO">
+        SELECT s.user_id AS studentId, course_id AS courseId, AVG(s.total_score) AS finalScore
+        FROM scores s
+        LEFT JOIN tasks t ON s.task_id = t.id
+        WHERE t.course_id = #{courseId}
+        GROUP BY s.user_id, t.course_id
+    </select>
+
+    <!-- 获取某门课程平均分   -->
+    <select id="getAvgScoreByCourseId" resultType="java.math.BigDecimal">
+        SELECT AVG(s.total_score)
+        FROM scores s
+        LEFT JOIN tasks t ON s.task_id = t.id
+        WHERE t.course_id = #{courseId}
+    </select>
 </mapper>

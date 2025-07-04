@@ -7,12 +7,14 @@ import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.base.CourseService;
 import com.dd.ai_smart_course.service.base.UserService;
+import com.dd.ai_smart_course.utils.BaseContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,10 @@ public class CourseImpl implements CourseService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TaskMapper taskMapper;
+
+
     @Override
     public List<Course> getAllCourse() {
         return courseMapper.getAllCourses();
@@ -65,8 +71,6 @@ public class CourseImpl implements CourseService {
     @Override
     @Transactional
     public int addCourse(Course course) {
-
-
         return courseMapper.addCourse(course);
     }
 
@@ -153,8 +157,25 @@ public class CourseImpl implements CourseService {
      */
     @Override
     public List<CoursesDTO> getCoursesByTeacherId(int teacherId) {
+        List<CoursesDTO> courses = courseMapper.getCoursesByTeacherId(teacherId);
 
-        return courseMapper.getCoursesByTeacherId(teacherId);
+        //为每门课程添加平均值数据
+        for(CoursesDTO course:courses){
+            BigDecimal avg = scoreMapper.getAvgScoreByCourseId(course.getId());
+            course.setAverageScore(avg!=null ? avg : BigDecimal.ZERO);
+        }
+
+        return courses;
+    }
+
+    //在数据库获取的课程列表中补充上学生数目
+    @Override
+    public List<CoursesDTO> getCoursesWithStudentCount(List<CoursesDTO> courses) {
+        for (CoursesDTO course : courses) {
+            int studentCount = getStudentsIDByCourseId(course.getId()).size();
+            course.setStudentCount(studentCount);
+        }
+        return courses;
     }
 
     /**
@@ -375,7 +396,7 @@ public class CourseImpl implements CourseService {
     public List<CoursesDTO> getMyCourses(int userId) {
         List<Course_user> courseUsers = courseUserMapper.findCoursesByUserId(userId);
         List<CoursesDTO> coursesdto =  new ArrayList<>();
-       List<Integer> courseIds = courseUsers.stream()
+        List<Integer> courseIds = courseUsers.stream()
                 .map(Course_user::getCourseId)
                 .collect(Collectors.toList());
        if (courseIds.isEmpty()){
@@ -397,6 +418,14 @@ public class CourseImpl implements CourseService {
                 dto.setTeacherId(course.getTeacherId());
                 dto.setStatusSelf(course.getStatusSelf());
                 dto.setStatusStudent(course.getStatusStudent());
+                List<Integer> taskIdsByCourseId = taskMapper.getTaskIdsByCourseId(course.getId());
+                log.info("任务课程id:{}{}",taskIdsByCourseId,course.getId());
+                if(taskIdsByCourseId.isEmpty()){
+                    dto.setAverageScore(BigDecimal.ZERO);
+                }else{
+                    dto.setAverageScore(scoreMapper.getAvgScoreByTaskIdAndUserId(BaseContext.getCurrentId(),taskIdsByCourseId));
+                }
+                log.info("课程平均分:{}{}",dto.getName(),dto.getAverageScore());
                 if (course.getTeacherId() != 0) {
                     String teacherName = courseMapper.getUserNameById(course.getTeacherId());
                     dto.setTeacherRealName(teacherName);

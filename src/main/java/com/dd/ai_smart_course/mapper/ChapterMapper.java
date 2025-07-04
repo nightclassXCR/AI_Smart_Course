@@ -17,7 +17,7 @@ public interface ChapterMapper {
     List<Chapter> getAllChapters();
 
     // 根据课程ID获取章节
-    @Select("SELECT * FROM chapters WHERE course_id = #{courseId}")
+    @Select("SELECT * FROM chapters WHERE course_id = #{courseId} ORDER BY sequence ASC")
     List<Chapter> getChaptersByCourseId(int courseId);
 
     // 添加章节
@@ -72,4 +72,7 @@ public interface ChapterMapper {
 
     @Select("SELECT content FROM chapters WHERE id =#{id}")
     Chapter getChapterContentById(@Param("id") int chapterId);
+
+    @Select("SELECT MAX(sequence) FROM chapters WHERE course_id = #{courseId}")
+    Integer getMaxSequenceByCourseId(@Param("courseId") int courseId);
 }
