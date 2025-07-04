@@ -8,8 +8,8 @@ import java.util.List;
 @Mapper
 public interface TaskQuestionMapper {
 
-    @Select("SELECT * FROM task_question WHERE task_id = #{task_id}")
-    List<Task_question> listByTaskId(int task_id);
+    @Select("SELECT question_id FROM task_question WHERE task_id = #{task_id}")
+    List<Integer> listByTaskId(int task_id);
     //作业新增题目
     @Insert("INSERT INTO task_question (task_id, question_id, max_score, sequence) VALUES (#{task_id}, #{question_id}, #{max_score}, #{sequence})")
     int insert(Task_question task_question);
