@@ -19,13 +19,13 @@ import java.util.concurrent.TimeUnit;
 public class DifyKnowledgeUploader {
 
     // 从配置文件读取Dify相关配置
-    @Value("${dify.api.base-url}")
+//    @Value("${dify.api.url}")
     private String difyApiBaseUrl;
 
     @Value("${dify.api.key}")
     private String difyApiKey;
 
-    @Value("${dify.dataset.key}")
+//    @Value("${dify.api.key}")
     private String difyDatasetKey;
 
     @Value("${dify.dataset.id}")

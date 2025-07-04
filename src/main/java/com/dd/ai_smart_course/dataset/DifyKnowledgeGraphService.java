@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class DifyKnowledgeGraphService {
 
     // Dify配置
-    @Value("${dify.api.base-url}")
+    @Value("${dify.api.url}")
     private String difyApiBaseUrl;
 
     @Value("${dify.api.key}")
