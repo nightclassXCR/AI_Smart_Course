@@ -74,8 +74,8 @@ public class TaskServiceImpl implements TaskService {
         for (Question question : questions) {
             Task_question tq = new Task_question();
             tq.setTask_id(taskId);
-            questionMapper.insert(question);
-            tq.setQuestion_id(question.getId());
+            int questionId = question.getId();
+            tq.setQuestion_id(questionId);
             tqMapper.insert(tq);
         }
 
