@@ -1,5 +1,6 @@
 package com.dd.ai_smart_course.mapper;
 
+import com.dd.ai_smart_course.dto.ScoreDTO;
 import com.dd.ai_smart_course.entity.Score;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
@@ -32,4 +33,10 @@ public interface ScoreMapper {
 
     @Delete("DELETE FROM scores WHERE id = #{id}")
     void deleteById(Integer id);
+
+    // 获取某门课程的所有学生的平均分（假设每份task权重相等）
+    List<ScoreDTO> getFinalScoreByCourseId(int courseId);
+
+    // 获取某门课程的平均分
+    BigDecimal getAvgScoreByCourseId(int courseId);
 }

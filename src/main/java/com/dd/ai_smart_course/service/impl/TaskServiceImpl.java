@@ -1,6 +1,6 @@
 package com.dd.ai_smart_course.service.impl;
 
-import com.dd.ai_smart_course.dto.TaskDTO;
+import com.dd.ai_smart_course.dto.*;
 import com.dd.ai_smart_course.entity.*;
 import com.dd.ai_smart_course.event.LearningActionEvent;
 import com.dd.ai_smart_course.mapper.*;
@@ -45,6 +45,8 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     private CourseMapper courseMapper;
 
+    @Autowired
+    private OptionMapper optionMapper;
 
     @Override
     @Transactional
@@ -74,7 +76,6 @@ public class TaskServiceImpl implements TaskService {
         for (Question question : questions) {
             Task_question tq = new Task_question();
             tq.setTask_id(taskId);
-            questionMapper.insert(question);
             tq.setQuestion_id(question.getId());
             tqMapper.insert(tq);
         }
@@ -124,7 +125,6 @@ public class TaskServiceImpl implements TaskService {
             return tasks;
         }
         List<Task> tasks = taskMapper.listByCourseIds(courseIds);
-
         return tasks;
 
 
@@ -242,4 +242,77 @@ public class TaskServiceImpl implements TaskService {
         ));
     }
 
+    @Override
+    public List<QuestionDTO> getQuestionsByTaskId(int taskId) {
+        List<Integer> questionIds =tqMapper.listByTaskId(taskId);
+
+        List<Question> questions = questionMapper.findByIds(questionIds);
+        List<QuestionDTO> questionDTOs = new ArrayList<>();
+
+        for (Question question : questions) {
+            QuestionDTO questionDTO = new QuestionDTO();
+            BeanUtils.copyProperties(question, questionDTO);
+            questionDTO.setDifficulty(question.getDifficulty().name());
+
+            // 获取选项
+            List<Option> options = optionMapper.findByQuestionId(question.getId());
+            List<OptionDTO> optionDTOs = new ArrayList<>();
+            for (Option option : options) {
+                OptionDTO optionDTO = new OptionDTO();
+                BeanUtils.copyProperties(option, optionDTO);
+                optionDTOs.add(optionDTO);
+            }
+            questionDTO.setOptions(optionDTOs);
+
+            questionDTOs.add(questionDTO);
+        }
+
+        return questionDTOs;
+    }
+    //判断对错
+    @Override
+    public List<TaskAnswerResultDTO> submitAnswerAndJudge(List<SubmitAnswerDTO> submitAnswerDTOList) {
+        List<TaskAnswerResultDTO> results = new ArrayList<>();
+
+        for (SubmitAnswerDTO submitAnswerDTO : submitAnswerDTOList) {
+            TaskAnswerResultDTO resultDTO = new TaskAnswerResultDTO();
+            BeanUtils.copyProperties(submitAnswerDTO, resultDTO); // 复制基本信息
+
+            Optional<Question> questionOptional = Optional.ofNullable(questionMapper.findById(submitAnswerDTO.getQuestionId()));
+            if (questionOptional.isEmpty()) {
+                // 如果问题不存在，可以记录日志或抛出异常，这里选择跳过当前问题并记录错误
+                log.warn("Question not found for submitted answer: " + submitAnswerDTO.getQuestionId());
+                // 你也可以在这里设置一个错误状态或默认值到 resultDTO 中
+                resultDTO.setCorrect(false); // 标记为不正确
+                resultDTO.setPoint(BigDecimal.ZERO); // 得分为0
+                results.add(resultDTO);
+                continue; // 跳过当前问题，处理下一个
+            }
+
+            Question question = questionOptional.get();
+            String correctAnswer = question.getAnswer(); // 获取正确答案
+            BigDecimal point = BigDecimal.ZERO; // 默认分数为0
+
+            // 比较用户答案和正确答案
+            boolean isCorrect = submitAnswerDTO.getUserAnswer().equalsIgnoreCase(correctAnswer);
+            resultDTO.setCorrect(isCorrect); // 设置是否正确
+            resultDTO.setCorrectAnswer(correctAnswer); // 设置正确答案
+
+            // 根据答案的正确性确定得分
+            if (isCorrect) {
+                // 这里假设 Question 实体中有一个 getScore() 方法来获取该题目的分值
+                // 如果分数是存储在 task_question 表中，你可以使用 tqMapper.findMaxScoreByTaskAndQuestionId
+                point = question.getPoint();
+            }
+            resultDTO.setPoint(point); // 设置得分
+
+            // 发布用户回答问题的事件
+            answerQuestion(submitAnswerDTO.getQuestionId(), submitAnswerDTO.getUserId(), submitAnswerDTO.getUserAnswer(), isCorrect);
+
+            results.add(resultDTO); // 将处理结果添加到列表中
+        }
+
+        return results; // 返回结果列表
+    }
 }
+

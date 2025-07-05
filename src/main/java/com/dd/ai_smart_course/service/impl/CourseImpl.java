@@ -157,7 +157,15 @@ public class CourseImpl implements CourseService {
      */
     @Override
     public List<CoursesDTO> getCoursesByTeacherId(int teacherId) {
-        return courseMapper.getCoursesByTeacherId(teacherId);
+        List<CoursesDTO> courses = courseMapper.getCoursesByTeacherId(teacherId);
+
+        //为每门课程添加平均值数据
+        for(CoursesDTO course:courses){
+            BigDecimal avg = scoreMapper.getAvgScoreByCourseId(course.getId());
+            course.setAverageScore(avg!=null ? avg : BigDecimal.ZERO);
+        }
+
+        return courses;
     }
 
     //在数据库获取的课程列表中补充上学生数目
@@ -388,7 +396,7 @@ public class CourseImpl implements CourseService {
     public List<CoursesDTO> getMyCourses(int userId) {
         List<Course_user> courseUsers = courseUserMapper.findCoursesByUserId(userId);
         List<CoursesDTO> coursesdto =  new ArrayList<>();
-       List<Integer> courseIds = courseUsers.stream()
+        List<Integer> courseIds = courseUsers.stream()
                 .map(Course_user::getCourseId)
                 .collect(Collectors.toList());
        if (courseIds.isEmpty()){

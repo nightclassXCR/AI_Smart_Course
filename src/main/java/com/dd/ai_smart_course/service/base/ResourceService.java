@@ -14,4 +14,6 @@ public interface ResourceService {
     List<Resource> list();
 
     List<Resource> listByChapterId(int chapterId);
+
+    void viewOrPlayResource(int resourceId, int userId, Integer durationSeconds, String currentProgress, String resourceType);
 }

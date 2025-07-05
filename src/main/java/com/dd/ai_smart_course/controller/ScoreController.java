@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.dto.ScoreDTO;
 import com.dd.ai_smart_course.entity.Score;
 import com.dd.ai_smart_course.service.base.ScoreService;
 import lombok.Data;
@@ -65,5 +66,31 @@ public class ScoreController {
         return Result.success(scores);
     }
 
+    //获取某门课程的所有学生的平均分（假设每份task权重相等）
+    @GetMapping("/courses/{courseId}/finalScore")
+    public Result<List<ScoreDTO>> getFinalScoreByCourseId(@PathVariable int courseId) {
+        log.info("get a request: get final score by courseId: {}", courseId);
+        List<ScoreDTO> scores = scoreService.getFinalScoreByCourseId(courseId);
+        return Result.success(scores);
+    }
+
+    //获取某门课程的成绩分布情况（无改动）
+    @GetMapping("/courses/{courseId}/pureScoreDistribution")
+    public Result<List<Integer>> getPureScoreDistribution(@PathVariable int courseId) {
+        log.info("get a request: get pure score distribution by courseId: {}", courseId);
+        List<ScoreDTO> scores = scoreService.getFinalScoreByCourseId(courseId);
+        List<Integer> distribution = scoreService.getPureScoreDistribution(scores);
+        return Result.success(distribution);
+    }
+
+    //获取某门课程的成绩分布情况（比例）
+    @GetMapping("/courses/{courseId}/scoreDistribution")
+    public Result<List<Integer>> getScoreDistribution(@PathVariable int courseId) {
+        log.info("get a request: get score distribution by courseId: {}", courseId);
+        List<ScoreDTO> scores = scoreService.getFinalScoreByCourseId(courseId);
+        log.info("get score list size: {}", scores.size());
+        List<Integer> scoreDistribution = scoreService.getScoreDistribution(scores);
+        return Result.success(scoreDistribution);
+    }
 
 }
