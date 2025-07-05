@@ -1,6 +1,9 @@
 package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.R.Result;
+import com.dd.ai_smart_course.dto.QuestionDTO;
+import com.dd.ai_smart_course.dto.SubmitAnswerDTO;
+import com.dd.ai_smart_course.dto.TaskAnswerResultDTO;
 import com.dd.ai_smart_course.dto.TaskDTO;
 import com.dd.ai_smart_course.entity.Task;
 import com.dd.ai_smart_course.mapper.CourseMapper;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @RestController
@@ -94,8 +98,31 @@ public class TaskController {
         return Result.success(taskService.getTaskCountByTeacherId(teacherId));
     }
 
+    @GetMapping("/detail/{id}")
+    public Result<List<QuestionDTO> >getTaskDetail(@PathVariable int id){
+        try{
+            List<QuestionDTO> questions = taskService.getQuestionsByTaskId(id);
+            log.info("展示成功:{}", questions);
+            return Result.success("展示成功", questions);
+        }catch (Exception e){
+            log.error("展示失败:{}", e.getMessage());
+            return Result.error("展示失败");
+        }
+    }
 
+    @PostMapping("/submit")
+    public Result<List<TaskAnswerResultDTO>> submit(@RequestBody List<SubmitAnswerDTO> submitAnswerDTOList){
+        log.info("收到请求体：{}", submitAnswerDTOList);
+        try{
+            List<TaskAnswerResultDTO> taskAnswerResultDTOS = taskService.submitAnswerAndJudge(submitAnswerDTOList);
+            log.info("提交成功:{}", taskAnswerResultDTOS);
+            return Result.success("提交成功", taskAnswerResultDTOS);
+        } catch (Exception e) {
+            log.error("提交失败:{}", e.getMessage());
+            return Result.error("提交失败");
+        }
 
+    }
 
 
 

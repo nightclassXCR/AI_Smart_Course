@@ -1,13 +1,10 @@
 package com.dd.ai_smart_course.controller;
 
 import com.dd.ai_smart_course.entity.QA;
-import com.dd.ai_smart_course.service.base.QAService;
 import com.dd.ai_smart_course.service.impl.QAImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.dd.ai_smart_course.dto.QuestionDTO;
-import com.dd.ai_smart_course.service.base.DifyService;
 import com.dd.ai_smart_course.R.Result;
 import org.springframework.web.bind.annotation.*;
 
