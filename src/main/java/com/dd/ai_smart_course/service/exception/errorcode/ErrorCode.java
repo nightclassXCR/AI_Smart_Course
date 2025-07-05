@@ -41,9 +41,16 @@ public enum ErrorCode {
     LOG_TARGET_TYPE_NULL(7003, "日志目标类型为空"),
     LOG_ACTION_TYPE_NULL(7004, "日志操作类型为空"),
     LOG_TARGET_TYPE_INVALID(7005, "日志目标类型参数错误"),
-    LOG_ACTION_TYPE_INVALID(7006, "日志操作类型参数错误");
+    LOG_ACTION_TYPE_INVALID(7006, "日志操作类型参数错误"),
 
-
+    // 邮件模块
+    MAIL_SEND_FAILS(8001, "邮件发送失败"),
+    MAIL_REDIS_BREAK(8002, "Redis异常"),
+    MAIL_SEND_FAILS_TOO_MANY_TIMES(8003, "邮件发送失败次数过多"),
+    MAIL_VERIFICATION_CODE_EXPIRED(8004, "邮件验证码已过期"),
+    MAIL_VERIFICATION_CODE_INVALID(8005, "邮件验证码无效"),
+    MAIL_VERIFICATION_CODE_NOT_EXISTS(8006, "邮件验证码不存在"),
+    MAIL_VERIFICATION_CODE_NOT_MATCH(8007, "邮件验证码不匹配");
 
     private final int code;     // 错误码
     private final String message;   // 错误信息

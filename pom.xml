@@ -168,6 +168,12 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <!--    redis    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- 阿里云OSS SDK -->
         <dependency>
             <groupId>com.aliyun.oss</groupId>
