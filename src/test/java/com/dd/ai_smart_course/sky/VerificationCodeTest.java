@@ -12,7 +12,7 @@ public class VerificationCodeTest {
     @Autowired
     private VerificationCodeServiceImpl verificationService;
 
-    // 测试目的地邮箱
+    // 测试目的地邮箱g
     private static final String TEST_EMAIL = "1825270596@qq.com";
 
     // 测试发送验证码
