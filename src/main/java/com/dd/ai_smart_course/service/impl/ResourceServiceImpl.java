@@ -69,8 +69,8 @@ public class ResourceServiceImpl implements ResourceService {
         }
         List<Resource> resources=new ArrayList<>();
         for(Concept concept:concepts) {
-            int resourceId =resourceMapper.findIdByNameAndType(concept.getName(), "concept");
-            Resource resource = resourceMapper.selectById(resourceId);
+            int ownerId =resourceMapper.findIdByNameAndType(concept.getName(), "concept");
+            Resource resource = resourceMapper.selectByOwnerId(ownerId);
             resources.add(resource);
         }
         return resources;

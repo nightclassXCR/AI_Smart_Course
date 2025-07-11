@@ -99,6 +99,8 @@ public class ResourceController {
     @GetMapping("/chapter/{chapterId}")
     public Result<List<Resource>> getResourcesByChapterId(@PathVariable int chapterId) {
        List<Resource> resources = resourceService.listByChapterId(chapterId);
+       log.info("查询成功，chapterId：{}", chapterId);
+       log.info("查询成功，resources：{}", resources);
         return Result.success(resources);
     }
 

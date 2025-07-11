@@ -21,13 +21,13 @@ public interface ResourceMapper {
     @Select("SELECT * FROM resources WHERE id = #{id}")
     Resource selectById(int id);
 
+    @Select("SELECT * FROM resources WHERE owner_id = #{id}")
+    Resource selectByOwnerId(int id);
     @Delete("DELETE FROM resources WHERE id = #{id}")
     void deleteById(int id);
 
-
     List<Resource> selectByFilter(Resource resource);
-
-
+    
     @Select("SELECT * FROM resources")
     List<Resource> list();
 
