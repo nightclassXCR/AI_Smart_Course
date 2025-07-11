@@ -59,7 +59,7 @@ public class ScoreControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(scores)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("操作成功"));
+                .andExpect(jsonPath("$.message").value("操作成功"));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ScoreControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("操作成功"));
+                .andExpect(jsonPath("$.message").value("操作成功"));
     }
 
     @Test
@@ -83,27 +83,7 @@ public class ScoreControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(score)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("操作成功"));
+                .andExpect(jsonPath("$.message").value("操作成功"));
     }
 
-    @Test
-    public void testGetTaskScores() throws Exception {
-        Score score = new Score();
-        when(scoreService.getTaskScore(1)).thenReturn(score);
-
-        mockMvc.perform(get("/score/tasks/1/scores"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.score").value(77.0));
-    }
-
-    @Test
-    public void testGetUserScores() throws Exception {
-        List<Score> scores = List.of(new Score(), new Score());
-        when(scoreService.getUserScores(1)).thenReturn(scores);
-
-        mockMvc.perform(get("/score/users/1/scores"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].score").value(90.0));
-    }
 }

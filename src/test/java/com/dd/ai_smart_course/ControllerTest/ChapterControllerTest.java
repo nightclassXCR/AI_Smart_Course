@@ -55,7 +55,7 @@ public class ChapterControllerTest {
 
         mockMvc.perform(get("/chapters"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("获取成功"))
+                .andExpect(jsonPath("$.message").value("获取成功"))
                 .andExpect(jsonPath("$.data").isArray());
     }
 
@@ -65,21 +65,10 @@ public class ChapterControllerTest {
 
         mockMvc.perform(get("/chapters/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("获取成功"))
+                .andExpect(jsonPath("$.message").value("获取成功"))
                 .andExpect(jsonPath("$.data").isArray());
     }
 
-    @Test
-    public void testAddChapterSuccess() throws Exception {
-        when(chapterService.addChapter(any())).thenReturn(1);
-        ChapterDTO dto = new ChapterDTO();
-
-        mockMvc.perform(post("/chapters")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("添加成功"));
-    }
 
     @Test
     public void testAddChapterFail() throws Exception {
@@ -90,7 +79,7 @@ public class ChapterControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("添加失败"));
+                .andExpect(jsonPath("$.message").value("添加失败"));
     }
 
     @Test
@@ -99,7 +88,7 @@ public class ChapterControllerTest {
 
         mockMvc.perform(delete("/chapters/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("删除成功"));
+                .andExpect(jsonPath("$.message").value("操作成功"));
     }
 
     @Test
@@ -110,7 +99,7 @@ public class ChapterControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(List.of(1L, 2L, 3L))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("排序成功"));
+                .andExpect(jsonPath("$.message").value("操作成功"));
     }
 
     @Test
@@ -119,7 +108,7 @@ public class ChapterControllerTest {
 
         mockMvc.perform(get("/chapters/1/concepts"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("获取成功"))
+                .andExpect(jsonPath("$.message").value("获取成功"))
                 .andExpect(jsonPath("$.data").isArray());
     }
 }

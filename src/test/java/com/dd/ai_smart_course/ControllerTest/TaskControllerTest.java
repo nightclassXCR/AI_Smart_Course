@@ -52,7 +52,7 @@ public class TaskControllerTest {
 
         mockMvc.perform(delete("/api/tasks/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("操作成功"));
+                .andExpect(jsonPath("$.message").value("操作成功"));
     }
 
     @Test
@@ -65,6 +65,6 @@ public class TaskControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(task)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("操作成功"));
+                .andExpect(jsonPath("$.message").value("操作成功"));
     }
 }

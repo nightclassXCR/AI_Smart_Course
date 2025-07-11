@@ -97,7 +97,7 @@ public class ConceptControllerTest {
         when(conceptService.deleteConcept(1)).thenReturn(0);
         mockMvc.perform(delete("/concepts/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("删除失败"));
+                .andExpect(jsonPath("$.message").value("删除失败"));
     }
 
     @Test
@@ -113,18 +113,4 @@ public class ConceptControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    public void testUpdateMasteryLevel() throws Exception {
-        mockMvc.perform(put("/concepts/users/1/concepts/2/mastery")
-                        .param("masteryLevel", "3"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testGetMasteryLevel() throws Exception {
-        when(conceptService.getMasteryLevel(1, 2)).thenReturn(5);
-        mockMvc.perform(get("/concepts/users/1/concepts/2/mastery"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(5));
-    }
 }

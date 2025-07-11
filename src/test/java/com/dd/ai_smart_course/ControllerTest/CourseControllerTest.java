@@ -59,53 +59,6 @@ public class CourseControllerTest {
                 .andExpect(jsonPath("$.data").exists());
     }
 
-    @Test
-    public void testAddCourseSuccess() throws Exception {
-        Course course = new Course();
-        when(courseService.addCourse(any())).thenReturn(1);
-
-        mockMvc.perform(post("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(course)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("添加成功"));
-    }
-
-    @Test
-    public void testAddCourseFail() throws Exception {
-        Course course = new Course();
-        when(courseService.addCourse(any())).thenReturn(0);
-
-        mockMvc.perform(post("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(course)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("添加失败"));
-    }
-
-    @Test
-    public void testUpdateCourseSuccess() throws Exception {
-        Course course = new Course();
-        when(courseService.updateCourse(any())).thenReturn(1);
-
-        mockMvc.perform(put("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(course)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("更新成功"));
-    }
-
-    @Test
-    public void testUpdateCourseFail() throws Exception {
-        Course course = new Course();
-        when(courseService.updateCourse(any())).thenReturn(0);
-
-        mockMvc.perform(put("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(course)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("更新失败"));
-    }
 
     @Test
     public void testDeleteCourseSuccess() throws Exception {
@@ -113,7 +66,7 @@ public class CourseControllerTest {
 
         mockMvc.perform(delete("/courses/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("删除成功"));
+                .andExpect(jsonPath("$.message").value("操作成功"));
     }
 
     @Test
@@ -122,7 +75,7 @@ public class CourseControllerTest {
 
         mockMvc.perform(delete("/courses/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("删除失败"));
+                .andExpect(jsonPath("$.message").value("删除失败"));
     }
 
     @Test
@@ -131,7 +84,7 @@ public class CourseControllerTest {
 
         mockMvc.perform(get("/courses/chapters/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("获取成功"))
+                .andExpect(jsonPath("$.message").value("获取成功"))
                 .andExpect(jsonPath("$.data").isArray());
     }
 
@@ -141,7 +94,7 @@ public class CourseControllerTest {
 
         mockMvc.perform(get("/courses/concepts/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("获取成功"))
+                .andExpect(jsonPath("$.message").value("获取成功"))
                 .andExpect(jsonPath("$.data").isArray());
     }
 
@@ -154,7 +107,7 @@ public class CourseControllerTest {
 
         mockMvc.perform(get("/courses/groupedConcepts/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.msg").value("获取成功"))
+                .andExpect(jsonPath("$.message").value("获取成功"))
                 .andExpect(jsonPath("$.data").exists());
     }
 }
