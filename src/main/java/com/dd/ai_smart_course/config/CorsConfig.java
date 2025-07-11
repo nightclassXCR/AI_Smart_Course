@@ -13,7 +13,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:*", "http://www.localhost:*","http://82.157.104.71:*") // 包含5173端口
+                .allowedOriginPatterns("http://localhost:*", "http://www.localhost:*","http://82.157.104.71:*","http://172.26.208.1:*") // 包含5173端口
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // 确保包含OPTIONS
                 .allowedHeaders("*")
                 .allowCredentials(true)
