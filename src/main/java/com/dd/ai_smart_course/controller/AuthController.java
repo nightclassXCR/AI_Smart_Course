@@ -29,6 +29,7 @@ public class AuthController {
         System.out.println("get a LoginByEmail request: " + "email = " + email + "; password = " + password); // 添加日志
         try {
             LocalToken response = authService.loginByEmail(email, password);
+
             log.info("LoginByEmail request status: success:{}",response);
             return Result.success(response);
         }catch (BusinessException be){
