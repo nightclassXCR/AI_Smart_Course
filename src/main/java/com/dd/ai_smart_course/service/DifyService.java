@@ -24,6 +24,8 @@ public class DifyService {
     private final ObjectMapper objectMapper;
     @Value("${dify.api.key}")
     private String apiKey;
+    @Value("${dify.api.key-questionnaire}")
+    private String apiQuestionnaireKey;
     @Value("${dify.api.url}")
     private String apiWorkflowUrl;
 
@@ -110,6 +112,29 @@ public class DifyService {
         // 如果没有找到 ```json 或 ``` 标记，则尝试直接返回清理后的文本，假定它就是JSON
         // 但这可能导致后续的JSON解析失败，如果内容不是纯JSON
         return cleanedText;
+    }
+
+    /**
+     * 通过调用Dify的工作流生成一份问卷
+     * @param courseName 课程名称
+     * return DifyCompletionResponse
+     *
+     */
+    public Mono<DifyCompletionResponse> generateQuestionnaire(String courseName) {
+        Map<String, Object> inputs = Collections.singletonMap("Course", courseName);
+        String userId = UUID.randomUUID().toString();
+        DifyWorkflowRequest requestBody = new DifyWorkflowRequest(
+                inputs,
+                "blocking",
+                userId
+        );
+        return webClient.post()
+                .uri(apiWorkflowUrl)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + apiQuestionnaireKey)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(DifyCompletionResponse.class);
     }
 }
 
