@@ -1,6 +1,7 @@
 package com.dd.ai_smart_course.service;
 
 
+import com.dd.ai_smart_course.dto.QuestionnaireResponse;
 import org.springframework.http.HttpHeaders;
 import com.dd.ai_smart_course.dto.DifyCompletionResponse;
 import com.dd.ai_smart_course.dto.KnowledgeGraphResponse;
@@ -81,6 +82,25 @@ public class DifyService {
             if (jsonString != null && !jsonString.trim().isEmpty()) {
                 try {
                     return objectMapper.readValue(jsonString, KnowledgeGraphResponse.class);
+                } catch (Exception e) {
+                    System.err.println("Failed to parse KnowledgeGraphResponse from Dify output text: " + e.getMessage());
+                    e.printStackTrace();
+                    return null; // 或者抛出自定义异常
+                }
+            }
+        }
+        return null;
+    }
+    public QuestionnaireResponse extractQuestionnaireResponse(DifyCompletionResponse difyResponse) {
+        if (difyResponse != null && difyResponse.getData() != null && difyResponse.getData().getOutputs() != null) {
+            String rawText = difyResponse.getData().getOutputs().getText();
+
+            // 尝试从字符串中提取JSON部分，去除<think>标签及```json```包裹
+            String jsonString = extractJsonFromThoughtText(rawText);
+
+            if (jsonString != null && !jsonString.trim().isEmpty()) {
+                try {
+                    return objectMapper.readValue(jsonString, QuestionnaireResponse.class);
                 } catch (Exception e) {
                     System.err.println("Failed to parse KnowledgeGraphResponse from Dify output text: " + e.getMessage());
                     e.printStackTrace();

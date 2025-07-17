@@ -14,6 +14,7 @@ public class KnowledgeGraphResponse {
     private List<ChapterNode> chapters;
 
 
+
     @Data
     public static class ChapterNode {
         private String id; // 章节的ID，如 "cpu_chapter_0"
