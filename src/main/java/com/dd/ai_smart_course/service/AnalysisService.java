@@ -4,7 +4,7 @@ package com.dd.ai_smart_course.service;
 import com.dd.ai_smart_course.R.PaginationResult;
 import com.dd.ai_smart_course.dto.ConceptMasteryDTO;
 import com.dd.ai_smart_course.dto.LearningLogDTO;
-import com.dd.ai_smart_course.entity.Concept_mastery;
+import com.dd.ai_smart_course.entity.ConceptMastery;
 import com.dd.ai_smart_course.entity.User;
 import com.dd.ai_smart_course.mapper.*;
 import org.springframework.beans.BeanUtils;
@@ -86,7 +86,7 @@ public class AnalysisService {
      */
     @Transactional(readOnly = true)
     public List<ConceptMasteryDTO> getConceptMastery(int userId, int conceptId, int courseId) {
-        List<Concept_mastery> masteries;
+        List<ConceptMastery> masteries;
         if (userId != 0 && conceptId != 0) {
             masteries = conceptMasteryMapper.findByUserIdAndConceptId(userId, conceptId).map(List::of).orElse(List.of());
         } else if (userId != 0) {
@@ -184,15 +184,15 @@ public class AnalysisService {
         // 完成章节数（targetType=CHAPTER, actionType=COMPLETE）
         long completedChapters = logs.stream().filter(l -> "CHAPTER".equalsIgnoreCase(l.getTargetType()) && "COMPLETE".equalsIgnoreCase(l.getActionType())).map(LearningLog::getTargetId).distinct().count();
         stats.setCompletedChapters((int) completedChapters);
-        // 完成概念数（统计 concept_mastery 表中 mastery_level >= 60 的数量）
-        List<com.dd.ai_smart_course.entity.Concept_mastery> masteries = conceptMasteryMapper.findMasteriesByUserId(userId);
-        long completedConcepts = masteries.stream()
-            .filter(m -> {
-                Double level = m.getMasteryLevel();
-                return level != null && level >= 60.0;
-            })
-            .count();
-        stats.setCompletedConcepts((int) completedConcepts);
+//        // 完成概念数（统计 concept_mastery 表中 mastery_level >= 60 的数量）
+//        List<ConceptMastery> masteries = conceptMasteryMapper.findMasteriesByUserId(userId);
+//        long completedConcepts = masteries.stream()
+//            .filter(m -> {
+//                Double level = m.getMasteryLevel();
+//                return level != null && level >= 60.0;
+//            })
+//            .count();
+//        stats.setCompletedConcepts((int) completedConcepts);
         // 平均分数（取 scores 表中 finalScore 平均值）
         double averageScore = 0.0;
         try {

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dd.ai_smart_course.mapper.ConceptMasteryMapper">
+    <resultMap id="conceptMasteryMap" type="com.dd.ai_smart_course.entity.ConceptMastery">
+        <id property="userId" column="user_id"/>
+        <id property="conceptId" column="concept_id"/>
+        <result property="masteryLevel" column="mastery_level"/>
+        <result property="lastUpdated" column="last_updated"/>
+    </resultMap>
+
+    <select id="findConceptMasteryByUserIdAndConceptId" resultMap="conceptMasteryMap">
+        SELECT user_id, concept_id, mastery_level, last_updated FROM concept_mastery
+        WHERE user_id = #{userId} AND concept_id = #{conceptId}
+    </select>
+    <insert id="insertConceptMastery" parameterType="com.dd.ai_smart_course.entity.ConceptMastery">
+        INSERT INTO concept_mastery (user_id, concept_id, mastery_level)
+        VALUES (#{userId}, #{conceptId}, #{masteryLevel})
+    </insert>
+    <update id="updateConceptMastery" parameterType="com.dd.ai_smart_course.entity.ConceptMastery">
+        UPDATE concept_mastery SET mastery_level = #{masteryLevel}, last_updated = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId} AND concept_id = #{conceptId}
+    </update>
+    <select id="findAllConceptMasteries" resultMap="conceptMasteryMap">
+        SELECT user_id, concept_id, mastery_level, last_updated FROM concept_mastery
+    </select>
+</mapper>

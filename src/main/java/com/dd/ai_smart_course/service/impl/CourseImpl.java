@@ -402,11 +402,6 @@ public class CourseImpl implements CourseService {
        if (courseIds.isEmpty()){
            return Collections.emptyList();
        }
-//        // 将 List<Integer> 转换为 List<Long>
-//        List<Long> longIds = courseIds.stream()
-//                .map(Integer::longValue) // 或者 .map(i -> Long.valueOf(i))
-//                .collect(Collectors.toList());
-
        List<Course> courses = courseMapper.getCoursesByIds(courseIds);
         for (Course course : courses) {
             // 确保 course 对象不为 null
@@ -419,13 +414,13 @@ public class CourseImpl implements CourseService {
                 dto.setStatusSelf(course.getStatusSelf());
                 dto.setStatusStudent(course.getStatusStudent());
                 List<Integer> taskIdsByCourseId = taskMapper.getTaskIdsByCourseId(course.getId());
-                log.info("任务课程id:{}{}",taskIdsByCourseId,course.getId());
+//                log.info("任务课程id:{}{}",taskIdsByCourseId,course.getId());
                 if(taskIdsByCourseId.isEmpty()){
                     dto.setAverageScore(BigDecimal.ZERO);
                 }else{
                     dto.setAverageScore(scoreMapper.getAvgScoreByTaskIdAndUserId(BaseContext.getCurrentId(),taskIdsByCourseId));
                 }
-                log.info("课程平均分:{}{}",dto.getName(),dto.getAverageScore());
+//                log.info("课程平均分:{}{}",dto.getName(),dto.getAverageScore());
                 if (course.getTeacherId() != 0) {
                     String teacherName = courseMapper.getUserNameById(course.getTeacherId());
                     dto.setTeacherRealName(teacherName);

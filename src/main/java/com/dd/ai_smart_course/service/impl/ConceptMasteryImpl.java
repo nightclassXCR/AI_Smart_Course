@@ -1,7 +1,7 @@
 package com.dd.ai_smart_course.service.impl;
 
 
-import com.dd.ai_smart_course.entity.Concept_mastery;
+import com.dd.ai_smart_course.entity.ConceptMastery;
 import com.dd.ai_smart_course.mapper.*;
 import com.dd.ai_smart_course.service.base.ConceptMasteryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,14 +47,14 @@ public class ConceptMasteryImpl implements ConceptMasteryService {
                 try {
                     int newMasteryLevel = calculateMasteryForUserConcept(userId, conceptId);
 
-                    Optional<Concept_mastery> existingMastery = conceptMasteryMapper.findByUserIdAndConceptId(userId, conceptId);
+                    Optional<ConceptMastery> existingMastery = conceptMasteryMapper.findByUserIdAndConceptId(userId, conceptId);
                     if (existingMastery.isPresent()) {
-                        Concept_mastery mastery = existingMastery.get();
+                        ConceptMastery mastery = existingMastery.get();
                         mastery.setMasteryLevel(newMasteryLevel);
-                        mastery.setLastPracticed(LocalDateTime.now());
+                        mastery.setLastUpdated(LocalDateTime.now());
                         conceptMasteryMapper.updateConceptMastery(mastery);
                     } else {
-                        Concept_mastery mastery = new Concept_mastery(userId, conceptId, newMasteryLevel, LocalDateTime.now());
+                        ConceptMastery mastery = new ConceptMastery(userId, conceptId, newMasteryLevel, LocalDateTime.now());
                         conceptMasteryMapper.insertConceptMastery(mastery);
                     }
                 } catch (Exception e) {
@@ -128,14 +128,14 @@ public class ConceptMasteryImpl implements ConceptMasteryService {
         // 2. 遍历这些概念，为每个概念重新计算掌握度
         for (int conceptId : conceptIds) {
             int newMasteryLevel = calculateMasteryForUserConcept(userId, conceptId);
-            Optional<Concept_mastery> existingMastery = conceptMasteryMapper.findByUserIdAndConceptId(userId, conceptId);
+            Optional<ConceptMastery> existingMastery = conceptMasteryMapper.findByUserIdAndConceptId(userId, conceptId);
             if (existingMastery.isPresent()) {
-                Concept_mastery mastery = existingMastery.get();
+                ConceptMastery mastery = existingMastery.get();
                 mastery.setMasteryLevel(newMasteryLevel);
-                mastery.setLastPracticed(LocalDateTime.now());
+                mastery.setLastUpdated(LocalDateTime.now());
                 conceptMasteryMapper.updateConceptMastery(mastery);
             } else {
-                Concept_mastery mastery = new Concept_mastery(userId, conceptId, newMasteryLevel, LocalDateTime.now());
+                ConceptMastery mastery = new ConceptMastery(userId, conceptId, newMasteryLevel, LocalDateTime.now());
                 conceptMasteryMapper.insertConceptMastery(mastery);
             }
         }

@@ -188,6 +188,9 @@ public interface ConceptMapper {
             "</script>")
     List<Concept> getConceptsByNames(@Param("names") List<String> names);
 
+    @Select("SELECT id , name FROM concepts WHERE  name LIKE CONCAT('%',#{name},'%') LIMIT 1")
+    Concept findConceptByNameFuzzy(String name);
+
 
 //    /**
 //     * 【需要额外数据库表支持】获取用户在某个课程中的错题对应的概念ID及错题次数

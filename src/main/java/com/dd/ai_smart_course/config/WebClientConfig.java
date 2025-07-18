@@ -22,12 +22,12 @@ public class WebClientConfig {
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
                 // 响应超时：从发送请求到接收完整响应的总时间
                 // 设置为比 Dify 实际完成时间稍长，例如 4 分 30 秒
-                .responseTimeout(Duration.ofMinutes(8).plusSeconds(30))
+                .responseTimeout(Duration.ofMinutes(4).plusSeconds(30))
                 // 当连接建立后，进一步配置读写超时处理器
                 .doOnConnected(conn -> conn
                         // 读取超时：连接空闲时间（没有数据读入）超过此时间则超时
                         // 这对于流式响应很重要，防止Dify在发送数据块之间挂起
-                        .addHandlerLast(new ReadTimeoutHandler(Duration.ofMinutes(8).toSeconds() + 30, TimeUnit.SECONDS))
+                        .addHandlerLast(new ReadTimeoutHandler(4, TimeUnit.MINUTES))
                         // 写入超时：发送请求体（如果很大）的最大时间
                         .addHandlerLast(new WriteTimeoutHandler(10, TimeUnit.SECONDS)));
 

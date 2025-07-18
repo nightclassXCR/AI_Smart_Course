@@ -111,6 +111,7 @@ public class DifyService {
         return null;
     }
 
+
     // 辅助方法：从包含<think>标签和```json```的字符串中提取纯JSON
     private String extractJsonFromThoughtText(String rawText) {
         if (rawText == null || rawText.trim().isEmpty()) {

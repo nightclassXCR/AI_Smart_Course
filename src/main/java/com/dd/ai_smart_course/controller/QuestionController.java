@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class QuestionController {
                 if (!concepts.isEmpty()) {
                     allQuestions = questionService.listByConcept(concepts.get(0).getId());
                 } else {
-                    allQuestions = List.of();
+                    allQuestions = new ArrayList<>();
                 }
 
             }else if(conceptId != null){

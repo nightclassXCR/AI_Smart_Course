@@ -22,7 +22,7 @@ public class QuestionnaireResponse{
         @JsonProperty("question_text")
         private String question_text;
         private String type;
-        private List<String> options; // 仅单选或多选题有
+        private List<String> options; // 仅单选有
         @JsonProperty("correct_answer")
         private String correct_answer;
         private String explanation;
